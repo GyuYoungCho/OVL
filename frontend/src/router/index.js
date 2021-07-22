@@ -1,23 +1,106 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Main from '../views/Main.vue'
+import Signup from '../views/Signup.vue'
+import Login from '../views/Login.vue'
+import NotFound from '../views/errorpages/404.vue'
+import ArticleCreate from '../views/ArticleCreate.vue'
+import ArticleDetail from '../views/ArticleDetail.vue'
+import ChallengeDetail from '../views/ChallengeDetail.vue'
+import ChallengeList from '../views/ChallengeList.vue'
+import FindPassword from '../views/FindPassword.vue'
+import Profile from '../views/Profile.vue'
+import RecipeCreate from '../views/RecipeCreate.vue'
+import RecipeDetail from '../views/RecipeDetail.vue'
+import RecipeSearch from '../views/RecipeSearch.vue'
+import VetPartyCreate from '../views/VetPartyCreate.vue'
+import VetPartyDetail from '../views/VetPartyDetail.vue'
+import VetPartyList from '../views/VetPartyList.vue'
+
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Main',
+    component: Main
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+    path: '/signup',
+    name: 'Signup',
+    component: Signup
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
+  {
+    path: '*',
+    name: 'NotFound',
+    component: NotFound
+  },
+  {
+    path: '/article_create',
+    name: 'ArticleCreate',
+    component: ArticleCreate
+  },
+  {
+    path: '/article_detail',
+    name: 'ArticleDetail',
+    component: ArticleDetail
+  },
+  {
+    path: '/challenge_detail',
+    name: 'ChallengeDetail',
+    component: ChallengeDetail
+  },
+  {
+    path: '/challenge_list',
+    name: 'ChallengeList',
+    component: ChallengeList
+  },
+  {
+    path: '/find_password',
+    name: 'FindPassword',
+    component: FindPassword
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
+  },
+  {
+    path: '/recipe_create',
+    name: 'RecipeCreate',
+    component: RecipeCreate
+  },
+  {
+    path: '/recipe_detail',
+    name: 'RecipeDetail',
+    component: RecipeDetail
+  },
+  {
+    path: '/recipe_search',
+    name: 'RecipeSearch',
+    component: RecipeSearch
+  },
+  {
+    path: '/vetparty_create',
+    name: 'VetPartyCreate',
+    component: VetPartyCreate
+  },
+  {
+    path: '/vetparty_detail',
+    name: 'VetPartyDetail',
+    component: VetPartyDetail
+  },
+  {
+    path: '/vetparty_list',
+    name: 'VetPartyList',
+    component: VetPartyList
+  },
 ]
 
 const router = new VueRouter({
