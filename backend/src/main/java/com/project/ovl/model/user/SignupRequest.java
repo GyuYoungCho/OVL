@@ -56,6 +56,12 @@ public class SignupRequest {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 	public String getPassword() {
 		return password;
 	}
@@ -68,10 +74,24 @@ public class SignupRequest {
 	public void setExperience(int experience) {
 		this.experience = experience;
 	}
+	public int getAccount_open() {
+		return account_open;
+	}
+	public void setAccount_open(int account_open) {
+		this.account_open = account_open;
+	}
+	public int getWarning() {
+		return warning;
+	}
+	public void setWarning(int warning) {
+		this.warning = warning;
+	}
 	public int getChallenge_id() {
 		return challenge_id;
 	}
 	public void setChallenge_id(int challenge_id) {
 		this.challenge_id = challenge_id;
 	}
+	
+    
 }
