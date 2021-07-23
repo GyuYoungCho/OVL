@@ -1,14 +1,19 @@
 package com.project.ovl.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.UserDao;
+import com.project.ovl.model.jwt.JwtService;
 import com.project.ovl.model.mail.mailService;
 import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
+
 
 @RestController
 @RequestMapping("/user")
@@ -31,6 +38,9 @@ import io.swagger.annotations.ApiOperation;
 public class UserController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
+	
+	@Autowired
+	private JwtService jwtService;
 	
 	@Autowired
     UserDao userDao;
@@ -95,5 +105,35 @@ public class UserController {
 				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null, null);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
+	
+	@Transactional
+	@PostMapping("/login")
+	@ApiOperation(value = "로그인")
+	public ResponseEntity<Map<String, Object>> login(@RequestBody SignupRequest request, HttpServletResponse res){
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		ResponseEntity<Map<String, Object>> entity = null;
+		String token = "";
+		
+		try {
+			User userlogin = userDao.login(request.getEmail(), request.getPassword());
+			token = jwtService.create(userlogin);
+			
+			resultMap.putAll(jwtService.get(token));
+			
+			resultMap.put("status", true);
+			resultMap.put("data", userlogin);
+			resultMap.put("token", token);
+			
+			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+			
+		}catch(RuntimeException e){
+			//Logger.info("로그인 실패",e);
+			resultMap.put("message", e.getMessage());
+			entity = ResponseEntity.badRequest().body(resultMap);
+		}
+		return entity;
+		
 	}
 }
