@@ -1,5 +1,7 @@
 <template>
-  <div></div>
+  <div>
+    <h1>레시피 생성 페이지</h1>
+  </div>
 </template>
 
 <script>

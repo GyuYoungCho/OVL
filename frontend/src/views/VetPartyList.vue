@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div>
+    <h1>채식팟</h1>
+
+  </div>
 </template>
 
 <script>
