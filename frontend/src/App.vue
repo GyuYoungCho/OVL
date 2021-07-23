@@ -1,16 +1,19 @@
 <template>
-  <section>
-    <h1>NAV바 여기 넣을거임</h1>
+  <v-app>
+    <Navbar />
     <RouterView/>
-  </section>
+  </v-app>
 </template>
 
 <script>
 import "./assets/css/index.scss"
+import Navbar from "@/components/Navbar"
 
 export default {
   name: 'App',
-
+  components: {
+    Navbar
+  },
   data: () => ({
     //
   }),
