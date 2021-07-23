@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String user_id;
+    private int user_id;
 
     @JsonIgnore
     private String email;
@@ -38,7 +38,7 @@ public class User {
     private int account_open;
     private int warning;
     
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "from_id")
