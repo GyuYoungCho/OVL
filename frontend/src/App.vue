@@ -1,8 +1,8 @@
 <template>
-  <section>
+  <v-app>
     <h1>NAV바 여기 넣을거임</h1>
     <RouterView/>
-  </section>
+  </v-app>
 </template>
 
 <script>
@@ -16,3 +16,6 @@ export default {
   }),
 };
 </script>
+
+<style>
+</style>
