@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,13 +46,13 @@ public class UserController {
 		else return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
 	
-	@GetMapping("/join_auth/{email}")
-	@ApiOperation(value = "회원가입 이메일 인증")
-	public ResponseEntity<String> join_auth(@PathVariable String email, HttpServletRequest request) throws UnsupportedEncodingException {
+	@GetMapping("/email_auth/{type}/{email}")
+	@ApiOperation(value = "이메일 인증")
+	public ResponseEntity<String> join_auth(@PathVariable String type, @PathVariable String email, HttpServletRequest request) throws UnsupportedEncodingException {
 		User isEmail = userDao.getUserByEmail(email);
 		if (isEmail==null) {
 	    	HttpSession session = request.getSession();
-	    	int authorization = mService.mailSend(email, "join");
+	    	int authorization = mService.mailSend(email, type);
 	    	session.setAttribute(email, authorization);
 	    	System.out.println("join_auth email : "+email+", session : "+session.getAttribute(email));
 			if (authorization!=0) return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -59,9 +60,9 @@ public class UserController {
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
 	
-	@GetMapping("/join_auth_check/{email}/{confirm}")
-	@ApiOperation(value = "회원가입 이메일 인증번호 확인")
-	public ResponseEntity<String> join_auth_check(@PathVariable String email, @PathVariable String confirm, HttpSession session) throws UnsupportedEncodingException {
+	@GetMapping("/email_auth_check/{email}/{confirm}")
+	@ApiOperation(value = "이메일 인증번호 확인")
+	public ResponseEntity<String> join_auth_check( @PathVariable String email, @PathVariable String confirm, HttpSession session) throws UnsupportedEncodingException {
     	try {
     		int authorization = (int) session.getAttribute(email);
     		if (authorization>0) {
@@ -72,6 +73,19 @@ public class UserController {
     	} catch(Exception e) {
     		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
     	}
+	}
+	
+	@PutMapping("/modify_pw/{email}/{password}")
+	@ApiOperation(value = "비밀번호 변경")
+	public ResponseEntity<String> modify_pw(@PathVariable String email, @PathVariable String password){
+		try {
+			User isEmail = userDao.getUserByEmail(email);
+			isEmail.setPassword(password);
+			userDao.save(isEmail);
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+		}
 	}
 	
 	@PostMapping("/join")
