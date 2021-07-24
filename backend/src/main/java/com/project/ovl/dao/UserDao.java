@@ -10,7 +10,7 @@ import com.project.ovl.model.user.User;
 public interface UserDao extends JpaRepository<User, String> {
 	 User getUserByEmail(String email);
 	 User getUserByNickname(String nickname);
-	 User login(String email, String password);
 	 User getUserByUserid(int userid);
 	 Optional<User> findUserByNameAndPhone(String name, String phone);
+	 Optional<User> findUserByEmailAndPassword(String email, String password);
 }

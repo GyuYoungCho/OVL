@@ -26,10 +26,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.UserDao;
+import com.project.ovl.dto.UserDto;
 import com.project.ovl.model.jwt.JwtService;
 import com.project.ovl.model.mail.mailService;
 import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
+
 
 import io.swagger.annotations.ApiOperation;
 
@@ -111,14 +113,14 @@ public class UserController {
 	@Transactional
 	@PostMapping("/login")
 	@ApiOperation(value = "로그인")
-	public ResponseEntity<Map<String, Object>> login(@RequestBody SignupRequest request, HttpServletResponse res){
+	public ResponseEntity<Map<String, Object>> login(@RequestBody UserDto loginDto, HttpServletResponse res) throws Exception{
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		ResponseEntity<Map<String, Object>> entity = null;
 		String token = "";
 		
 		try {
-			User userlogin = userDao.login(request.getEmail(), request.getPassword());
+			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
 			token = jwtService.create(userlogin);
 			
 			resultMap.putAll(jwtService.get(token));
