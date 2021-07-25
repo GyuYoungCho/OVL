@@ -13,6 +13,7 @@
     </v-col>
     <v-col cols="12">
       <v-btn
+      :disabled="!nickname || !(nickname.length <= 10)"
       block
       @click="onNicknameBtnClick"
       >
@@ -33,7 +34,7 @@ export default {
   }),
   methods: {
     onNicknameBtnClick () {
-        this.$emit('nicknameCheck')
+        this.$emit('nicknameCheck', this.nickname)
       },
   }
 }

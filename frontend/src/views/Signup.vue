@@ -10,14 +10,14 @@
     >
       <NickName @nicknameCheck="nicknameCheck" />
       <Email @emailCheck="emailCheck" />
-      <PhoneNumber />
-      <Password />
+      <PhoneNumber @phoneNumberChanged="phoneNumberChanged" />
+      <Password @passwordChanged="passwordChanged" />
       <v-btn
         :disabled="!valid || !allValid"
         class="bg-freditgreen"
         raised
-        @click="validate"
         block
+        @click="onSignupBtnClick"
       >
         가입하기
       </v-btn>
@@ -41,21 +41,35 @@ import Email from './signup/Email.vue'
       valid: false,
       nicknameValid: false,
       emailValid: false,
+
+      nickname: '',
+      email: '',
+      phoneNumber: '',
+      password: '',
     }),
     methods: {
-      validate () {
-        this.$refs.form.validate()
+      onSignupBtnClick () {
+        console.log(this.$data)
+        // this.$router.push({ name: 'Login' })
       },
-      nicknameCheck () {
+      nicknameCheck (nickname) {
         this.nicknameValid = true
+        this.nickname = nickname
       },
-      emailCheck () {
+      emailCheck (email) {
         this.emailValid = true
+        this.email = email
+      },
+      phoneNumberChanged (phoneNumber) {
+        this.phoneNumber = phoneNumber
+      },
+      passwordChanged (password) {
+        this.password = password
       }
     },
     computed: {
       allValid () {
-        return this.emailValid && this.nicknameValid
+        return this.emailValid && this.nicknameValid && this.nickname && this.phoneNumber && this.password
       }
     }
     
