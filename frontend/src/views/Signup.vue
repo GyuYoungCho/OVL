@@ -3,6 +3,8 @@
     <h1 class="text-center">
       회원가입
     </h1>
+    <KakaoLogin />
+
     <v-form
       ref="form"
       v-model="valid"
@@ -32,10 +34,11 @@ import Password from './signup/Password.vue'
 import PhoneNumber from './signup/PhoneNumber.vue'
 import NickName from './signup/NickName.vue'
 import Email from './signup/Email.vue'
+import KakaoLogin from '@/components/KakaoLogin.vue'
 
   export default {
     components: {
-      Password, PhoneNumber, NickName, Email,
+      Password, PhoneNumber, NickName, Email, KakaoLogin,
     },
     data: () => ({
       valid: false,
