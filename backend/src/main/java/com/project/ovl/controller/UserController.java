@@ -1,5 +1,6 @@
 package com.project.ovl.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -167,11 +168,17 @@ public class UserController {
 
     @ApiOperation(value = "회원 수정", response = String.class)
 	@PutMapping("/modify_user")
-	public ResponseEntity<String> search_id(@RequestBody User user, @RequestPart("picture") MultipartFile pic) {
+	public ResponseEntity<String> search_id(@RequestBody User user, @RequestPart("picture") MultipartFile pic) throws IOException {
     	User useropt = userDao.getUserByUserid(user.getUserid());
     	useropt.setNickname(user.getNickname());
     	useropt.setExperience(user.getExperience());
     	useropt.setPhone(user.getPhone());
+    	
+    	if(pic==null)
+    		useropt.setImg(null);
+    	else
+    		useropt.setImg(pic.getBytes());
+    	
 		userDao.save(useropt);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}

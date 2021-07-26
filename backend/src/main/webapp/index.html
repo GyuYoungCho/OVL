@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>crud test</title>
+</head>
+
+<body>
+<div id="app">
+	<input type="text" id="title" ref="title"><br>
+	<input type="file" id="picture" ref="picture" accept="image/png, image/jpeg"><br>
+	<input type="password" id="password" ref="password"><br>
+	<button v-on:click="post">Posting!</button>
+	<hr>
+	<div v-for="list in lists" v-bind:id="list.userid">
+	{{list.userid}}
+	<img v-bind:src=list.path width="200px" height="200px">
+	<input type="text" v-model=list.title ref="tt"><br>
+	<input type="file" v-bind:ref=list.userid accept="image/png, image/jpeg"><br>
+	<button v-on:click="update(list)">update</button>
+	<button v-on:click="del(list)">delete</button>
+	<hr>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.2.0/mustache.min.js"></script>
+
+<script type="text/javascript">
+new Vue({
+	el:"#app",
+	data:{
+		file:null,
+		lists:[],
+		path:'',
+		status:''
+	},
+	methods:{
+		post:function(){
+			var formData = new formData();
+			formData.append("picture",this.$ref.picture.files[0])
+			formData.append("title",this.$ref.title.value)
+			formData.append("password",this.$ref.password.value)
+			axios.post(
+				'/content',
+				formData,
+				{headers:{'Content-Type':'multipart/form-data'}}
+			).then(response=>{
+				console.log(response.data)
+				this.getList();
+			})
+		},
+		update:function(list){
+			
+			
+			list.picture = this.$ref[list.uid][0].files[0]
+			list.nickname = this.title
+			
+			axios.put(
+				'http://localhost:8080/user/modify_user',
+				list,
+				{headers:{'Content-Type':'multipart/form-data'}}
+			).then(response=>{
+				console.log(response.data)
+				this.getList();
+			})
+		},
+		del:function(list){
+			var delPasswd = prompt("enter password");
+			if(!delPasswd) return;
+			axios.delete(
+				'/content'+list.uid,
+				{data:{password:delPasswd}}
+			).then(response=>{
+				// console.log(response.data)
+				this.getList();
+			})
+		},
+		getList:function(){
+			axios.get('http://localhost:8080/user/select/'+1).then(response=>{
+				this.lists.push(response.data)
+			})
+			console.log(this.lists)
+		}
+	},
+
+	mounted:function() {
+		this.$nextTick(function(){
+			this.getList()
+		})
+	},
+})
+</script>
+</body>
+</html>

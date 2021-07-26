@@ -3,12 +3,15 @@ package com.project.ovl.model.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +37,7 @@ public class User {
     @Column(name = "user_id")
     private int userid;
 
-    @JsonIgnore
+    
     private String email;
     private String nickname;
     private String name;
@@ -43,7 +46,11 @@ public class User {
     private int experience;
     private int account_open;
     private int warning;
-    private MultipartFile img;
+    
+    @Lob
+	@Basic(fetch = FetchType.LAZY) 
+	@Column(name="profile", columnDefinition="longblob", nullable=true)
+    private byte[] img;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();

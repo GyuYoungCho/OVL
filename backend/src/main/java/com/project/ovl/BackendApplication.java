@@ -29,7 +29,7 @@ public class BackendApplication implements WebMvcConfigurer{
 	    registry.addInterceptor(jwtInterceptor).addPathPatterns("/user/**")
 	    .excludePathPatterns(Arrays.asList("/user/login", "/user/nickname_check/{nickname}", "/user/search_id/{name}/{phone}", 
 	    		"/user/select/{user_id}", "/user/email_auth/{type}/{email}", "/user/email_auth_check/{email}/{confirm}",
-	    		"/user/delete/{user_id}"));
+	    		"/user/delete/{user_id}","/user/modify_user"));
 	    
 	}
 
