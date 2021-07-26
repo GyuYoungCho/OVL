@@ -1,5 +1,6 @@
 package com.project.ovl.model.follow;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import com.project.ovl.model.user.User;
@@ -24,13 +26,14 @@ import lombok.NoArgsConstructor;
 public class Follow {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int follow_id;
+	@Column(name = "follow_id")
+    private int followid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_id")
-    private User from_id;
+    private User fromuser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_id")
-    private User to_id;
+    private User touser;
 }
