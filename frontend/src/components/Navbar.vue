@@ -1,13 +1,110 @@
 <template>
-  <div></div>
+  <div>
+    <!-- dense 하면 좀더 좁은 nav bar (48px 이 가능함) -->
+      <v-app-bar color="accent-4" dense white>
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <!-- justify content between 해주는 태그가 v-spacer -->
+        <v-spacer></v-spacer>
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+          <v-list-item v-for="(item, index) in items" :key="index">
+            <v-list-item-title>
+              <RouterLink class='text-dec' :to="{ name: item.routerName }">
+                {{ item.title }}
+              </RouterLink>
+            </v-list-item-title>
+          </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-app-bar>
+
+      <v-navigation-drawer v-model="drawer" absolute bottom temporary>
+        <v-list nav dense>
+          <!-- <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4"> -->
+          <v-list-item-group v-model="group" active-class="green">
+
+            <RouterLink :to="{ name: 'Main' }">
+             <v-list-item class="mb-2 text-dec">
+               <v-icon>mdi-home-export-outline</v-icon>
+              <v-list-item-title class="ms-4">홈</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+            
+            <RouterLink :to="{ name: 'Profile' }">           
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-card-account-details-outline</v-icon>
+                <v-list-item-title class="ms-4">내 프로필</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <RouterLink :to="{name:'VetPartyList'}">
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-sprout-outline</v-icon>
+                <v-list-item-title class="ms-4">채식팟</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <RouterLink :to="{name:'RecipeSearch'}">
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-file-outline</v-icon>
+                <v-list-item-title class="ms-4">레시피</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <RouterLink :to="{name:'ChallengeList'}">
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-controller-classic-outline</v-icon>
+                <v-list-item-title class="ms-4">챌린지</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <RouterLink :to="{name:'Main'}">
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-map-marker-radius-outline</v-icon>
+                <v-list-item-title class="ms-4">지도</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <v-list-item class="mb-2">
+              <v-icon>mdi-home-remove-outline</v-icon>
+              <v-list-item-title class="ms-4">로그아웃</v-list-item-title>
+            </v-list-item>
+
+            
+          </v-list-item-group>
+        </v-list>
+      </v-navigation-drawer>
+  </div>
 </template>
 
 <script>
-export default {
+  export default {
+    data: () => ({
+      drawer: false,
+      group: null,
+      items: [
+        { title: '게시글 생성', routerName: 'ArticleCreate'},
+        { title: '레시피 생성', routerName: 'RecipeCreate' },
+      ],
+    }),
 
-}
+    watch: {
+      group () {
+        this.drawer = false
+      },
+    },
+  }
 </script>
 
-<style>
+<style lang="scss" scoped>
+ .text-dec {
+   text-decoration: none !important;
+   color: black !important;
+ }
 
 </style>
