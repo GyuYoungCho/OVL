@@ -63,7 +63,7 @@
               </v-list-item>
             </RouterLink>
 
-            <RouterLink :to="{name:'main'}">
+            <RouterLink :to="{name:'Main'}">
               <v-list-item class="mb-2 text-dec">
                 <v-icon>mdi-map-marker-radius-outline</v-icon>
                 <v-list-item-title class="ms-4">지도</v-list-item-title>
