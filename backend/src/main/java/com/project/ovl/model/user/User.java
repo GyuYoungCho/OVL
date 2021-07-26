@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.post.Post;
+import com.project.ovl.model.report.Report;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
