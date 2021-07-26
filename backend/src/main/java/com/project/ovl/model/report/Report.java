@@ -1,6 +1,5 @@
-package com.project.ovl.model.post;
+package com.project.ovl.model.report;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -21,15 +20,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Post {
+public class Report {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int post_id;
+    private int report_id;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "fromId")
+    private User fromId;
 
-    @Column(columnDefinition = "text")
-    private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "toId")
+    private User toId;
 }

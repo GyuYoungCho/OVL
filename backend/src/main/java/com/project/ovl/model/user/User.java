@@ -3,6 +3,7 @@ package com.project.ovl.model.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.post.Post;
+import com.project.ovl.model.report.Report;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +28,8 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String user_id;
+    @Column(name = "user_id")
+    private int userid;
 
     @JsonIgnore
     private String email;
@@ -38,7 +41,7 @@ public class User {
     private int account_open;
     private int warning;
     
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
     @OneToMany(mappedBy = "from_id")
