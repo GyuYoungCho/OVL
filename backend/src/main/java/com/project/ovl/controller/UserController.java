@@ -139,4 +139,51 @@ public class UserController {
 		return entity;
 		
 	}
+	
+	@ApiOperation(value = "name, phone으로 이메일 찾기. 'success' or 'fail'", response = String.class)
+	@GetMapping("/search_id/{name}/{phone}")
+	public ResponseEntity<String> search_id(@PathVariable("name") String name,
+											@PathVariable("phone") String phone) {
+		Optional<User> userOpt = userDao.findUserByNameAndPhone(name, phone);
+		if (userOpt.isPresent()) {
+            return new ResponseEntity<>(userOpt.get().getEmail(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(FAIL, HttpStatus.NO_CONTENT);
+        }
+	}
+	
+	@ApiOperation(value = "회원 조회", response = User.class)
+	@GetMapping("/select/{user_id}")
+	public ResponseEntity<User> select(@PathVariable int user_id) {
+		User user = userDao.getUserByUserid(user_id);
+		if (user!=null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+	}
+
+    @ApiOperation(value = "회원 수정", response = String.class)
+	@PutMapping("/modify_user")
+	public ResponseEntity<String> search_id(@RequestBody User user) {
+    	User useropt = userDao.getUserByUserid(user.getUserid());
+    	useropt.setNickname(user.getNickname());
+    	useropt.setExperience(user.getExperience());
+    	useropt.setPhone(user.getPhone());
+		userDao.save(useropt);
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
+    
+    @ApiOperation(value = "회원 탈퇴", response = String.class)
+	@DeleteMapping("/delete/{user_id}")
+	public ResponseEntity<String> delete(@PathVariable int user_id) {
+    	User user = userDao.getUserByUserid(user_id);
+		if(user!=null) {
+			userDao.delete(user);
+			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		}
+		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+	}
+
+    
 }
