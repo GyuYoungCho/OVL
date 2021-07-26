@@ -72,12 +72,6 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		
-		<!-- maria db -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -109,6 +103,13 @@
     		<version>2.5.3</version>
 		</dependency>
 		
+
+		<dependency>
+		  <groupId>org.hibernate</groupId>
+		  <artifactId>hibernate-validator</artifactId>
+		  <version>6.0.7.Final</version>
+		</dependency>
+
 		
 	</dependencies>
 

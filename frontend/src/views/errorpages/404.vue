@@ -15,7 +15,9 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
+  @import '@/assets/css/index.scss';
+
   p {
     margin-bottom: 30px;
   }
@@ -50,7 +52,7 @@ export default {
 
   .entire .a{
     text-decoration: none;
-    background: #e55039aa;
+    background: $freditgreen;
     color: #fff;
     padding: 12px 24px;
     display: inline-block;
@@ -61,6 +63,6 @@ export default {
   }
 
   .entire .a:hover{
-    background: #e55039;
+    background: green;
   }
 </style>
