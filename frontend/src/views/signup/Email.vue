@@ -3,6 +3,7 @@
     <v-col
     cols="12">
       <v-text-field
+        color="green lighten-4"
         v-model="email"
         :rules="emailRules"
         label="이메일"
@@ -64,7 +65,7 @@ export default {
       },
     onAuthBtnClick () {
       this.$emit('emailCheck', this.email)
-    }
+    },
   }
 }
 </script>
