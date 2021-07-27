@@ -1,9 +1,15 @@
 package com.project.ovl.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,14 +24,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.PostDao;
 import com.project.ovl.dao.PostLIkeDao;
+import com.project.ovl.dao.PostPhotoDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.like.PostLike;
+import com.project.ovl.model.photo.PhotoHandler;
+import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.user.User;
 
@@ -36,6 +48,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class PostController {
 	private static final String SUCCESS = "success";
+	private static final String FAIL = "fail";
 	
 	@Autowired
 	PostDao postDao;
@@ -49,12 +62,27 @@ public class PostController {
 	@Autowired
     PostLIkeDao postLikeDao;
 	
+	@Autowired
+	PostPhotoDao postPhotoDao;
+	
+	@Autowired
+	PhotoHandler photoHandler;
+	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<String> regist(@RequestBody Post post) {
-		System.out.println("post : "+post);
-		post.setTime(new Date());
+	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("title") String title,
+											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
+		// 게시글 저장
+		User user = userDao.getUserByUserid(Integer.parseInt(userId));
+		Post post = new Post(0, content, title, 0, new Date(), user);
 		postDao.save(post);
+		
+		// 이미지 저장
+		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
+		
+		for (PostPhoto pp : photoList) {
+			postPhotoDao.save(pp);
+		}
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
@@ -70,6 +98,20 @@ public class PostController {
 	@DeleteMapping("/delete/{post_id}")
 	@ApiOperation(value = "게시글 삭제")
 	public ResponseEntity<String> delete(@PathVariable int post_id) {
+		// 해당 게시글 좋아요 리스트 삭제
+		List<PostLike> likeList = postLikeDao.findAll();
+		
+		for (PostLike pl : likeList) {
+			if (pl.getPostId().getPostId()==post_id) postLikeDao.delete(pl);
+		}
+		
+		// 해당 게시글 사진 리스트 삭제
+		List<PostPhoto> photoList = postPhotoDao.findAll();
+		
+		for (PostPhoto pp : photoList) {
+			if (pp.getPostId().getPostId()==post_id) postPhotoDao.delete(pp);
+		}
+		
 		Post deletePost = postDao.findPostByPostId(post_id);
 		postDao.delete(deletePost);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -77,7 +119,8 @@ public class PostController {
 	
 	@GetMapping("/select_all/{user_id}")
 	@ApiOperation(value = "게시글 조회")
-	public ResponseEntity<List<Post>> select_all(@PathVariable int user_id) {
+	public ResponseEntity<Map<Post, PostPhoto>> select_all(@PathVariable int user_id) {
+		Map<Post, PostPhoto> map = new HashMap<>();
 		// 내가 팔로우 한 사람 찾기
 		Optional<List<Follow>> followList = followDao.findByFromIdUserid(user_id);
 		Set<Integer> followingList = new HashSet<>();
@@ -86,15 +129,30 @@ public class PostController {
 				followingList.add(r.getToId().getUserid());
 			}
 		}
-		
+
 		// 내가 팔로우 한 사람의 게시글만 저장해서 보내주기
 		List<Post> postList = postDao.findAll();
-		List<Post> returnList = new ArrayList<>();
+		// 해당 게시글의 이미지 리스트를 찾기 위해 이미지 데이터 싹 가져오기
+		List<PostPhoto> photoList = postPhotoDao.findAll();
 		for (Post p : postList) {
-			if (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid()==user_id) returnList.add(p);
+			if (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id) {
+				List<PostPhoto> saveList = new ArrayList<>();
+				
+				// 해당 게시물의 이미지를 리스트에 저장
+				for (PostPhoto pp : photoList) {
+					if (pp.getPostId().getPostId()==p.getPostId()) saveList.add(pp);
+				}
+				
+				Collections.sort(saveList, (o1, o2)-> {
+					return Integer.compare(o1.getPostPhotoId(), o2.getPostPhotoId());
+				});
+				
+				// 해당 게시물과 제일 처음 업로드한 이미지 map에 저장
+				map.put(p, saveList.get(0));
+			}
 		}
 		
-		return new ResponseEntity<List<Post>>(returnList, HttpStatus.OK);
+		return new ResponseEntity<Map<Post, PostPhoto>>(map, HttpStatus.OK);
 	} 
 	
 	@GetMapping("/select_detail/{post_id}")
@@ -102,6 +160,18 @@ public class PostController {
 	public ResponseEntity<Post> select_detail(@PathVariable int post_id) {
 		Post detailPost = postDao.findPostByPostId(post_id);
 		return new ResponseEntity<Post>(detailPost, HttpStatus.OK);
+	} 
+	
+	@GetMapping("/select_detail_photo/{post_id}")
+	@ApiOperation(value = "게시글 이미지 상세조회")
+	public ResponseEntity<List<PostPhoto>> select_detail_photo(@PathVariable int post_id) {
+		List<PostPhoto> photoList = postPhotoDao.findAll();
+		List<PostPhoto> returnList = new ArrayList<>();
+		for (PostPhoto pl : photoList) {
+			if (pl.getPostId().getPostId()==post_id) returnList.add(pl);
+		}
+		
+		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
 	
 	@GetMapping("/like/{user_id}/{post_id}")
