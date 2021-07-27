@@ -1,19 +1,13 @@
 package com.project.ovl.model.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.follow.Follow;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,10 +33,4 @@ public class User {
     private int experience;
     private int account_open;
     private int warning;
-
-    @OneToMany(mappedBy = "from_id")
-    private List<Follow> followings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "to_id")
-    private List<Follow> followers = new ArrayList<>();
 }

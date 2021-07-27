@@ -1,5 +1,7 @@
 package com.project.ovl.model.post;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,12 +26,20 @@ import lombok.NoArgsConstructor;
 public class Post {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int post_id;
+	@Column(name = "post_id")
+    private int postId;
+	
+	@Column(columnDefinition = "text")
+	private String content;
+	
+	@Column(columnDefinition = "longblob")
+	private String filename;
+	
+	private String title;
+	private int like_count;
+	private Date time;
 
-    @Column(columnDefinition = "text")
-    private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;
 }
