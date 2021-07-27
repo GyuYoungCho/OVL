@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>crud test</title>
+</head>
+
+<body>
+<div id="app">
+	
+	<div v-for="list in lists" v-bind:id="list.email">
+	{{list.email}}
+	{{list.stored_file_path}}
+	<img v-bind:src=filename width="200px" height="200px">
+	<input type="text" v-model=list.nickname><br>
+	<input type="text" v-model=list.phone><br>
+	<input type="file" id="picture" ref="picture" accept="image/png, image/jpeg"><br>
+	<button v-on:click="update(list)">update</button>
+	<hr>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.2.0/mustache.min.js"></script>
+
+<script type="text/javascript">
+new Vue({
+	el:"#app",
+	data:{
+		file:null,
+		lists:[],
+		path:'',
+	},
+	computed:{
+		filename(){
+			return "profile" + this.lists[0].userid + "/" + this.lists[0].stored_file_path.split('/').reverse()[0]
+		}
+	},
+
+	methods:{
+		update:function(list){
+			
+			console.log(this.filename)
+			console.log(this.$refs.picture[0].files[0])
+			var formData = new FormData();
+			formData.append("picture",this.$refs.picture[0].files[0])
+			formData.append("nickname",list.nickname)
+			formData.append("phone",list.phone)
+			axios.put(
+				'http://localhost:8080/user/modify_user/' + list.userid,
+				formData,
+				{headers:{'Content-Type':'multipart/form-data'}}
+			).then(response=>{
+				console.log(response.data)
+				this.getList();
+			})
+		},
+		
+		getList:function(){
+			axios.get('http://localhost:8080/user/select/'+4).then(response=>{
+				this.lists.push(response.data)
+				console.log(this.lists)
+			})
+			
+		}
+	},
+
+	mounted:function() {
+		this.$nextTick(function(){
+			this.getList()
+		})
+	},
+})
+</script>
+</body>
+</html>

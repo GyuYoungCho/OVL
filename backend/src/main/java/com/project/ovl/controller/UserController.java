@@ -1,7 +1,10 @@
 package com.project.ovl.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,7 +113,7 @@ public class UserController {
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null);
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,null);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
@@ -167,19 +172,58 @@ public class UserController {
 	}
 
     @ApiOperation(value = "회원 수정", response = String.class)
-	@PutMapping("/modify_user")
-	public ResponseEntity<String> search_id(@RequestBody User user, @RequestPart("picture") MultipartFile pic) throws IOException {
-    	User useropt = userDao.getUserByUserid(user.getUserid());
-    	useropt.setNickname(user.getNickname());
-    	useropt.setExperience(user.getExperience());
-    	useropt.setPhone(user.getPhone());
+    @PutMapping(value = "/modify_user/{user_id}")
+	public ResponseEntity<String> modify(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic,
+			@RequestParam("nickname") String nickname,
+			@RequestParam("phone") String phone) throws IOException {
+    	User useropt = userDao.getUserByUserid(user_id);
+    	useropt.setNickname(nickname);
+    	useropt.setPhone(phone);
+    	String originalFileExtension;
     	
-    	if(pic==null)
-    		useropt.setImg(null);
-    	else
-    		useropt.setImg(pic.getBytes());
-    	
-		userDao.save(useropt);
+    	if(pic!=null) {
+    		
+    		File file = new File(useropt.getStored_file_path());
+
+    		if(file.exists() == true){
+    			file.delete();
+    		}
+
+            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+            String path = "src/main/resources/static/profile" + useropt.getUserid();
+            file = new File(path);
+            
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            
+            String contentType = pic.getContentType();
+
+            if(!ObjectUtils.isEmpty(contentType)) {
+
+                if(contentType.contains("image/jpeg"))
+                    originalFileExtension = ".jpg";
+                else if(contentType.contains("image/png"))
+                    originalFileExtension = ".png";
+              
+                else {
+                	userDao.save(useropt);
+            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+                }
+                String new_file_name = System.nanoTime() + originalFileExtension;
+                useropt.setStored_file_path(path + "/" + new_file_name);
+                useropt.setOriginal_file_name(pic.getOriginalFilename());
+                
+                userDao.save(useropt);
+                
+                file = new File(absolutePath + path + File.separator + new_file_name);
+                pic.transferTo(file);
+                
+                file.setWritable(true);
+                file.setReadable(true);
+            }
+            
+    	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
     
