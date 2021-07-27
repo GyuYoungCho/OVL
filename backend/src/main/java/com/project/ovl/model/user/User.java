@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.project.ovl.model.follow.Follow;
@@ -41,13 +43,10 @@ public class User {
     private int experience;
     private int account_open;
     private int warning;
-    
+    private MultipartFile img;
+
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "from_id")
-    private List<Follow> followings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "to_id")
-    private List<Follow> followers = new ArrayList<>();
+    
 }
