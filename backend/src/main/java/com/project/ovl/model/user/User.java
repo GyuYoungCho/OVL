@@ -35,5 +35,5 @@ public class User {
     private int experience;
     private int account_open;
     private int warning;
-    private MultipartFile img;
+//    private MultipartFile img;
 }
