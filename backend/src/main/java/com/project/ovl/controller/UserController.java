@@ -184,11 +184,9 @@ public class UserController {
     	if(pic!=null) {
     		
     		File file = new File(useropt.getStored_file_path());
-
     		if(file.exists() == true){
     			file.delete();
     		}
-
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
             String path = "src/main/resources/static/profile" + useropt.getUserid();
             file = new File(path);
@@ -196,7 +194,6 @@ public class UserController {
             if(!file.exists()){
                 file.mkdirs();
             }
-            
             String contentType = pic.getContentType();
 
             if(!ObjectUtils.isEmpty(contentType)) {
