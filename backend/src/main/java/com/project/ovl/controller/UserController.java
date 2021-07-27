@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.dto.UserDto;
@@ -104,7 +106,7 @@ public class UserController {
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning());
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
@@ -164,7 +166,7 @@ public class UserController {
 
     @ApiOperation(value = "회원 수정", response = String.class)
 	@PutMapping("/modify_user")
-	public ResponseEntity<String> search_id(@RequestBody User user) {
+	public ResponseEntity<String> search_id(@RequestBody User user, @RequestPart("picture") MultipartFile pic) {
     	User useropt = userDao.getUserByUserid(user.getUserid());
     	useropt.setNickname(user.getNickname());
     	useropt.setExperience(user.getExperience());
