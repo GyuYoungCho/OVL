@@ -103,7 +103,6 @@ public class FollowController {
 	@ApiOperation(value = "나를 팔로우하는 사람들 상세 조회")
 	public ResponseEntity<List<User>> select_detail(@RequestBody List<Integer> follow) {
 		
-		
 		List<User> targetList = new ArrayList<>();
 		
 		if (!follow.isEmpty()) {

@@ -1,4 +1,4 @@
-package com.project.ovl.model.follow;
+package com.project.ovl.model.photo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import com.project.ovl.model.user.User;
+import com.project.ovl.model.post.Post;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,17 +21,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Follow {
+public class PostPhoto {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "follow_id")
-    private int followid;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "fromId")
-    private User fromId;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "toId")
-    private User toId;
+	@Column(name = "post_photo_id")
+    private int postPhotoId;
+	
+	private String filename; // 파일 원본명
+	private String filepath; // 파일 저장 경로
+	private String filesize;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "postId")
+    private Post postId;
 }
