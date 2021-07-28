@@ -30,10 +30,10 @@
 
 <script>
 import './signup.scss'
-import Password from './signup/Password.vue'
-import PhoneNumber from './signup/PhoneNumber.vue'
-import NickName from './signup/NickName.vue'
-import Email from './signup/Email.vue'
+import Password from '@/components/signup/Password.vue'
+import PhoneNumber from '@/components/signup/PhoneNumber.vue'
+import NickName from '@/components/signup/NickName.vue'
+import Email from '@/components/signup/Email.vue'
 import KakaoLogin from '@/components/KakaoLogin.vue'
 
   export default {
