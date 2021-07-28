@@ -33,6 +33,7 @@ public class Post {
 	private String content;
 	
 	private int like_count;
+	private int comment_count;
 	private Date time;
 
     @ManyToOne(fetch = FetchType.EAGER)

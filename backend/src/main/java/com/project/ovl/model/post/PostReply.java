@@ -1,4 +1,6 @@
-package com.project.ovl.model.reply;
+package com.project.ovl.model.post;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +33,11 @@ public class PostReply {
 	
 	private String content;
 	private int like_count;
+	private Date time;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "postCommentId")
+    private PostComment postCommentId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")

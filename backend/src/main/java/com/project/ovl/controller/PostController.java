@@ -1,15 +1,10 @@
 package com.project.ovl.controller;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,12 +19,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.FollowDao;
+import com.project.ovl.dao.PostCommentDao;
 import com.project.ovl.dao.PostDao;
 import com.project.ovl.dao.PostLIkeDao;
 import com.project.ovl.dao.PostPhotoDao;
@@ -39,6 +34,7 @@ import com.project.ovl.model.like.PostLike;
 import com.project.ovl.model.photo.PhotoHandler;
 import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
+import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
@@ -66,6 +62,9 @@ public class PostController {
 	PostPhotoDao postPhotoDao;
 	
 	@Autowired
+	PostCommentDao postCommentDao;
+	
+	@Autowired
 	PhotoHandler photoHandler;
 	
 	@PostMapping("/regist")
@@ -74,7 +73,7 @@ public class PostController {
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
 		// 게시글 저장
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
-		Post post = new Post(0, content, 0, new Date(), user);
+		Post post = new Post(0, content, 0, 0, new Date(), user);
 		postDao.save(post);
 		
 		// 이미지 저장
@@ -110,6 +109,13 @@ public class PostController {
 		
 		for (PostPhoto pp : photoList) {
 			if (pp.getPostId().getPostId()==post_id) postPhotoDao.delete(pp);
+		}
+		
+		// 해당 게시글 댓글 삭제
+		List<PostComment> commentList = postCommentDao.findAll();
+		
+		for (PostComment pc : commentList) {
+			if (pc.getPostId().getPostId()==post_id) postCommentDao.delete(pc);
 		}
 		
 		Post deletePost = postDao.findPostByPostId(post_id);
@@ -149,7 +155,7 @@ public class PostController {
 				returnList.add(saveList.get(0));
 			}
 		}
-		
+		// 최신글을 먼저 보여줘야 하므로 post_id 역순으로 정렬 
 		Collections.sort(returnList, (o1, o2)-> {
 			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
 		});
