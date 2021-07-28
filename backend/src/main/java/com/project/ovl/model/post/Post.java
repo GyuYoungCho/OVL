@@ -29,6 +29,8 @@ public class Post {
 	@Column(name = "post_id")
     private int postId;
 	
+	private int categori;
+	
 	@Column(columnDefinition = "text")
 	private String content;
 	
