@@ -81,28 +81,28 @@ public class PostCommentController {
 //		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 //	}
 //	
-//	@GetMapping("/like_list/{user_id}")
-//	@ApiOperation(value = "포스트의 모든 댓글 조회")
-//	public ResponseEntity<Boolean> like_list(@PathVariable int user_id) {
-//		List<Report> list = reportDao.findAll();
-//		Set<Integer> reportList = new HashSet<>();
-//		for (Report r : list) {
-//			if (r.getFromId().getUserid() == user_id) reportList.add(r.getToId().getUserid());
-//		}
-//		
-//		return new ResponseEntity<>(reportList, HttpStatus.OK);
-//	}
-//	
-//	@GetMapping("/search_all/{post_id}")
-//	@ApiOperation(value = "포스트의 모든 댓글 조회")
-//	public ResponseEntity<Boolean> like(@PathVariable int user_id) {
-//		List<Report> list = reportDao.findAll();
-//		Set<Integer> reportList = new HashSet<>();
-//		for (Report r : list) {
-//			if (r.getFromId().getUserid() == user_id) reportList.add(r.getToId().getUserid());
-//		}
-//		
-//		return new ResponseEntity<>(reportList, HttpStatus.OK);
-//	}
+	@GetMapping("/like_list/{user_id}")
+	@ApiOperation(value = "포스트의 모든 댓글 조회")
+	public ResponseEntity<Boolean> like_list(@PathVariable int user_id) {
+		List<Report> list = reportDao.findAll();
+		Set<Integer> reportList = new HashSet<>();
+		for (Report r : list) {
+			if (r.getFromId().getUserid() == user_id) reportList.add(r.getToId().getUserid());
+		}
+		
+		return new ResponseEntity<>(reportList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/search_all/{post_id}")
+	@ApiOperation(value = "포스트의 모든 댓글 조회")
+	public ResponseEntity<Boolean> like(@PathVariable int user_id) {
+		List<Report> list = reportDao.findAll();
+		Set<Integer> reportList = new HashSet<>();
+		for (Report r : list) {
+			if (r.getFromId().getUserid() == user_id) reportList.add(r.getToId().getUserid());
+		}
+		
+		return new ResponseEntity<>(reportList, HttpStatus.OK);
+	}
 	
 }

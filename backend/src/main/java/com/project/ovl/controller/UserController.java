@@ -106,9 +106,14 @@ public class UserController {
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
+<<<<<<< HEAD
 				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(),null,null);
+=======
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,null);
+>>>>>>> 590773aefb51e345ba14c9dab9ce93113200fc5a
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+
 	}
 	
 	@Transactional
