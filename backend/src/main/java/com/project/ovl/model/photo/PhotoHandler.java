@@ -1,8 +1,6 @@
 package com.project.ovl.model.photo;
 
 import java.io.File;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,15 +28,12 @@ public class PhotoHandler {
 //			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 //			String current_date = now.format(dateTimeFormatter);
 
-			System.out.println("들어왔으!!!!");
 			// 프로젝트 디렉터리 내의 저장을 위한 절대 경로 설정
 			// 경로 구분자 File.separator 사용
 			String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-
 			// 파일을 저장할 세부 경로 지정
-			String path = "images" + File.separator + post_id;
+			String path = "src/main/resources/static/post/" + post_id;
 			File file = new File(path);
-
 			// 디렉터리가 존재하지 않을 경우
 			if (!file.exists()) {
 				boolean wasSuccessful = file.mkdirs();
@@ -72,7 +67,7 @@ public class PhotoHandler {
 
 				Post post = postDao.findPostByPostId(post_id);
 				// 파일 DTO 이용하여 Photo 엔티티 생성
-				PostPhoto photo = new PostPhoto(0, multipartFile.getOriginalFilename(), path + File.separator + new_file_name, multipartFile.getSize()+"", post);
+				PostPhoto photo = new PostPhoto(0, multipartFile.getOriginalFilename(), path + "/" + new_file_name, multipartFile.getSize()+"", post);
 
 				// 생성 후 리스트에 추가
 				fileList.add(photo);
