@@ -69,11 +69,21 @@ public class PostController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, 
+	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String categori,
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
 		// 게시글 저장
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
-		Post post = new Post(0, content, 0, 0, new Date(), user);
+		// 게시글 등록 시 유저에 경험치 5 추가
+		int value = 0;
+		if (Integer.parseInt(categori)==1) value = 5;
+		else if (Integer.parseInt(categori)==2) value = 3;
+		else value = 2;
+		
+		user.setExperience(user.getExperience()+value);
+		userDao.save(user);
+		
+		// 게시글 등록
+		Post post = new Post(0, Integer.parseInt(categori), content, 0, 0, new Date(), user);
 		postDao.save(post);
 		
 		// 이미지 저장
@@ -97,6 +107,17 @@ public class PostController {
 	@DeleteMapping("/delete/{post_id}")
 	@ApiOperation(value = "게시글 삭제")
 	public ResponseEntity<String> delete(@PathVariable int post_id) {
+		// 해당 게시글 올린 유저 경험치 -5
+		Post post = postDao.findPostByPostId(post_id);
+		int value = 0;
+		if (post.getCategori()==1) value = 5;
+		else if (post.getCategori()==2) value = 3;
+		else value = 2;
+		
+		User user = userDao.getUserByUserid(post.getUserId().getUserid());
+		user.setExperience(user.getExperience()-value);
+		userDao.save(user);
+		
 		// 해당 게시글 좋아요 리스트 삭제
 		List<PostLike> likeList = postLikeDao.findAll();
 		
@@ -162,6 +183,35 @@ public class PostController {
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
 
+	@GetMapping("/select_user/{user_id}")
+	@ApiOperation(value = "자기 자신 게시글 조회")
+	public ResponseEntity<List<PostPhoto>> select_user(@PathVariable int user_id) {
+		// 내가 작성한 게시글만 저장해서 보내주기
+		List<Post> postList = postDao.findAll();
+		// 해당 게시글의 이미지 리스트를 찾기 위해 이미지 데이터 싹 가져오기
+		List<PostPhoto> photoList = postPhotoDao.findAll();
+		List<PostPhoto> returnList = new ArrayList<>();
+		for (Post p : postList) {
+			if (p.getUserId().getUserid() == user_id) {
+				List<PostPhoto> saveList = new ArrayList<>();
+				// 해당 게시물의 이미지를 리스트에 저장
+				for (PostPhoto pp : photoList) {
+					if (pp.getPostId().getPostId()==p.getPostId()) saveList.add(pp);
+				}
+				
+				Collections.sort(saveList, (o1, o2)-> {
+					return Integer.compare(o1.getPostPhotoId(), o2.getPostPhotoId());
+				});
+				
+				returnList.add(saveList.get(0));
+			}
+		}
+		// 최신글을 먼저 보여줘야 하므로 post_id 역순으로 정렬 
+		Collections.sort(returnList, (o1, o2)-> {
+			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
+		});
+		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
+	} 
 	
 	@GetMapping("/select_detail/{post_id}")
 	@ApiOperation(value = "게시글 상세조회")
