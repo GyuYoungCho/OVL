@@ -86,7 +86,7 @@ public class PostReplyController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@GetMapping("/seelct_all/{comment_id}")
+	@GetMapping("/select_all/{comment_id}")
 	@ApiOperation(value = "모든 대댓글 조회")
 	public ResponseEntity<List<PostReply>> seelct_all(@PathVariable int comment_id) {
 		List<PostReply> replyList = postReplyDao.findAll();
@@ -114,7 +114,7 @@ public class PostReplyController {
 			// like 테이블에 저장
 			postReplyLikeDao.save(new PostReplyLike(0, user, reply));
 		} else { // 이미 존재 시
-			// 해당 post like_count-1
+			// 해당 reply like_count-1
 			reply.setLike_count(reply.getLike_count()-1);
 			
 			postReplyLikeDao.delete(like);
@@ -130,7 +130,7 @@ public class PostReplyController {
 		List<PostReplyLike> likeList = postReplyLikeDao.findAll();
 		Set<Integer> returnSet = new HashSet<>();
 		
-		// 좋아요 데이터에 있는 user_id와 나의 user_id가 일치할 시 post_id를 set에 저장
+		// 좋아요 데이터에 있는 user_id와 나의 user_id가 일치할 시 reply_id를 set에 저장
 		for (PostReplyLike prl : likeList) {
 			if (prl.getUserId().getUserid()==user_id) returnSet.add(prl.getPostReplyId().getPostReplyId());
 		}
