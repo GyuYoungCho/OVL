@@ -25,6 +25,7 @@ import com.project.ovl.dao.PostDao;
 import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.PostCommentLike;
+import com.project.ovl.model.like.PostLike;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
@@ -62,7 +63,11 @@ public class PostCommentController {
 		User user = userDao.getUserByUserid(user_id);
 		Post post = postDao.findPostByPostId(post_id);
 		
-		postCommentDao.save(new PostComment(0, content, 0, new Date(),post, user));
+		
+		postCommentDao.save(new PostComment(0, content, 0,0, new Date(),post, user));
+		post.setComment_count(post.getComment_count()+1);
+		postDao.save(post);
+		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -96,6 +101,10 @@ public class PostCommentController {
 		}
 		
 		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
+		
+		Post post = postDao.findPostByPostId(pc.getPostId().getPostId());
+		post.setComment_count(post.getComment_count()-1);
+		
 		postCommentDao.delete(pc);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
@@ -121,6 +130,18 @@ public class PostCommentController {
 		PostComment pc = postCommentDao.findByPostCommentId(post_commnet_id);
 		PostCommentLike like = postCommentLikeDao.findByUserIdAndPostCommentId(user, pc);
 		 
+		if (like==null) { // 존재하지 않을 시
+			// 해당 post like_count+1
+			pc.setLike_count(pc.getLike_count()+1);
+			
+			// like 테이블에 저장
+			postCommentLikeDao.save(new PostCommentLike(0, user, pc));
+		} else { // 이미 존재 시
+			// 해당 post like_count-1
+			pc.setLike_count(pc.getLike_count()-1);
+			
+			postCommentLikeDao.delete(like);
+		}
 		
 		postCommentDao.save(pc);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
