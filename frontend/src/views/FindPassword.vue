@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import './findpassword.scss'
+// import '@/assets/css/index.scss'
 export default {
   data: () => ({
     // valid라고 되어있는 부분은 v-form 안에 컴포넌트에 바인딩 시키면
