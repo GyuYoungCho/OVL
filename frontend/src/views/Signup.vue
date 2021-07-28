@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import './signup.scss'
+// import '@/assets/css/index.scss' 이걸 안써도 되는걸 발견함.
 import Password from '@/components/signup/Password.vue'
 import PhoneNumber from '@/components/signup/PhoneNumber.vue'
 import NickName from '@/components/signup/NickName.vue'
