@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.post.Post;
+import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class PostCommentLike {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "postcomment_like_id")
+	@Column(name = "post_comment_like_id")
     private int postCommentLikeId;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,5 +34,5 @@ public class PostCommentLike {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "postCommentId")
-    private Post postCommentId;
+    private PostComment postCommentId;
 }

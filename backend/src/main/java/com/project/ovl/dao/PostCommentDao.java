@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.project.ovl.model.post.PostComment;
 
 public interface PostCommentDao extends JpaRepository<PostComment, String>{
-	PostComment getByPostcommentid(int post_comment_id);
-//	Optional<List<PostComment>> findByPostPostid(int post_id);
+	PostComment findByPostCommentId(int post_comment_id);
+	Optional<List<PostComment>> findByPostIdPostId(int PostId);
 }
