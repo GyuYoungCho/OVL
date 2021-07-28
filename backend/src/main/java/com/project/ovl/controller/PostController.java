@@ -70,11 +70,11 @@ public class PostController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("title") String title,
+	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, 
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
 		// 게시글 저장
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
-		Post post = new Post(0, content, title, 0, new Date(), user);
+		Post post = new Post(0, content, 0, new Date(), user);
 		postDao.save(post);
 		
 		// 이미지 저장
@@ -152,7 +152,14 @@ public class PostController {
 			}
 		}
 		
+<<<<<<< HEAD
 		return new ResponseEntity<Map<Post, PostPhoto>>(map, HttpStatus.OK);
+=======
+		Collections.sort(returnList, (o1, o2)-> {
+			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
+		});
+		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
+>>>>>>> ffb9ae063b3ebeeac24c4abe9f12e34a88f88a61
 	} 
 	
 	@GetMapping("/select_detail/{post_id}")
