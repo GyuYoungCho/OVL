@@ -43,10 +43,10 @@ public class User {
     private int experience;
     private int account_open;
     private int warning;
-    private MultipartFile img;
+   // private MultipartFile img;
 
-    @OneToMany(mappedBy = "user")
-    private List<Post> posts = new ArrayList<>();
+//    @OneToMany(mappedBy = "user")
+//    private List<Post> posts = new ArrayList<>();
 
     
 }
