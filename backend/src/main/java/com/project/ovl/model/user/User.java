@@ -34,8 +34,5 @@ public class User {
 
     private String original_file_name;
     private String stored_file_path;
-<<<<<<< HEAD
-=======
     
->>>>>>> ffb9ae063b3ebeeac24c4abe9f12e34a88f88a61
 }

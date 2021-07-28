@@ -61,10 +61,10 @@ public class PostCommentController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@GetMapping("/search_all/{postId}")
+	@GetMapping("/search_all/{post_id}")
 	@ApiOperation(value = "포스트의 모든 댓글 조회")
-	public ResponseEntity<List<PostComment>> select_all(@PathVariable int postId) {
-		Optional<List<PostComment>> list = postCommentDao.findByPostIdPostId(postId);
+	public ResponseEntity<List<PostComment>> select_all(@PathVariable int post_id) {
+		Optional<List<PostComment>> list = postCommentDao.findByPostIdPostId(post_id);
 		if (list.isPresent()) 
 			return new ResponseEntity<>(list.get(), HttpStatus.OK);
 		else

@@ -33,7 +33,7 @@ public class PostComment {
     private int like_count;
 	private Date time;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PostId")
     private Post postId;
     

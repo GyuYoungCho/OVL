@@ -119,8 +119,7 @@ public class PostController {
 	
 	@GetMapping("/select_all/{user_id}")
 	@ApiOperation(value = "게시글 조회")
-	public ResponseEntity<Map<Post, PostPhoto>> select_all(@PathVariable int user_id) {
-		Map<Post, PostPhoto> map = new HashMap<>();
+	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id) {
 		// 내가 팔로우 한 사람 찾기
 		Optional<List<Follow>> followList = followDao.findByFromIdUserid(user_id);
 		Set<Integer> followingList = new HashSet<>();
@@ -134,10 +133,10 @@ public class PostController {
 		List<Post> postList = postDao.findAll();
 		// 해당 게시글의 이미지 리스트를 찾기 위해 이미지 데이터 싹 가져오기
 		List<PostPhoto> photoList = postPhotoDao.findAll();
+		List<PostPhoto> returnList = new ArrayList<>();
 		for (Post p : postList) {
 			if (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id) {
 				List<PostPhoto> saveList = new ArrayList<>();
-				
 				// 해당 게시물의 이미지를 리스트에 저장
 				for (PostPhoto pp : photoList) {
 					if (pp.getPostId().getPostId()==p.getPostId()) saveList.add(pp);
@@ -147,20 +146,16 @@ public class PostController {
 					return Integer.compare(o1.getPostPhotoId(), o2.getPostPhotoId());
 				});
 				
-				// 해당 게시물과 제일 처음 업로드한 이미지 map에 저장
-				map.put(p, saveList.get(0));
+				returnList.add(saveList.get(0));
 			}
 		}
 		
-<<<<<<< HEAD
-		return new ResponseEntity<Map<Post, PostPhoto>>(map, HttpStatus.OK);
-=======
 		Collections.sort(returnList, (o1, o2)-> {
 			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
 		});
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
->>>>>>> ffb9ae063b3ebeeac24c4abe9f12e34a88f88a61
 	} 
+
 	
 	@GetMapping("/select_detail/{post_id}")
 	@ApiOperation(value = "게시글 상세조회")
