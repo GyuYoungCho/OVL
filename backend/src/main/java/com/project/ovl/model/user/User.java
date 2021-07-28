@@ -43,12 +43,12 @@ public class User {
     private int account_open;
     private int warning;
     
-
+    
     private String original_file_name;
     private String stored_file_path;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
-
+    
     
 }
