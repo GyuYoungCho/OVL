@@ -109,7 +109,7 @@ public class PostCommentController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@GetMapping("/like_list/{userId}")
+	@GetMapping("/like_list/{user_id}")
 	@ApiOperation(value = "내가 좋아요 누른 게시글 목록")
 	public ResponseEntity<Set<Integer>> like_list(@PathVariable int user_id) {
 		// 모든 좋아요 데이터 가져오기
@@ -123,11 +123,11 @@ public class PostCommentController {
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
 	}
 	
-	@GetMapping("/like/{user_id}/{post_commnet_id}")
+	@GetMapping("/like/{user_id}/{post_comment_id}")
 	@ApiOperation(value = "좋아요 누르기 or 취소")
-	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int post_commnet_id) {
+	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int post_comment_id) {
 		User user = userDao.getUserByUserid(user_id);
-		PostComment pc = postCommentDao.findByPostCommentId(post_commnet_id);
+		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
 		PostCommentLike like = postCommentLikeDao.findByUserIdAndPostCommentId(user, pc);
 		 
 		if (like==null) { // 존재하지 않을 시
