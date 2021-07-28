@@ -31,6 +31,7 @@ public class PostComment {
 	
     private String content;
     private int like_count;
+    private int reply_count;
 	private Date time;
     
     @ManyToOne(fetch = FetchType.EAGER)
