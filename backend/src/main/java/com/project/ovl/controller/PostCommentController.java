@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.ovl.dao.PostCommentDao;
 import com.project.ovl.dao.PostCommentLikeDao;
 import com.project.ovl.dao.PostDao;
+import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.PostCommentLike;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
+import com.project.ovl.model.post.PostReply;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
@@ -48,6 +50,9 @@ public class PostCommentController {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	PostReplyDao postReplyDao;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "댓글 등록")
@@ -83,6 +88,13 @@ public class PostCommentController {
 	@DeleteMapping("/delete/{post_comment_id}")
 	@ApiOperation(value = "댓글 삭제")
 	public ResponseEntity<String> unreport(@PathVariable int post_comment_id) {
+		// 해당 댓글의 대댓글 삭제
+		List<PostReply> replyList = postReplyDao.findAll();
+		
+		for (PostReply pr : replyList) {
+			if (pr.getPostCommentId().getPostCommentId()==post_comment_id) postReplyDao.delete(pr);
+		}
+		
 		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
 		postCommentDao.delete(pc);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
