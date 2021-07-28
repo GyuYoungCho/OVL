@@ -21,10 +21,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.PostCommentDao;
+import com.project.ovl.dao.PostDao;
 import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.PostReplyLikeDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.PostReplyLike;
+import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
 import com.project.ovl.model.user.User;
@@ -39,6 +41,9 @@ public class PostReplyController {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	PostDao postDao;
 	
 	@Autowired
 	PostCommentDao postCommentDao;
@@ -60,6 +65,10 @@ public class PostReplyController {
 		// 해당 댓글 reply_count +1
 		comment.setReply_count(comment.getReply_count()+1);
 		postCommentDao.save(comment);
+		// 해당 게시글 comment_count+1
+		Post post = postDao.findPostByPostId(comment.getPostId().getPostId());
+		post.setComment_count(post.getComment_count()+1);
+		postDao.save(post);
 		
 		postReplyDao.save(new PostReply(0, content, 0, new Date(), comment, user));
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -81,6 +90,10 @@ public class PostReplyController {
 		PostComment comment = reply.getPostCommentId();
 		comment.setReply_count(comment.getReply_count()-1);
 		postCommentDao.save(comment);
+		// 해당 게시글 comment_count -1
+		Post post = postDao.findPostByPostId(comment.getPostId().getPostId());
+		post.setComment_count(post.getComment_count()-1);
+		postDao.save(post);
 		
 		postReplyDao.delete(reply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
