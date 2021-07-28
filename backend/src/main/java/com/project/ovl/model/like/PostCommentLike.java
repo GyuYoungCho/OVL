@@ -1,4 +1,4 @@
-package com.project.ovl.model.follow;
+package com.project.ovl.model.like;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
+import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
@@ -22,17 +22,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Follow {
+public class PostCommentLike {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "follow_id")
-    private int followid;
+	@Column(name = "post_comment_like_id")
+    private int postCommentLikeId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "fromId")
-    private User fromId;
+    @JoinColumn(name = "userId")
+    private User userId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "toId")
-    private User toId;
+    @JoinColumn(name = "postCommentId")
+    private PostComment postCommentId;
 }
