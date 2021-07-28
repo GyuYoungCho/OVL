@@ -24,9 +24,7 @@ import com.project.ovl.dao.PostCommentDao;
 import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.PostReplyLikeDao;
 import com.project.ovl.dao.UserDao;
-import com.project.ovl.model.like.PostLike;
 import com.project.ovl.model.like.PostReplyLike;
-import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
 import com.project.ovl.model.user.User;
@@ -38,7 +36,6 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class PostReplyController {
 	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
 	
 	@Autowired
 	UserDao userDao;
@@ -100,5 +97,43 @@ public class PostReplyController {
 		}
 		
 		return new ResponseEntity<List<PostReply>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/like/{user_id}/{reply_id}")
+	@ApiOperation(value = "좋아요 누르기 or 취소")
+	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int reply_id) {
+		User user = userDao.getUserByUserid(user_id);
+		PostReply reply = postReplyDao.findByPostReplyId(reply_id);
+		PostReplyLike like = postReplyLikeDao.findPostReplyLikeByUserIdAndPostReplyId(user, reply);
+		 
+		// like 테이블에 존재하는지 확인
+		if (like==null) { // 존재하지 않을 시
+			// 해당 reply like_count+1
+			reply.setLike_count(reply.getLike_count()+1);
+			
+			// like 테이블에 저장
+			postReplyLikeDao.save(new PostReplyLike(0, user, reply));
+		} else { // 이미 존재 시
+			// 해당 post like_count-1
+			reply.setLike_count(reply.getLike_count()-1);
+			
+			postReplyLikeDao.delete(like);
+		}
+		postReplyDao.save(reply);
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	} 
+	
+	@GetMapping("/like_list/{user_id}")
+	@ApiOperation(value = "내가 좋아요 누른 대댓글 목록")
+	public ResponseEntity<Set<Integer>> like_list(@PathVariable int user_id) {
+		// 모든 좋아요 데이터 가져오기
+		List<PostReplyLike> likeList = postReplyLikeDao.findAll();
+		Set<Integer> returnSet = new HashSet<>();
+		
+		// 좋아요 데이터에 있는 user_id와 나의 user_id가 일치할 시 post_id를 set에 저장
+		for (PostReplyLike prl : likeList) {
+			if (prl.getUserId().getUserid()==user_id) returnSet.add(prl.getPostReplyId().getPostReplyId());
+		}
+		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
 	}
 }

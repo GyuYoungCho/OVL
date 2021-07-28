@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.post.Post;
+import com.project.ovl.model.post.PostReply;
 import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
@@ -34,5 +34,5 @@ public class PostReplyLike {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "postReplyId")
-    private Post postReplyId;
+    private PostReply postReplyId;
 }
