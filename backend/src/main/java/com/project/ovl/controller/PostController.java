@@ -1,10 +1,15 @@
 package com.project.ovl.controller;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -149,6 +155,7 @@ public class PostController {
 		});
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
+
 	
 	@GetMapping("/select_detail/{post_id}")
 	@ApiOperation(value = "게시글 상세조회")

@@ -3,8 +3,6 @@ package com.project.ovl.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +36,6 @@ import com.project.ovl.model.jwt.JwtService;
 import com.project.ovl.model.mail.mailService;
 import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
-
 
 import io.swagger.annotations.ApiOperation;
 
@@ -171,7 +168,7 @@ public class UserController {
         }
 	}
 
-    @ApiOperation(value = "회원 수정", response = String.class)
+	@ApiOperation(value = "회원 수정", response = String.class)
     @PutMapping(value = "/modify_user/{user_id}")
 	public ResponseEntity<String> modify(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic,
 			@RequestParam("nickname") String nickname,
@@ -223,6 +220,7 @@ public class UserController {
     	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
+
     
     @ApiOperation(value = "회원 탈퇴", response = String.class)
 	@DeleteMapping("/delete/{user_id}")
