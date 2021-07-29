@@ -30,8 +30,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.ovl.dao.ChallengeDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.dto.UserDto;
+import com.project.ovl.model.challenge.Challenge;
 import com.project.ovl.model.jwt.JwtService;
 import com.project.ovl.model.mail.mailService;
 import com.project.ovl.model.user.SignupRequest;
@@ -51,6 +53,9 @@ public class UserController {
 	
 	@Autowired
     UserDao userDao;
+	
+	@Autowired
+	ChallengeDao challengedao;
 	
 	@Autowired
     mailService mService;
@@ -108,8 +113,9 @@ public class UserController {
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null);
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
