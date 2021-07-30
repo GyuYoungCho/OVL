@@ -98,9 +98,26 @@ public class PostController {
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "게시글 수정")
-	public ResponseEntity<String> modify(@RequestBody Post post) {
-		post.setTime(new Date());
+	public ResponseEntity<String> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
+			@RequestPart("content") String content, @RequestPart("postId") int postId) throws Exception {
+		Post post = postDao.findPostByPostId(postId);
+		post.setCategori(categori);
+		post.setContent(content);
+		
 		postDao.save(post);
+		
+		// 원래 있던 사진 다 지우기
+		List<PostPhoto> deleteList = postPhotoDao.findAll();
+		for (PostPhoto pp : deleteList) {
+			if (pp.getPostId().getPostId()==postId) postPhotoDao.delete(pp);
+		}
+		
+		// 사진 다시 저장
+		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
+
+		for (PostPhoto pp : photoList) {
+			postPhotoDao.save(pp);
+		}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	} 
 	
