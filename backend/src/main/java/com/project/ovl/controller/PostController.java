@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,6 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class PostController {
 	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
 	
 	@Autowired
 	PostDao postDao;
@@ -85,7 +83,6 @@ public class PostController {
 		// 게시글 등록
 		Post post = new Post(0, Integer.parseInt(categori), content, 0, 0, new Date(), user);
 		postDao.save(post);
-		
 		// 이미지 저장
 		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
 		
@@ -242,6 +239,7 @@ public class PostController {
 	public ResponseEntity<List<PostPhoto>> select_detail_photo(@PathVariable int post_id) {
 		List<PostPhoto> photoList = postPhotoDao.findAll();
 		List<PostPhoto> returnList = new ArrayList<>();
+		
 		for (PostPhoto pl : photoList) {
 			if (pl.getPostId().getPostId()==post_id) returnList.add(pl);
 		}

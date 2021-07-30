@@ -33,7 +33,7 @@ public class Recipe {
 	private String content;
 	
 	@Column(columnDefinition = "text")
-    private String ingrediendt;
+    private String ingredient;
 	
 	private Date time;
 	private int like_count;
