@@ -12,8 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.like.PostLike;
-import com.project.ovl.model.post.Post;
 import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;

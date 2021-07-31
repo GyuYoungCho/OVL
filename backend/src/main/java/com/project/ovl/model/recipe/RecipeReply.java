@@ -23,21 +23,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RecipeComment {
+public class RecipeReply {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "recipe_comment_id")
-    private int recipeCommentId;
+	@Column(name = "recipe_reply_id")
+    private int recipeReplyId;
 	
-    private String content;
-    private int like_count;
-    private int reply_count;
+	private String content;
+	private int like_count;
 	private Date time;
-    
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "recipeId")
-    private Recipe recipeId;
-    
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipeCommentId")
+    private RecipeComment recipeCommentId;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;

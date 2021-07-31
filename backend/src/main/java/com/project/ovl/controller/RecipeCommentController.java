@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.ovl.dao.RecipeCommentDao;
 import com.project.ovl.dao.RecipeCommentLikeDao;
 import com.project.ovl.dao.RecipeDao;
+import com.project.ovl.dao.RecipeReplyDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.RecipeCommentLike;
 import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.recipe.RecipeComment;
+import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
@@ -48,6 +50,9 @@ public class RecipeCommentController {
 	
 	@Autowired
 	UserDao userDao;
+	
+	@Autowired
+	RecipeReplyDao recipeReplyDao;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "댓글 등록")
@@ -84,24 +89,28 @@ public class RecipeCommentController {
 		return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
 	}
 	
-//	@DeleteMapping("/delete/{recipe_comment_id}")
-//	@ApiOperation(value = "댓글 삭제")
-//	public ResponseEntity<String> unreport(@PathVariable int recipe_comment_id) {
-//		// 해당 댓글의 대댓글 삭제
-//		List<RecipeReply> replyList = recipeReplyDao.findAll();
-//		
-//		for (RecipeReply rr : replyList) {
-//			if (rr.getRecipeCommentId().getRecipeCommentId()==recipe_comment_id) recipeReplyDao.delete(rr);
-//		}
-//		
-//		RecipeComment rc = recipeCommentDao.findByRecipeCommentId(recipe_comment_id);
-//		
-//		Recipe recipe = recipeDao.findRecipeByPostId(pc.getRecipeId().getRecipeId());
-//		recipe.setComment_count(recipe.getComment_count()-1);
-//		
-//		recipeCommentDao.delete(rc);
-//		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-//	}
+	@DeleteMapping("/delete/{recipe_comment_id}")
+	@ApiOperation(value = "댓글 삭제")
+	public ResponseEntity<String> unreport(@PathVariable int recipe_comment_id) {
+		// 해당 댓글
+		RecipeComment rc = recipeCommentDao.findByRecipeCommentId(recipe_comment_id);
+		// 해당 레시피
+		Recipe recipe = recipeDao.findRecipeByRecipeId(rc.getRecipeId().getRecipeId());
+		recipe.setComment_count(recipe.getComment_count()-1); // 해당 레시피 댓글 삭제 시 레시피 comment_count -1
+		
+		// 해당 댓글의 대댓글 삭제
+		List<RecipeReply> replyList = recipeReplyDao.findAll();
+		
+		for (RecipeReply rr : replyList) {
+			if (rr.getRecipeCommentId().getRecipeCommentId()==recipe_comment_id) {
+				recipeReplyDao.delete(rr);
+				recipe.setComment_count(recipe.getComment_count()-1); // 해당 레시피 대댓글 삭제 시 레시피 comment_count -1
+			}
+		}
+		
+		recipeCommentDao.delete(rc);
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
 	
 	@GetMapping("/like_list/{user_id}")
 	@ApiOperation(value = "내가 좋아요 누른 레시피 목록")

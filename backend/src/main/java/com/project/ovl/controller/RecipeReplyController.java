@@ -20,39 +20,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.ovl.dao.PostCommentDao;
-import com.project.ovl.dao.PostDao;
-import com.project.ovl.dao.PostReplyDao;
-import com.project.ovl.dao.PostReplyLikeDao;
+import com.project.ovl.dao.RecipeCommentDao;
+import com.project.ovl.dao.RecipeDao;
+import com.project.ovl.dao.RecipeReplyDao;
+import com.project.ovl.dao.RecipeReplyLikeDao;
 import com.project.ovl.dao.UserDao;
-import com.project.ovl.model.like.PostReplyLike;
-import com.project.ovl.model.post.Post;
-import com.project.ovl.model.post.PostComment;
-import com.project.ovl.model.post.PostReply;
+import com.project.ovl.model.like.RecipeReplyLike;
+import com.project.ovl.model.recipe.Recipe;
+import com.project.ovl.model.recipe.RecipeComment;
+import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/post/reply")
+@RequestMapping("/recipe/reply")
 @CrossOrigin("*")
-public class PostReplyController {
+public class RecipeReplyController {
 	private static final String SUCCESS = "success";
 	
 	@Autowired
 	UserDao userDao;
 	
 	@Autowired
-	PostDao postDao;
+	RecipeDao recipeDao;
 	
 	@Autowired
-	PostCommentDao postCommentDao;
+	RecipeCommentDao recipeCommentDao;
 	
 	@Autowired
-	PostReplyDao postReplyDao;
+	RecipeReplyDao recipeReplyDao;
 	
 	@Autowired
-	PostReplyLikeDao postReplyLikeDao;
+	RecipeReplyLikeDao recipeReplyLikeDao;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "대댓글 등록")
@@ -60,65 +60,64 @@ public class PostReplyController {
 										@RequestParam("content") String content) {
 		
 		User user = userDao.getUserByUserid(user_id);
-		PostComment comment = postCommentDao.findByPostCommentId(comment_id);
+		RecipeComment comment = recipeCommentDao.findByRecipeCommentId(comment_id);
 		
 		// 해당 댓글 reply_count +1
 		comment.setReply_count(comment.getReply_count()+1);
-		postCommentDao.save(comment);
-		
+		recipeCommentDao.save(comment);
 		// 해당 게시글 comment_count+1
-		Post post = postDao.findPostByPostId(comment.getPostId().getPostId());
-		post.setComment_count(post.getComment_count()+1);
-		postDao.save(post);
+		Recipe recipe = recipeDao.findRecipeByRecipeId(comment.getRecipeId().getRecipeId());
+		recipe.setComment_count(recipe.getComment_count()+1);
+		recipeDao.save(recipe);
 		
-		postReplyDao.save(new PostReply(0, content, 0, new Date(), comment, user));
+		recipeReplyDao.save(new RecipeReply(0, content, 0, new Date(), comment, user));
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "대댓글 수정")
-	public ResponseEntity<String> modify(@RequestBody PostReply postReply) {
-		postReplyDao.save(postReply);
+	public ResponseEntity<String> modify(@RequestBody RecipeReply recipeReply) {
+		recipeReplyDao.save(recipeReply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/delete/{reply_id}")
 	@ApiOperation(value = "대댓글 삭제")
 	public ResponseEntity<String> delete(@PathVariable int reply_id) {
-		PostReply reply = postReplyDao.findByPostReplyId(reply_id);
+		RecipeReply reply = recipeReplyDao.findByRecipeReplyId(reply_id);
 		
 		// 해당 댓글 reply_count -1
-		PostComment comment = reply.getPostCommentId();
+		RecipeComment comment = reply.getRecipeCommentId();
 		comment.setReply_count(comment.getReply_count()-1);
-		postCommentDao.save(comment);
+		recipeCommentDao.save(comment);
 		// 해당 게시글 comment_count -1
-		Post post = postDao.findPostByPostId(comment.getPostId().getPostId());
-		post.setComment_count(post.getComment_count()-1);
-		postDao.save(post);
+		Recipe recipe = recipeDao.findRecipeByRecipeId(comment.getRecipeId().getRecipeId());
+		recipe.setComment_count(recipe.getComment_count()-1);
+		recipeDao.save(recipe);
 		
-		postReplyDao.delete(reply);
+		recipeReplyDao.delete(reply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
 	@GetMapping("/select_all/{comment_id}")
 	@ApiOperation(value = "모든 대댓글 조회")
-	public ResponseEntity<List<PostReply>> seelct_all(@PathVariable int comment_id) {
-		List<PostReply> replyList = postReplyDao.findAll();
-		List<PostReply> returnList = new ArrayList<>();
+	public ResponseEntity<List<RecipeReply>> seelct_all(@PathVariable int comment_id) {
+		List<RecipeReply> replyList = recipeReplyDao.findAll();
+		List<RecipeReply> returnList = new ArrayList<>();
 		
-		for (PostReply pp : replyList) {
-			if (pp.getPostCommentId().getPostCommentId() == comment_id) returnList.add(pp);
+		for (RecipeReply pp : replyList) {
+			if (pp.getRecipeCommentId().getRecipeCommentId() == comment_id) returnList.add(pp);
 		}
 		
-		return new ResponseEntity<List<PostReply>>(returnList, HttpStatus.OK);
+		return new ResponseEntity<List<RecipeReply>>(returnList, HttpStatus.OK);
 	}
 	
 	@GetMapping("/like/{user_id}/{reply_id}")
 	@ApiOperation(value = "좋아요 누르기 or 취소")
 	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int reply_id) {
 		User user = userDao.getUserByUserid(user_id);
-		PostReply reply = postReplyDao.findByPostReplyId(reply_id);
-		PostReplyLike like = postReplyLikeDao.findPostReplyLikeByUserIdAndPostReplyId(user, reply);
+		RecipeReply reply = recipeReplyDao.findByRecipeReplyId(reply_id);
+		RecipeReplyLike like = recipeReplyLikeDao.findRecipeReplyLikeByUserIdAndRecipeReplyId(user, reply);
 		 
 		// like 테이블에 존재하는지 확인
 		if (like==null) { // 존재하지 않을 시
@@ -126,14 +125,14 @@ public class PostReplyController {
 			reply.setLike_count(reply.getLike_count()+1);
 			
 			// like 테이블에 저장
-			postReplyLikeDao.save(new PostReplyLike(0, user, reply));
+			recipeReplyLikeDao.save(new RecipeReplyLike(0, user, reply));
 		} else { // 이미 존재 시
 			// 해당 reply like_count-1
 			reply.setLike_count(reply.getLike_count()-1);
 			
-			postReplyLikeDao.delete(like);
+			recipeReplyLikeDao.delete(like);
 		}
-		postReplyDao.save(reply);
+		recipeReplyDao.save(reply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	} 
 	
@@ -141,12 +140,12 @@ public class PostReplyController {
 	@ApiOperation(value = "내가 좋아요 누른 대댓글 목록")
 	public ResponseEntity<Set<Integer>> like_list(@PathVariable int user_id) {
 		// 모든 좋아요 데이터 가져오기
-		List<PostReplyLike> likeList = postReplyLikeDao.findAll();
+		List<RecipeReplyLike> likeList = recipeReplyLikeDao.findAll();
 		Set<Integer> returnSet = new HashSet<>();
 		
 		// 좋아요 데이터에 있는 user_id와 나의 user_id가 일치할 시 reply_id를 set에 저장
-		for (PostReplyLike prl : likeList) {
-			if (prl.getUserId().getUserid()==user_id) returnSet.add(prl.getPostReplyId().getPostReplyId());
+		for (RecipeReplyLike prl : likeList) {
+			if (prl.getUserId().getUserid()==user_id) returnSet.add(prl.getRecipeReplyId().getRecipeReplyId());
 		}
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
 	}

@@ -153,8 +153,7 @@ public class PostController {
 			if (pc.getPostId().getPostId()==post_id) postCommentDao.delete(pc);
 		}
 		
-		Post deletePost = postDao.findPostByPostId(post_id);
-		postDao.delete(deletePost);
+		postDao.delete(post);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	} 
 	

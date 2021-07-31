@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.ovl.dao.RecipeCommentDao;
 import com.project.ovl.dao.RecipeDao;
 import com.project.ovl.dao.RecipeLikeDao;
 import com.project.ovl.dao.RecipeProcessDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.RecipeLike;
 import com.project.ovl.model.recipe.Recipe;
+import com.project.ovl.model.recipe.RecipeComment;
 import com.project.ovl.model.recipe.RecipePhotoHandler;
 import com.project.ovl.model.recipe.RecipeProcess;
 import com.project.ovl.model.user.User;
@@ -49,6 +51,9 @@ public class RecipeController {
 	RecipeLikeDao recipeLikeDao;
 	
 	@Autowired
+	RecipeCommentDao recipeCommentDao;
+	
+	@Autowired
 	RecipeProcessDao processDao;
 	
 	@Autowired
@@ -62,6 +67,9 @@ public class RecipeController {
 										@RequestPart("picture") MultipartFile pic, @RequestPart("files") List<MultipartFile> files) throws Exception {
 		
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
+		
+		// 레시피 등록 시 사용자에게 경험치 20점 부여
+		user.setExperience(user.getExperience()+20);
 		
 		// 레시피 등록
 		Recipe recipe = new Recipe(0, title, content, ingredient, new Date(), 0, 0, null, null, user);
@@ -120,15 +128,36 @@ public class RecipeController {
 	@DeleteMapping("/delete/{recipe_id}")
 	@ApiOperation(value = "레시피 삭제")
 	public ResponseEntity<String> delete(@PathVariable int recipe_id) {
-		// 레시피 과정 삭제
+		// 해당 레시피
+		Recipe recipe = recipeDao.findRecipeByRecipeId(recipe_id);
+		
+		// 유저 경험치 -20 
+		User user = userDao.getUserByUserid(recipe.getUserid().getUserid());
+		user.setExperience(user.getExperience()-20);
+		userDao.save(user);
+		
+		// 해당 레시피 좋아요 리스트 삭제
+		List<RecipeLike> likeList = recipeLikeDao.findAll();
+		
+		for (RecipeLike rl : likeList) {
+			if (rl.getRecipeId().getRecipeId()==recipe_id) recipeLikeDao.delete(rl);
+		}
+		
+		// 해당 레시피 과정 삭제
 		List<RecipeProcess> processList = processDao.findAll();
 		
 		for (RecipeProcess rp : processList) {
 			if (rp.getRecipeId().getRecipeId() == recipe_id) processDao.delete(rp);
 		}
 		
+		// 해당 레시피 댓글 삭제
+		List<RecipeComment> commentList = recipeCommentDao.findAll();
+		
+		for (RecipeComment rc : commentList) {
+			if (rc.getRecipeId().getRecipeId()==recipe_id) recipeCommentDao.delete(rc);
+		}
+		
 		// 레시피 삭제
-		Recipe recipe = recipeDao.findRecipeByRecipeId(recipe_id);
 		recipeDao.delete(recipe);
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
