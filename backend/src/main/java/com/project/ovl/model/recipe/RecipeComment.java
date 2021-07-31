@@ -35,7 +35,7 @@ public class RecipeComment {
 	private Date time;
     
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "RecipeId")
+    @JoinColumn(name = "recipeId")
     private Recipe recipeId;
     
     @ManyToOne(fetch = FetchType.EAGER)
