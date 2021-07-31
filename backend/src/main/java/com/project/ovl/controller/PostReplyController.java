@@ -65,6 +65,7 @@ public class PostReplyController {
 		// 해당 댓글 reply_count +1
 		comment.setReply_count(comment.getReply_count()+1);
 		postCommentDao.save(comment);
+		
 		// 해당 게시글 comment_count+1
 		Post post = postDao.findPostByPostId(comment.getPostId().getPostId());
 		post.setComment_count(post.getComment_count()+1);
