@@ -33,9 +33,9 @@ public class RecipeReply {
 	private int like_count;
 	private Date time;
 	
-//	@ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "recipeCommentId")
-//    private RecipeComment recipeCommentId;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipeCommentId")
+    private RecipeComment recipeCommentId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
