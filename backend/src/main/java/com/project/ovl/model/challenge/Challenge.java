@@ -32,8 +32,7 @@ public class Challenge {
 	private int period;
 	
 	private int categori;
-	private int score;
+	private int type;
 	
-	private String type;
-	private String step;
+	private int score;
 }

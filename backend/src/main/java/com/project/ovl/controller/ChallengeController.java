@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +43,7 @@ public class ChallengeController {
 	@ApiOperation(value = "챌린지 참여스")
 	public ResponseEntity<String> attend(@RequestParam("challenge_id") int challenge_id,
 			@RequestParam("user_id") int user_id) {
+		
 		User user = userDao.getUserByUserid(user_id);
 		ChallengeHistory history = challengeHistoryDao.findByUserIdUseridAndChallengeIdChallengeId(user_id,challenge_id);
 		
@@ -58,7 +58,7 @@ public class ChallengeController {
 		}
 	}
 	
-	@GetMapping("/delete/{use_id}")
+	@GetMapping("/delete/{user_id}")
 	@ApiOperation(value = "사용자가 챌린지 참여 중단")
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
@@ -73,9 +73,14 @@ public class ChallengeController {
 	@ApiOperation(value = "사용자가 챌린지 완료")
 	public ResponseEntity<String> complete(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
+		Challenge endChallenge = user.getChallengeId();
 		
-		Challenge challenge = challengeDao.findByChallengeId(1);
-		user.setChallengeId(challenge);
+		//완료된 챌린지 저장
+		challengeHistoryDao.save(new ChallengeHistory(0, endChallenge, user));
+		
+		// 경험치 획득 및 챌린지 없는 상태로 만들기
+		user.setExperience(user.getExperience() + endChallenge.getScore());
+		user.setChallengeId(challengeDao.findByChallengeId(1));
 		userDao.save(user);
 		return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
 	}
