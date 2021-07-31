@@ -93,17 +93,20 @@ public class PostCommentController {
 	@DeleteMapping("/delete/{post_comment_id}")
 	@ApiOperation(value = "댓글 삭제")
 	public ResponseEntity<String> unreport(@PathVariable int post_comment_id) {
+		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
+
+		Post post = postDao.findPostByPostId(pc.getPostId().getPostId());
+		post.setComment_count(post.getComment_count()-1);
+		
 		// 해당 댓글의 대댓글 삭제
 		List<PostReply> replyList = postReplyDao.findAll();
 		
 		for (PostReply pr : replyList) {
-			if (pr.getPostCommentId().getPostCommentId()==post_comment_id) postReplyDao.delete(pr);
+			if (pr.getPostCommentId().getPostCommentId()==post_comment_id) {
+				postReplyDao.delete(pr);
+				post.setComment_count(post.getComment_count()-1);
+			}
 		}
-		
-		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
-		
-		Post post = postDao.findPostByPostId(pc.getPostId().getPostId());
-		post.setComment_count(post.getComment_count()-1);
 		
 		postCommentDao.delete(pc);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);

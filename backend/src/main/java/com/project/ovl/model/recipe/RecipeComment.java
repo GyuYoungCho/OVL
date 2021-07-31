@@ -1,4 +1,4 @@
-package com.project.ovl.model.post;
+package com.project.ovl.model.recipe;
 
 import java.util.Date;
 
@@ -23,20 +23,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostReply {
+public class RecipeComment {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "post_reply_id")
-    private int postReplyId;
+	@Column(name = "recipe_comment_id")
+    private int recipeCommentId;
 	
-	private String content;
-	private int like_count;
+    private String content;
+    private int like_count;
+    private int reply_count;
 	private Date time;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "postCommentId")
-    private PostComment postCommentId;
-
+    
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipeId")
+    private Recipe recipeId;
+    
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;
