@@ -54,6 +54,9 @@ public class RecipeCommentController {
 	@Autowired
 	RecipeReplyDao recipeReplyDao;
 	
+	@Autowired
+	RecipeReplyController replyController;
+	
 	@PostMapping("/regist")
 	@ApiOperation(value = "댓글 등록")
 	public ResponseEntity<String> regist(@RequestParam("userId") int user_id, @RequestParam("recipeId") int recipe_id,
@@ -80,9 +83,9 @@ public class RecipeCommentController {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 	}
 	
-	@PutMapping("/modify/{recipe_comment_id}")
+	@PutMapping("/modify")
 	@ApiOperation(value = "댓글 수정")
-	public ResponseEntity<String> modify(@PathVariable int recipe_comment_id, @RequestParam("content") String content) {
+	public ResponseEntity<String> modify(@RequestParam("comment_id") int recipe_comment_id, @RequestParam("content") String content) {
 		RecipeComment rc = recipeCommentDao.findByRecipeCommentId(recipe_comment_id);
 		rc.setContent(content);
 		recipeCommentDao.save(rc);
@@ -91,20 +94,25 @@ public class RecipeCommentController {
 	
 	@DeleteMapping("/delete/{recipe_comment_id}")
 	@ApiOperation(value = "댓글 삭제")
-	public ResponseEntity<String> unreport(@PathVariable int recipe_comment_id) {
+	public ResponseEntity<String> delete(@PathVariable int recipe_comment_id) {
 		// 해당 댓글
 		RecipeComment rc = recipeCommentDao.findByRecipeCommentId(recipe_comment_id);
 		// 해당 레시피
 		Recipe recipe = recipeDao.findRecipeByRecipeId(rc.getRecipeId().getRecipeId());
 		recipe.setComment_count(recipe.getComment_count()-1); // 해당 레시피 댓글 삭제 시 레시피 comment_count -1
 		
+		// 해당 댓글 좋아요 삭제
+		List<RecipeCommentLike> likeList = recipeCommentLikeDao.findAll();
+		for (RecipeCommentLike rcl : likeList) {
+			if (rcl.getRecipeCommentId().getRecipeCommentId()==recipe_comment_id) recipeCommentLikeDao.delete(rcl);
+		}
+		
 		// 해당 댓글의 대댓글 삭제
 		List<RecipeReply> replyList = recipeReplyDao.findAll();
 		
 		for (RecipeReply rr : replyList) {
 			if (rr.getRecipeCommentId().getRecipeCommentId()==recipe_comment_id) {
-				recipeReplyDao.delete(rr);
-				recipe.setComment_count(recipe.getComment_count()-1); // 해당 레시피 대댓글 삭제 시 레시피 comment_count -1
+				replyController.delete(rr.getRecipeReplyId());
 			}
 		}
 		

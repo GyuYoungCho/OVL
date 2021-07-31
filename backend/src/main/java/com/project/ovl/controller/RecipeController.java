@@ -57,6 +57,9 @@ public class RecipeController {
 	RecipeProcessDao processDao;
 	
 	@Autowired
+	RecipeCommentController commentController;
+	
+	@Autowired
 	RecipePhotoHandler photoHandler;
 	
 	private List<String> processContent;
@@ -154,7 +157,7 @@ public class RecipeController {
 		List<RecipeComment> commentList = recipeCommentDao.findAll();
 		
 		for (RecipeComment rc : commentList) {
-			if (rc.getRecipeId().getRecipeId()==recipe_id) recipeCommentDao.delete(rc);
+			if (rc.getRecipeId().getRecipeId()==recipe_id) commentController.delete(rc.getRecipeCommentId());
 		}
 		
 		// 레시피 삭제
