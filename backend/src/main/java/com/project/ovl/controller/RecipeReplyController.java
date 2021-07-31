@@ -76,8 +76,11 @@ public class RecipeReplyController {
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "대댓글 수정")
-	public ResponseEntity<String> modify(@RequestBody RecipeReply recipeReply) {
-		recipeReplyDao.save(recipeReply);
+	public ResponseEntity<String> modify(@RequestParam("reply_id") int reply_id, @RequestParam("content") String content) {
+		RecipeReply reply = recipeReplyDao.findByRecipeReplyId(reply_id);
+		reply.setContent(content);
+		
+		recipeReplyDao.save(reply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -85,6 +88,12 @@ public class RecipeReplyController {
 	@ApiOperation(value = "대댓글 삭제")
 	public ResponseEntity<String> delete(@PathVariable int reply_id) {
 		RecipeReply reply = recipeReplyDao.findByRecipeReplyId(reply_id);
+		
+		// 대댓글 좋아요 삭제
+		List<RecipeReplyLike> likeList = recipeReplyLikeDao.findAll();
+		for (RecipeReplyLike rrl : likeList) {
+			if (rrl.getRecipeReplyId().getRecipeReplyId()==reply_id) recipeReplyLikeDao.delete(rrl);
+		}
 		
 		// 해당 댓글 reply_count -1
 		RecipeComment comment = reply.getRecipeCommentId();
