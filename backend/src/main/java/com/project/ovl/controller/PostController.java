@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +43,6 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class PostController {
 	private static final String SUCCESS = "success";
-	private static final String FAIL = "fail";
 	
 	@Autowired
 	PostDao postDao;
@@ -85,7 +83,6 @@ public class PostController {
 		// 게시글 등록
 		Post post = new Post(0, Integer.parseInt(categori), content, 0, 0, new Date(), user);
 		postDao.save(post);
-		
 		// 이미지 저장
 		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
 		
@@ -98,9 +95,26 @@ public class PostController {
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "게시글 수정")
-	public ResponseEntity<String> modify(@RequestBody Post post) {
-		post.setTime(new Date());
+	public ResponseEntity<String> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
+			@RequestPart("content") String content, @RequestPart("postId") int postId) throws Exception {
+		Post post = postDao.findPostByPostId(postId);
+		post.setCategori(categori);
+		post.setContent(content);
+		
 		postDao.save(post);
+		
+		// 원래 있던 사진 다 지우기
+		List<PostPhoto> deleteList = postPhotoDao.findAll();
+		for (PostPhoto pp : deleteList) {
+			if (pp.getPostId().getPostId()==postId) postPhotoDao.delete(pp);
+		}
+		
+		// 사진 다시 저장
+		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
+
+		for (PostPhoto pp : photoList) {
+			postPhotoDao.save(pp);
+		}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	} 
 	
@@ -225,6 +239,7 @@ public class PostController {
 	public ResponseEntity<List<PostPhoto>> select_detail_photo(@PathVariable int post_id) {
 		List<PostPhoto> photoList = postPhotoDao.findAll();
 		List<PostPhoto> returnList = new ArrayList<>();
+		
 		for (PostPhoto pl : photoList) {
 			if (pl.getPostId().getPostId()==post_id) returnList.add(pl);
 		}
