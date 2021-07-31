@@ -1,6 +1,4 @@
-package com.project.ovl.model.post;
-
-import java.util.Date;
+package com.project.ovl.model.like;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
@@ -23,21 +22,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostReply {
+public class RecipeReplyLike {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "post_reply_id")
-    private int postReplyId;
-	
-	private String content;
-	private int like_count;
-	private Date time;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "postCommentId")
-    private PostComment postCommentId;
+	@Column(name = "recipe_reply_like_id")
+    private int recipeReplyLikeId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "recipeReplyId")
+    private RecipeReply recipeReplyId;
 }
