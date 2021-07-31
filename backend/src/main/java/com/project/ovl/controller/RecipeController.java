@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -71,17 +72,48 @@ public class RecipeController {
 		// 레시피 과정 등록
 		List<RecipeProcess> processList = photoHandler.getProcessList(files, processContent, recipe.getRecipeId());
 
-		for (RecipeProcess pl : processList) {
-			processDao.save(pl);
+		for (RecipeProcess rp : processList) {
+			processDao.save(rp);
 		}
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@PostMapping("/regist/contentLisst")
-	@ApiOperation(value = "레시피 과정 설명 등록")
+	@PostMapping("/regist/contentList")
+	@ApiOperation(value = "레시피 과정 설명 등록 또는 수정")
 	public ResponseEntity<String> contentList(@RequestBody List<String> contentList) {
 		processContent = contentList;
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
+	
+	@PutMapping("/modify")
+	@ApiOperation(value = "레시피 수정")
+	public ResponseEntity<String> modify(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient,
+			@RequestPart("picture") MultipartFile pic, @RequestPart("files") List<MultipartFile> files, @RequestPart("recipeId") String recipeId) throws Exception {
+		
+		// 레시피 게시물 수정
+		Recipe recipe = recipeDao.findRecipeByRecipeId(Integer.parseInt(recipeId));
+		recipe.setTitle(title);
+		recipe.setContent(content);
+		recipe.setIngredient(ingredient);
+		recipeDao.save(recipe);
+		
+		photoHandler.saveProfile(pic, recipe.getRecipeId());
+		
+		// 레시피 과정 사진 지우기
+		List<RecipeProcess> proList = processDao.findAll();
+		for (RecipeProcess rp : proList) {
+			if (rp.getRecipeId().getRecipeId()==recipe.getRecipeId()) processDao.delete(rp);
+		}
+		
+		// 레시피 사진 다시 저장
+		List<RecipeProcess> saveList = photoHandler.getProcessList(files, processContent, recipe.getRecipeId());
+
+		for (RecipeProcess rp : saveList) {
+			processDao.save(rp);
+		}
+		
+		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -121,6 +153,14 @@ public class RecipeController {
 		}
 		
 		return new ResponseEntity<List<RecipeProcess>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/search/{title_search}")
+	@ApiOperation(value = "레시피 제목 검색")
+	public ResponseEntity<List<Recipe>> search(@PathVariable String title_search) {
+		List<Recipe> recipeList = recipeDao.findByTitleContaining(title_search);
+		
+		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
 	}
 	
 	@GetMapping("/like/{user_id}/{recipe_id}")
