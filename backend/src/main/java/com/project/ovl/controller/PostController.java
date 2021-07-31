@@ -63,6 +63,9 @@ public class PostController {
 	PostCommentDao postCommentDao;
 	
 	@Autowired
+	PostCommentController commentController;
+	
+	@Autowired
 	PhotoHandler photoHandler;
 	
 	@PostMapping("/regist")
@@ -123,6 +126,7 @@ public class PostController {
 	public ResponseEntity<String> delete(@PathVariable int post_id) {
 		// 해당 게시글 올린 유저 경험치 -5
 		Post post = postDao.findPostByPostId(post_id);
+		
 		int value = 0;
 		if (post.getCategori()==1) value = 5;
 		else if (post.getCategori()==2) value = 3;
@@ -150,7 +154,7 @@ public class PostController {
 		List<PostComment> commentList = postCommentDao.findAll();
 		
 		for (PostComment pc : commentList) {
-			if (pc.getPostId().getPostId()==post_id) postCommentDao.delete(pc);
+			if (pc.getPostId().getPostId()==post_id) commentController.delete(pc.getPostCommentId());
 		}
 		
 		postDao.delete(post);

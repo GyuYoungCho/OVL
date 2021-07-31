@@ -26,6 +26,7 @@ import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.PostReplyLikeDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.PostReplyLike;
+import com.project.ovl.model.like.RecipeReplyLike;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
@@ -77,8 +78,10 @@ public class PostReplyController {
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "대댓글 수정")
-	public ResponseEntity<String> modify(@RequestBody PostReply postReply) {
-		postReplyDao.save(postReply);
+	public ResponseEntity<String> modify(@RequestParam("reply_id") int reply_id, @RequestParam("content") String content) {
+		PostReply reply = postReplyDao.findByPostReplyId(reply_id);
+		reply.setContent(content);
+		postReplyDao.save(reply);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -86,6 +89,12 @@ public class PostReplyController {
 	@ApiOperation(value = "대댓글 삭제")
 	public ResponseEntity<String> delete(@PathVariable int reply_id) {
 		PostReply reply = postReplyDao.findByPostReplyId(reply_id);
+		
+		// 대댓글 좋아요 삭제
+		List<PostReplyLike> likeList = postReplyLikeDao.findAll();
+		for (PostReplyLike prl : likeList) {
+			if (prl.getPostReplyId().getPostReplyId() == reply_id) postReplyLikeDao.delete(prl);
+		}
 		
 		// 해당 댓글 reply_count -1
 		PostComment comment = reply.getPostCommentId();

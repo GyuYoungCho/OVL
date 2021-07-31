@@ -26,6 +26,7 @@ import com.project.ovl.dao.PostReplyDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.model.like.PostCommentLike;
 import com.project.ovl.model.like.PostLike;
+import com.project.ovl.model.like.RecipeCommentLike;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
@@ -55,6 +56,9 @@ public class PostCommentController {
 	@Autowired
 	PostReplyDao postReplyDao;
 	
+	@Autowired
+	PostReplyController replyController;
+	
 	@PostMapping("/regist")
 	@ApiOperation(value = "댓글 등록")
 	public ResponseEntity<String> regist(@RequestParam("userId") int user_id, @RequestParam("postId") int post_id,
@@ -81,9 +85,9 @@ public class PostCommentController {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 	}
 	
-	@PutMapping("/modify/{post_comment_id}")
+	@PutMapping("/modify")
 	@ApiOperation(value = "댓글 수정")
-	public ResponseEntity<String> modify(@PathVariable int post_comment_id, @RequestParam("content") String content) {
+	public ResponseEntity<String> modify(@RequestParam("comment_id") int post_comment_id, @RequestParam("content") String content) {
 		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
 		pc.setContent(content);
 		postCommentDao.save(pc);
@@ -92,19 +96,24 @@ public class PostCommentController {
 	
 	@DeleteMapping("/delete/{post_comment_id}")
 	@ApiOperation(value = "댓글 삭제")
-	public ResponseEntity<String> unreport(@PathVariable int post_comment_id) {
+	public ResponseEntity<String> delete(@PathVariable int post_comment_id) {
 		PostComment pc = postCommentDao.findByPostCommentId(post_comment_id);
 
 		Post post = postDao.findPostByPostId(pc.getPostId().getPostId());
 		post.setComment_count(post.getComment_count()-1);
+		
+		// 해당 댓글의 좋아요 삭제
+		List<PostCommentLike> likeList = postCommentLikeDao.findAll();
+		for (PostCommentLike pcl : likeList) {
+			if (pcl.getPostCommentId().getPostCommentId()==post_comment_id) postCommentLikeDao.delete(pcl);
+		}
 		
 		// 해당 댓글의 대댓글 삭제
 		List<PostReply> replyList = postReplyDao.findAll();
 		
 		for (PostReply pr : replyList) {
 			if (pr.getPostCommentId().getPostCommentId()==post_comment_id) {
-				postReplyDao.delete(pr);
-				post.setComment_count(post.getComment_count()-1);
+				replyController.delete(pr.getPostReplyId());
 			}
 		}
 		
