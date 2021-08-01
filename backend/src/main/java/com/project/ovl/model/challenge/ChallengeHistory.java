@@ -1,4 +1,4 @@
-package com.project.ovl.model.user;
+package com.project.ovl.model.challenge;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.challenge.Challenge;
+import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,25 +21,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User {
-    @Id
+public class ChallengeHistory {
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private int userid;
-  
-    private String email;
-    private String nickname;
-    private String name;
-    private String phone;
-    private String password;
-    private int experience;
-    private int account_open;
-    private int warning;
-
-    private String original_file_name;
-    private String stored_file_path;
-    
-    @ManyToOne(fetch = FetchType.EAGER)
+	@Column(name = "challenge_history_id")
+	private int challengeHistoryId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "challengeId")
     private Challenge challengeId;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User userId;
 }

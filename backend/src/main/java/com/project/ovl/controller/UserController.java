@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,10 +31,48 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.ovl.dao.ChallengeDao;
+import com.project.ovl.dao.ChallengeHistoryDao;
+import com.project.ovl.dao.FollowDao;
+import com.project.ovl.dao.PostCommentDao;
+import com.project.ovl.dao.PostCommentLikeDao;
+import com.project.ovl.dao.PostDao;
+import com.project.ovl.dao.PostLIkeDao;
+import com.project.ovl.dao.PostReplyDao;
+import com.project.ovl.dao.PostReplyLikeDao;
+import com.project.ovl.dao.PotDao;
+import com.project.ovl.dao.PotRelationDao;
+import com.project.ovl.dao.RecipeCommentDao;
+import com.project.ovl.dao.RecipeCommentLikeDao;
+import com.project.ovl.dao.RecipeDao;
+import com.project.ovl.dao.RecipeLikeDao;
+import com.project.ovl.dao.RecipeProcessDao;
+import com.project.ovl.dao.RecipeReplyDao;
+import com.project.ovl.dao.RecipeReplyLikeDao;
+import com.project.ovl.dao.ReportDao;
 import com.project.ovl.dao.UserDao;
 import com.project.ovl.dto.UserDto;
+import com.project.ovl.model.challenge.Challenge;
+import com.project.ovl.model.challenge.ChallengeHistory;
+import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.jwt.JwtService;
+import com.project.ovl.model.like.PostCommentLike;
+import com.project.ovl.model.like.PostLike;
+import com.project.ovl.model.like.PostReplyLike;
+import com.project.ovl.model.like.RecipeCommentLike;
+import com.project.ovl.model.like.RecipeLike;
+import com.project.ovl.model.like.RecipeReplyLike;
 import com.project.ovl.model.mail.mailService;
+import com.project.ovl.model.post.Post;
+import com.project.ovl.model.post.PostComment;
+import com.project.ovl.model.post.PostReply;
+import com.project.ovl.model.pot.Pot;
+import com.project.ovl.model.pot.PotRelation;
+import com.project.ovl.model.recipe.Recipe;
+import com.project.ovl.model.recipe.RecipeComment;
+import com.project.ovl.model.recipe.RecipeProcess;
+import com.project.ovl.model.recipe.RecipeReply;
+import com.project.ovl.model.report.Report;
 import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
 
@@ -53,7 +92,64 @@ public class UserController {
     UserDao userDao;
 	
 	@Autowired
+	ChallengeDao challengedao;
+	
+	@Autowired
     mailService mService;
+	
+	@Autowired
+	PostReplyLikeDao postReplyLikeDao;
+	
+	@Autowired
+	PostCommentLikeDao postCommentLikeDao;
+	
+	@Autowired
+	PostLIkeDao postLikeDao;
+	
+	@Autowired
+	PostReplyDao postReplyDao;
+	
+	@Autowired
+	PostCommentDao postCommentDao;
+	
+	@Autowired
+	PostDao postDao;
+	
+	@Autowired
+	RecipeReplyLikeDao recipeReplyLikeDao;
+	
+	@Autowired
+	RecipeCommentLikeDao recipeCommentLikeDao;
+	
+	@Autowired
+	RecipeLikeDao recipeLikeDao;
+	
+	@Autowired
+	RecipeReplyDao recipeReplyDao;
+	
+	@Autowired
+	RecipeCommentDao recipeCommentDao;
+	
+	@Autowired
+	RecipeProcessDao recipeProcessDao;
+	
+	@Autowired
+	RecipeDao recipeDao;
+	
+	@Autowired
+	PotDao potDao;
+	
+	@Autowired
+	PotRelationDao potRelationDao;
+	
+	@Autowired
+	FollowDao followDao;
+	
+	@Autowired
+	ReportDao reportDao;
+	
+	@Autowired
+	ChallengeHistoryDao challengeHistoryDao;
 	
 	@GetMapping("/nickname_check/{nickname}")
 	@ApiOperation(value = "닉네임 중복 체크")
@@ -108,8 +204,9 @@ public class UserController {
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null);
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
@@ -227,6 +324,176 @@ public class UserController {
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
     	User user = userDao.getUserByUserid(user_id);
 		if(user!=null) {
+			
+			// post 관련 삭제 
+			// 내가 쓴 글 안의 모든 컨텐츠 삭제
+			List<Post> pList = postDao.findByUserId(user);
+			for (Post p : pList) {
+				Optional<List<PostComment>> pcList = postCommentDao.findByPostIdPostId(p.getPostId());
+				if(pcList.isPresent()) {
+					for (PostComment pc : pcList.get()) {
+						List<PostReply> prList = postReplyDao.findByPostCommentId(pc);
+						
+						for (PostReply pr : prList) {
+							List<PostReplyLike> prlList = postReplyLikeDao.findByPostReplyId(pr);
+							for (PostReplyLike prl : prlList) {
+								postReplyLikeDao.delete(prl);
+							}
+							postReplyDao.delete(pr);
+						}
+						
+						List<PostCommentLike> pclList = postCommentLikeDao.findByPostCommentId(pc);
+						for (PostCommentLike pcl : pclList) {
+							postCommentLikeDao.delete(pcl);
+						}
+						
+						postCommentDao.delete(pc);
+					}
+				}
+				List<PostLike> plList = postLikeDao.findByPostId(p);
+				for (PostLike pl : plList) {
+					postLikeDao.delete(pl);
+				}
+				postDao.delete(p);
+			}
+			
+			// 내가 다른 곳에서 쓴 거 삭제
+			List<PostReplyLike> prlList = postReplyLikeDao.findByUserId(user);
+			for (PostReplyLike prl : prlList) {
+				postReplyLikeDao.delete(prl);
+			}
+			
+			List<PostCommentLike> pclList = postCommentLikeDao.findByUserId(user);
+			for (PostCommentLike pcl : pclList) {
+				postCommentLikeDao.delete(pcl);
+			}
+			
+			List<PostLike> plList = postLikeDao.findByUserId(user);
+			for (PostLike pl : plList) {
+				postLikeDao.delete(pl);
+			}
+			
+			List<PostReply> prList = postReplyDao.findByUserId(user);
+			for (PostReply pr : prList) {
+				postReplyDao.delete(pr);
+			}
+			
+			List<PostComment> pcList = postCommentDao.findByUserId(user);
+			for (PostComment pc : pcList) {
+				postCommentDao.delete(pc);
+			}
+			
+			
+			//recipe 관련 삭제
+			// 내 recipe 안의 모든 컨텐츠 삭제
+			
+			List<Recipe> rList = recipeDao.findByUserid(user);
+			for (Recipe r : rList) {
+				Optional<List<RecipeComment>> rcList = recipeCommentDao.findByRecipeIdRecipeId(r.getRecipeId());
+				if(rcList.isPresent()) {
+					for (RecipeComment rc : rcList.get()) {
+						List<RecipeReply> rrList = recipeReplyDao.findByRecipeCommentId(rc);
+						
+						for (RecipeReply rr : rrList) {
+							List<RecipeReplyLike> rrlList = recipeReplyLikeDao.findByRecipeReplyId(rr);
+							for (RecipeReplyLike rrl : rrlList) {
+								recipeReplyLikeDao.delete(rrl);
+							}
+							recipeReplyDao.delete(rr);
+						}
+						
+						List<RecipeCommentLike> rclList = recipeCommentLikeDao.findByRecipeCommentId(rc);
+						for (RecipeCommentLike rcl : rclList) {
+							recipeCommentLikeDao.delete(rcl);
+						}
+						
+						recipeCommentDao.delete(rc);
+					}
+				}
+				
+				List<RecipeLike> rlList = recipeLikeDao.findByRecipeId(r);
+				for (RecipeLike rl : rlList) {
+					recipeLikeDao.delete(rl);
+				}
+				
+				List<RecipeProcess> rpList = recipeProcessDao.findByRecipeId(r);
+				for (RecipeProcess rp : rpList) {
+					recipeProcessDao.delete(rp);
+				}
+				
+				recipeDao.delete(r);
+			}
+			
+			// 내가 다른 곳에서 쓴 거 삭제
+			List<RecipeReplyLike> rrlList = recipeReplyLikeDao.findByUserId(user);
+			for (RecipeReplyLike rrl : rrlList) {
+				recipeReplyLikeDao.delete(rrl);
+			}
+			
+			List<RecipeCommentLike> rclList = recipeCommentLikeDao.findByUserId(user);
+			for (RecipeCommentLike rcl : rclList) {
+				recipeCommentLikeDao.delete(rcl);
+			}
+			
+			List<RecipeLike> rlList = recipeLikeDao.findByUserId(user);
+			for (RecipeLike rl : rlList) {
+				recipeLikeDao.delete(rl);
+			}
+			
+			List<RecipeReply> rrList = recipeReplyDao.findByUserId(user);
+			for (RecipeReply rr : rrList) {
+				recipeReplyDao.delete(rr);
+			}
+			
+			List<RecipeComment> rcList = recipeCommentDao.findByUserId(user);
+			for (RecipeComment rc : rcList) {
+				recipeCommentDao.delete(rc);
+			}
+			
+			
+			// pot follow history 등
+			
+			List<PotRelation> prlt = potRelationDao.findByUserid(user);
+			for(PotRelation p : prlt) {
+				potRelationDao.delete(p);
+			}
+			
+			List<Pot> pt = potDao.findByUserid(user);
+			for(Pot p : pt) {
+				potDao.delete(p);
+			}
+			
+			Optional<List<Follow>> toflist = followDao.findByToIdUserid(user.getUserid());
+			if(toflist.isPresent()) {
+				for(Follow f : toflist.get()) {
+					followDao.delete(f);
+				}
+			}
+			
+			Optional<List<Follow>> frflist = followDao.findByFromIdUserid(user.getUserid());
+			if(frflist.isPresent()) {
+				for(Follow f : frflist.get()) {
+					followDao.delete(f);
+				}
+			}
+			
+			List<Report> rp = reportDao.findByFromId(user);
+			for(Report r : rp) {
+				reportDao.delete(r);
+			}
+			
+			rp = reportDao.findByToId(user);
+			for(Report r : rp) {
+				reportDao.delete(r);
+			}
+			
+			Optional<List<ChallengeHistory>> chl = challengeHistoryDao.findByUserIdUserid(user.getUserid());
+			if(chl.isPresent()) {
+				for(ChallengeHistory ch : chl.get()) {
+					challengeHistoryDao.delete(ch);
+				}
+			}
+			
 			userDao.delete(user);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		}

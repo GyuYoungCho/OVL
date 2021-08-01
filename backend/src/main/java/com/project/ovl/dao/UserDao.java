@@ -1,6 +1,7 @@
 
 package com.project.ovl.dao;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,6 @@ public interface UserDao extends JpaRepository<User, String> {
 	 User getUserByUserid(int userid);
 	 Optional<User> findUserByNameAndPhone(String name, String phone);
 	 Optional<User> findUserByEmailAndPassword(String email, String password);
-
+	 
+	 Optional<List<User>> findByChallengeIdChallengeId(int challenge_id);
 }
