@@ -64,7 +64,7 @@ export default {
   }),
   methods: {
     onEmailBtnClick () {
-      const URL = API.url + userAPI.url + userAPI.email_auth('join', this.email)
+      const URL = API.url + userAPI.email_auth('join', this.email)
       axios.get(URL)
         .then(res => {
           alert('이메일이 전송되었습니다.')
@@ -75,7 +75,7 @@ export default {
         .catch(err => console.error(err))
       },
     onAuthBtnClick () {
-      const URL = API.url + userAPI.url + userAPI.email_auth_check(this.email, this.authKey)
+      const URL = API.url + userAPI.email_auth_check(this.email, this.authKey)
       axios.get(URL)
         .then(res => {
           console.log(res)
