@@ -1,6 +1,6 @@
 // /@/api/user.js
 
-export default  {
+export default  { 
   url: '/user/',
     
   nickname_check (nickname) {
