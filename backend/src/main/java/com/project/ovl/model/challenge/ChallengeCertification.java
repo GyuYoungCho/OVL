@@ -4,11 +4,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,21 +23,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Challenge {
+public class ChallengeCertification {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "challenge_id")
-	private int challengeId;
+	@Column(name = "challenge_certification_id")
+	private int challengeCertificationId;
 	
-	private String title;
-	private String content;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User userId;
 	
-	private Date start_date;
-	private int period;
-	private int cycle;
+	@ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "challengeId")
+    private Challenge challengeId;
 	
-	private int categori;
-	private int type;
-	
-	private int score;
+	private Date certification_date;
+	private int certification;
 }
