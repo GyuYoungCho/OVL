@@ -9,11 +9,11 @@ export default  {
   join () {
     return 'join'
   },
-  email_auth (email) {
-    return `email_auth/${email}`
+  email_auth (type, email) {
+    return `email_auth/${type}/${email}`
   },
-  email_auth_check (authNumber) {
-    return `email_auth_check/${authNumber}`
+  email_auth_check (email, authNumber) {
+    return `email_auth_check/${email}/${authNumber}`
   },
   login () {
     return 'login'
