@@ -3,17 +3,17 @@
     <h1 class="text-center">
       회원가입
     </h1>
-    <KakaoLogin />
+    <!-- <KakaoLogin /> -->
 
     <v-form
       ref="form"
       v-model="valid"
       lazy-validation
     >
-      <Name @nameChange="nameChanged" />
+      <Name @nameChanged="nameChanged" />
       <NickName @nicknameCheck="nicknameCheck" />
       <Email @emailCheck="emailCheck" />
-      <PhoneNumber @phoneNumberChanged="phoneNumberChanged" />
+      <PhoneNumber @phoneNumberChanged="phoneChanged" />
       <Password @passwordChanged="passwordChanged" />
       <v-btn
         :disabled="!valid || !allValid"
@@ -36,11 +36,16 @@ import Password from '@/components/signup/Password.vue'
 import PhoneNumber from '@/components/signup/PhoneNumber.vue'
 import NickName from '@/components/signup/NickName.vue'
 import Email from '@/components/signup/Email.vue'
-import KakaoLogin from '@/components/KakaoLogin.vue'
+// import KakaoLogin from '@/components/KakaoLogin.vue'
+
+import axios from 'axios'
+import API from '@/api/index.js'
+import userAPI from '@/api/user.js'
 
   export default {
     components: {
-      Name, Password, PhoneNumber, NickName, Email, KakaoLogin,
+      Name, Password, PhoneNumber, NickName, Email, 
+      // KakaoLogin,
     },
     data: () => ({
       valid: false,
@@ -50,13 +55,21 @@ import KakaoLogin from '@/components/KakaoLogin.vue'
       name: '',
       nickname: '',
       email: '',
-      phoneNumber: '',
+      phone: '',
       password: '',
     }),
     methods: {
       onSignupBtnClick () {
-        console.log(this.$data)
-        // this.$router.push({ name: 'Login' })
+        const URL = API.url + userAPI.url + userAPI.join()
+        const { email, name, nickname, password, phone } = this
+        const data = { email, name, nickname, password, phone }
+        console.log(data)
+        axios.post(URL, data)
+          .then(res => {
+            console.log(res)
+            this.$router.push({ name: 'Login' })
+          })
+          .catch(err => console.error(err))
       },
       nicknameCheck (nickname) {
         this.nicknameValid = true
@@ -69,8 +82,8 @@ import KakaoLogin from '@/components/KakaoLogin.vue'
       nameChanged (name) {
         this.name = name
       },
-      phoneNumberChanged (phoneNumber) {
-        this.phoneNumber = phoneNumber
+      phoneChanged (phone) {
+        this.phone = phone
       },
       passwordChanged (password) {
         this.password = password
@@ -78,7 +91,7 @@ import KakaoLogin from '@/components/KakaoLogin.vue'
     },
     computed: {
       allValid () {
-        return this.emailValid && this.nicknameValid && this.nickname && this.phoneNumber && this.password
+        return this.emailValid && this.nicknameValid && this.nickname && this.phone && this.password
       }
     }
     

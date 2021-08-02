@@ -43,6 +43,10 @@
 </template>
 
 <script>
+import API from '@/api/index.js'
+import userAPI from '@/api/user.js'
+import axios from 'axios'
+
 export default {
   data: () => ({
     authKey: '',
@@ -60,11 +64,25 @@ export default {
   }),
   methods: {
     onEmailBtnClick () {
-      this.emailBtnClicked = true
-      // this.$emit('emailCheck')
+      const URL = API.url + userAPI.url + userAPI.email_auth('join', this.email)
+      axios.get(URL)
+        .then(res => {
+          alert('이메일이 전송되었습니다.')
+          console.log(res)
+          this.emailBtnClicked = true
+          this.$emit('emailCheck')
+        })
+        .catch(err => console.error(err))
       },
     onAuthBtnClick () {
-      this.$emit('emailCheck', this.email)
+      const URL = API.url + userAPI.url + userAPI.email_auth_check(this.email, this.authKey)
+      axios.get(URL)
+        .then(res => {
+          console.log(res)
+          alert('이메일 인증이 완료되었습니다.')
+          this.$emit('emailCheck', this.email)
+        })
+        .catch(err => console.error(err))
     },
   }
 }

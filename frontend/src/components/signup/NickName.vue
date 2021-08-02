@@ -42,11 +42,12 @@ export default {
       axios.get(URL)
         .then(res => {
           console.log(res)
+          alert('사용 가능한 닉네임입니다.')
           this.$emit('nicknameCheck', this.nickname)
         })
         .catch(err => {
           console.log(err)
-        })   
+        })
     },
   }
 }
