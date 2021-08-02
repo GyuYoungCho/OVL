@@ -38,7 +38,7 @@ export default {
   }),
   methods: {
     onNicknameBtnClick () {
-      const URL = API.url + userAPI.url + userAPI.nickname_check(this.nickname)
+      const URL = API.url + userAPI.nickname_check(this.nickname)
       axios.get(URL)
         .then(res => {
           console.log(res)

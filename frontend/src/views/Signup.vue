@@ -60,7 +60,7 @@ import userAPI from '@/api/user.js'
     }),
     methods: {
       onSignupBtnClick () {
-        const URL = API.url + userAPI.url + userAPI.join()
+        const URL = API.url + userAPI.join()
         const { email, name, nickname, password, phone } = this
         const data = { email, name, nickname, password, phone }
         console.log(data)

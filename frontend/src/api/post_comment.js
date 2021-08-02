@@ -1,23 +1,23 @@
 // @/api/post_comment.js
 
 export default {
-  url : '/post/comment/',
+  // url : '/post/comment/',
   regist () {
-    return 'regist'
+    return '/post/comment/regist'
   },
   modify (post_comment_id) {
-    return `modify/${post_comment_id}`
+    return `/post/comment/modify/${post_comment_id}`
   },
   delete (post_comment_id) {
-    return `delete/${post_comment_id}`
+    return `/post/comment/delete/${post_comment_id}`
   },
   select_all (post_id) {
-    return `select_all/${post_id}`
+    return `/post/comment/select_all/${post_id}`
   },
   like_list (user_id) {
-    return `like_list/${user_id}`
+    return `/post/comment/like_list/${user_id}`
   },
   like (user_id, post_comment_id) {
-    return `like/${user_id}/${post_comment_id}`
+    return `/post/comment/like/${user_id}/${post_comment_id}`
   }
 }
