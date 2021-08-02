@@ -11,8 +11,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.ovl.dao.RecipeDao;
-import com.project.ovl.dao.RecipeProcessDao;
+import com.project.ovl.dao.recipe.RecipeDao;
+import com.project.ovl.dao.recipe.RecipeProcessDao;
 
 @Component
 public class RecipePhotoHandler {
