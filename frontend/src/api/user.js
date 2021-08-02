@@ -4,7 +4,7 @@ export default  {
   url: '/user/',
     
   nickname_check (nickname) {
-    return `nick_name/${nickname}`
+    return `nickname_check/${nickname}`
   },
   join () {
     return 'join'

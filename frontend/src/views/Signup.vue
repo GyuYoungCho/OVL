@@ -10,6 +10,7 @@
       v-model="valid"
       lazy-validation
     >
+      <Name @nameChange="nameChanged" />
       <NickName @nicknameCheck="nicknameCheck" />
       <Email @emailCheck="emailCheck" />
       <PhoneNumber @phoneNumberChanged="phoneNumberChanged" />
@@ -30,6 +31,7 @@
 
 <script>
 // import '@/assets/css/index.scss' 이걸 안써도 되는걸 발견함.
+import Name from '@/components/signup/Name.vue'
 import Password from '@/components/signup/Password.vue'
 import PhoneNumber from '@/components/signup/PhoneNumber.vue'
 import NickName from '@/components/signup/NickName.vue'
@@ -38,13 +40,14 @@ import KakaoLogin from '@/components/KakaoLogin.vue'
 
   export default {
     components: {
-      Password, PhoneNumber, NickName, Email, KakaoLogin,
+      Name, Password, PhoneNumber, NickName, Email, KakaoLogin,
     },
     data: () => ({
       valid: false,
       nicknameValid: false,
       emailValid: false,
 
+      name: '',
       nickname: '',
       email: '',
       phoneNumber: '',
@@ -62,6 +65,9 @@ import KakaoLogin from '@/components/KakaoLogin.vue'
       emailCheck (email) {
         this.emailValid = true
         this.email = email
+      },
+      nameChanged (name) {
+        this.name = name
       },
       phoneNumberChanged (phoneNumber) {
         this.phoneNumber = phoneNumber
