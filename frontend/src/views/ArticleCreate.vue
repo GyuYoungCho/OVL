@@ -1,13 +1,34 @@
 <template>
   <div>
-    <h1>게시글을 생성하는 페이지 입니다</h1>
+    <v-container>
+      <v-select
+          :items="items"
+          label="카테고리"
+          outlined
+          color="#49784B"
+          item-color="green"
+          v-model="selectedItem"
+        ></v-select>
+        <button @click="getGet">getget</button>
+      <textarea name="" id="" cols="30" rows="10"></textarea>
+    </v-container>
   </div>
 </template>
 
 <script>
-export default {
-
-}
+  export default {
+    data () {
+      return {
+        items: ['식단', '화장품', '의류', '생활용품 etc'],
+        selectedItem : ''
+      }
+    },
+    methods: {
+      getGet () {
+        console.log(this.selectedItem)
+      }
+    }
+  }
 </script>
 
 <style>
