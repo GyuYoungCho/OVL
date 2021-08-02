@@ -7,8 +7,9 @@
     </div>
 
     <!-- 사진 미리보기 -->
-    <div>
-      <img v-for="(imgFile, index) in imgFiles" :key="index" class="preview-img" :src="imgFile.previewURL" alt="" @click="deleteImg(imgFile.number)">
+    <div v-for="(imgFile, index) in imgFiles" :key="index" >
+      <img class="preview-img" :src="imgFile.previewURL" alt="" @click="deleteImg(imgFile.number)">
+      <textarea name="" id="" cols="30" rows="10"></textarea>
     </div>
 
     <v-tabs

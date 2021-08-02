@@ -8,7 +8,7 @@
         :rules="nicknameRules"
         label="닉네임"
         required
-        placeholder="홍길동"
+        placeholder="닉네임을 적어주세요"
       ></v-text-field>
     </v-col>
     <v-col cols="12">
@@ -24,6 +24,10 @@
 </template>
 
 <script>
+import userAPI from '@/api/user.js'
+import API from '@/api/index.js'
+import axios from 'axios'
+
 export default {
   data: () => ({
     nickname: '',
@@ -34,8 +38,16 @@ export default {
   }),
   methods: {
     onNicknameBtnClick () {
-        this.$emit('nicknameCheck', this.nickname)
-      },
+      const URL = API.url + userAPI.url + userAPI.nickname_check(this.nickname)
+      axios.get(URL)
+        .then(res => {
+          console.log(res)
+          this.$emit('nicknameCheck', this.nickname)
+        })
+        .catch(err => {
+          console.log(err)
+        })   
+    },
   }
 }
 </script>
