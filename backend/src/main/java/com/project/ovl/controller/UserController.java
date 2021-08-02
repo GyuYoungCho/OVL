@@ -318,7 +318,7 @@ public class UserController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 
-    
+    //
     @ApiOperation(value = "회원 탈퇴", response = String.class)
 	@DeleteMapping("/delete/{user_id}")
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
