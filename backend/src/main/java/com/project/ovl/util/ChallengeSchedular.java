@@ -29,8 +29,8 @@ public class ChallengeSchedular {
 	@Autowired
 	UserDao userDao;
 
-	@Scheduled(cron = "0 17 * * * *")
-	public void cronJobSch() {
+	@Scheduled(cron = "0 0 0 * * *")
+	public void challengeJobSchedualing() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date now = new Date();
 		String strDate = sdf.format(now);
@@ -89,6 +89,10 @@ public class ChallengeSchedular {
 					}
 				}
 			}
+			
+			
+			// 챌린 중
+			
 		}
 	}
 }
