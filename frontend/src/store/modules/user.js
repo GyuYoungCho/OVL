@@ -43,40 +43,47 @@ namespaced: true,
 		},
 	},
 	actions: {
-	getUserInfo(store) {
+		getUserInfo(store) {
 			let token = localStorage.getItem("access-token");
+			console.log("jwt 정보" + token);
 			if (!token) {
 				return;
 			}
 			axios({
 				method: "post",
-				url: "http://localhost:3000/user/modify_user",
+				url: API.url + userAPI.info(),
 				headers: { "access-token" : token}
 			}).then((res) => {
 				console.log(res.data.User.nickname);
 				if (res.data) {
+					console.log(res.data.User);
 					store.commit("setUserInfo", res.data.User);
 				}
 				else
 					console.log("실패.");
 			}).catch((err) => {
+				console.log();
 				console.log(err);
 			})
+
 	},
 		login(store, loginObj) {
-			console.log("확인한다 로그인");
+			console.log("로그인 확인");
 			return new Promise(function (resolve) {
 			axios({
 				method: "post",
 				url: API.url + userAPI.login(),
 				data: loginObj,
 			}).then((res) => {
-				localStorage.setItem("access-token", res.header["access-token"]);
+				localStorage.setItem("access-token", res.headers["access-token"]);
+				//console.log("확인한다 로그인2");
 				resolve();
+				//console.log("확인한다 로그인3");
 			}).catch((err) => {
 				alert("이메일과 비밀번호를 확인하세요.");
 				console.log(err);
 			});
+			
 		})
 	},
 		logout(store) {
