@@ -33,7 +33,7 @@ public class ChallengeSchedular {
 	@Autowired
 	ChallengeController challengeController;
 
-	@Scheduled(cron = "0 53 11 * * *")
+	@Scheduled(cron = "0 07 15 * * *")
 	public void challengeJobSchedualing() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date now = new Date();
@@ -46,7 +46,7 @@ public class ChallengeSchedular {
 
 			Calendar endcal = Calendar.getInstance();
 			endcal.setTime(ch.getStart_date());
-			endcal.add(Calendar.DATE, ch.getPeriod());
+			endcal.add(Calendar.DATE, ch.getPeriod()-1);
 			if (sdf.format(endcal.getTime()).equals(strDate)) {
 				Optional<List<User>> attendList = userDao.findByChallengeIdChallengeId(ch.getChallengeId());
 				

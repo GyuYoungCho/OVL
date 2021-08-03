@@ -3,6 +3,7 @@ package com.project.ovl.controller.user;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,6 +264,28 @@ public class UserController {
         } else {
             return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
         }
+	}
+	
+	@ApiOperation(value = "회원 랭킹 및 퍼센트", response = User.class)
+	@GetMapping("/rank/{user_id}")
+	public ResponseEntity<Map<String, Float>> rank(@PathVariable int user_id) {
+		
+		Map<String, Float> map = new HashMap<>();
+		
+		List<User> userList = userDao.findAll();
+		Collections.sort(userList, (o1, o2)-> {
+			return Integer.compare(o2.getExperience(),o1.getExperience());
+		});
+		
+		int count =1;
+		for(User u: userList) {
+			if(u.getUserid()==user_id) break;
+			count++;
+		}
+		
+		map.put("rank", (float)count);
+		map.put("percent", ((float)count / userList.size())*100);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
 	@ApiOperation(value = "회원 수정", response = String.class)

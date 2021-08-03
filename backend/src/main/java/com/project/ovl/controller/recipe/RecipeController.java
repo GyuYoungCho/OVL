@@ -1,11 +1,12 @@
 package com.project.ovl.controller.recipe;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class RecipeController {
 	private static final String SUCCESS = "success";
+	private static final String FAIL = "fail";
 	
 	@Autowired
 	UserDao userDao;
@@ -79,9 +81,12 @@ public class RecipeController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "레시피 등록")
-	public ResponseEntity<String> regist(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient, @RequestPart("userId") String userId,
+	public ResponseEntity<Map<String,String>> regist(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient, @RequestPart("userId") String userId,
 										@RequestPart("picture") MultipartFile pic, @RequestPart("files") List<MultipartFile> files) throws Exception {
 		
+		Map<String, String> map = new HashMap<>();
+		map.put("job", SUCCESS);
+		map.put("challenge", FAIL);
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
 		
 		// 레시피 등록 시 사용자에게 경험치 20점 부여
@@ -118,10 +123,11 @@ public class RecipeController {
 				
 				if(now.after(start) && now.before(end)) {
 					
-					
-					cc.setCertification(1);
-					challengeCertificationDao.save(cc);
-					
+					if(cc.getCertification()==0) {
+						cc.setCertification(1);
+						challengeCertificationDao.save(cc);
+						map.put("challenge", SUCCESS);
+					}
 					break;
 				}
 			}
@@ -130,7 +136,7 @@ public class RecipeController {
 		// 로그 저장 post라 type 1
 		userLogDao.save(new UserLog(0, user, new Date(), 2 , 1,recipe.getRecipeId(), 20));
 
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PostMapping("/regist/contentList")
@@ -173,7 +179,12 @@ public class RecipeController {
 	
 	@DeleteMapping("/delete/{recipe_id}")
 	@ApiOperation(value = "레시피 삭제")
-	public ResponseEntity<String> delete(@PathVariable int recipe_id) {
+	public ResponseEntity<Map<String, String>> delete(@PathVariable int recipe_id) {
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("job", SUCCESS);
+		map.put("challenge", FAIL);
+		
 		// 해당 레시피
 		Recipe recipe = recipeDao.findRecipeByRecipeId(recipe_id);
 		
@@ -240,9 +251,11 @@ public class RecipeController {
 					
 					if(now.after(start) && now.before(end)) {
 						
-						cc.setCertification(0);
-						challengeCertificationDao.save(cc);
-						
+						if(cc.getCertification()==1) {
+							map.put("challenge", SUCCESS);
+							cc.setCertification(0);
+							challengeCertificationDao.save(cc);
+						}
 						break;
 					}
 				}
@@ -255,7 +268,7 @@ public class RecipeController {
 		// 레시피 삭제
 		recipeDao.delete(recipe);
 		
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@GetMapping("/select_all")

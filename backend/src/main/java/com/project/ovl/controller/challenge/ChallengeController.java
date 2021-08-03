@@ -1,6 +1,7 @@
 package com.project.ovl.controller.challenge;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -79,8 +80,12 @@ public class ChallengeController {
 		User user = userDao.getUserByUserid(user_id);
 		Challenge endChallenge = user.getChallengeId();
 		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(endChallenge.getStart_date());
+		cal.add(Calendar.DATE, endChallenge.getPeriod());
+		
 		//완료된 챌린지 저장
-		challengeHistoryDao.save(new ChallengeHistory(0, endChallenge, user));
+		challengeHistoryDao.save(new ChallengeHistory(0, endChallenge, user,cal.getTime()));
 		
 		// 경험치 획득 및 챌린지 없는 상태로 만들기
 		user.setExperience(user.getExperience() + endChallenge.getScore()/div);

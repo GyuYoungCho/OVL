@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -51,6 +53,7 @@ import io.swagger.annotations.ApiOperation;
 @CrossOrigin("*")
 public class PostController {
 	private static final String SUCCESS = "success";
+	private static final String FAIL = "fail";
 	
 	@Autowired
 	PostDao postDao;
@@ -87,8 +90,13 @@ public class PostController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<String> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String categori,
+	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String categori,
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("job", SUCCESS);
+		map.put("challenge", FAIL);
+		
 		// 게시글 저장
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
 		// 게시글 등록 시 유저에 경험치 5 추가
@@ -128,9 +136,11 @@ public class PostController {
 				
 				if(now.after(start) && now.before(end)) {
 					
-					cc.setCertification(1);
-					challengeCertificationDao.save(cc);
-					
+					if(cc.getCertification()==0) {
+						cc.setCertification(1);
+						challengeCertificationDao.save(cc);
+						map.put("challenge", SUCCESS);
+					}
 					break;
 				}
 			}
@@ -139,17 +149,94 @@ public class PostController {
 		// 로그 저장 post라 type 1
 		userLogDao.save(new UserLog(0, user, new Date(), 1 , Integer.parseInt(categori),post.getPostId(), value));
 		
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "게시글 수정")
-	public ResponseEntity<String> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
+	public ResponseEntity<Map<String, String>> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
 			@RequestPart("content") String content, @RequestPart("postId") int postId) throws Exception {
-		Post post = postDao.findPostByPostId(postId);
 		
+		Map<String, String> map = new HashMap<>();
+		map.put("job", SUCCESS);
+		map.put("challenge", FAIL);
+		
+		Post post = postDao.findPostByPostId(postId);
+		User user = post.getUserId();
+		int user_chall_cate = user.getChallengeId().getCategori();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+
+		Date startDate = cal.getTime();
+		cal.add(Calendar.DATE, user.getChallengeId().getCycle()-1);
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 999);
+		Date endDate = cal.getTime();
+		
+		int count = postDao.countByUserIdAndCategoriAndTimeBetween(
+				user,user_chall_cate,startDate,endDate);
+		// 카테고리 변경에 따른 챌린지 처리
 		if(categori!=post.getCategori()) {
 			
+			
+			// 챌린지로 인증됨
+			if(user_chall_cate==categori && count ==0) {
+				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
+				Date now = new Date();
+				
+				for(ChallengeCertification cc : cert) {
+					
+					Date start = cc.getCertification_date();
+					cal.setTime(start);
+					cal.add(Calendar.DATE, user.getChallengeId().getCycle());
+					Date end = cal.getTime();
+					
+					if(now.after(start) && now.before(end)) {
+						
+						if(cc.getCertification()==0) {
+							cc.setCertification(1);
+							challengeCertificationDao.save(cc);
+							map.put("challenge", SUCCESS);
+						}
+						break;
+					}
+				}
+			}
+				
+			// 챌린지 인증 취소됨
+			if(user_chall_cate==post.getCategori() && count ==1) {
+				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
+				Date now = new Date();
+				
+				for(ChallengeCertification cc : cert) {
+					
+					Date start = cc.getCertification_date();
+					cal.setTime(start);
+					cal.add(Calendar.DATE, user.getChallengeId().getCycle());
+					Date end = cal.getTime();
+					
+					if(now.after(start) && now.before(end)) {
+						
+						if(cc.getCertification()==1) {
+							cc.setCertification(0);
+							challengeCertificationDao.save(cc);
+							map.put("challenge", SUCCESS);
+						}
+						break;
+					}
+				}
+			}
+			
+			UserLog log = userLogDao.findByTypeAndContentId(1, postId);
+			log.setCategori(categori);
+			userLogDao.save(log);
 		}
 		
 		
@@ -173,12 +260,18 @@ public class PostController {
 		
 		
 		
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
 	
 	@DeleteMapping("/delete/{post_id}")
 	@ApiOperation(value = "게시글 삭제")
-	public ResponseEntity<String> delete(@PathVariable int post_id) {
+	public ResponseEntity<Map<String, String>> delete(@PathVariable int post_id) {
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("job", SUCCESS);
+		map.put("challenge", FAIL);
+		
+		
 		// 해당 게시글 올린 유저 경험치 -5
 		Post post = postDao.findPostByPostId(post_id);
 		
@@ -233,7 +326,8 @@ public class PostController {
 			cal.set(Calendar.MILLISECOND, 999);
 			Date endDate = cal.getTime();
 
-			int count = postDao.countByUserIdAndTimeBetween(user,startDate , endDate);
+			int count = postDao.countByUserIdAndCategoriAndTimeBetween(
+					user,post.getCategori(),startDate , endDate);
 			
 			// 하나일 경우 취소
 			if(count==1) {
@@ -250,9 +344,11 @@ public class PostController {
 					
 					if(now.after(start) && now.before(end)) {
 						
-						cc.setCertification(0);
-						challengeCertificationDao.save(cc);
-						
+						if(cc.getCertification()==1) {
+							cc.setCertification(0);
+							challengeCertificationDao.save(cc);
+							map.put("challenge", SUCCESS);
+						}
 						break;
 					}
 				}
@@ -266,7 +362,7 @@ public class PostController {
 		// 로그 삭제 post라 type 1
 		
 		
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
 	
 	@GetMapping("/select_all/{user_id}")
