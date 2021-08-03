@@ -7,7 +7,7 @@
         required
         placeholder="이름을 적어주세요"
         :rules="nameRules"
-        @change="onNameChange"
+        @input="onNameChange"
       >
 
       </v-text-field>
