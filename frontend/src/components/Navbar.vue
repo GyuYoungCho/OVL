@@ -90,6 +90,7 @@
       items: [
         { title: '게시글 생성', routerName: 'ArticleCreate'},
         { title: '레시피 생성', routerName: 'RecipeCreate' },
+        { title: '채식팟 생성', routerName: 'VetPartyCreate' },
       ],
     }),
 
