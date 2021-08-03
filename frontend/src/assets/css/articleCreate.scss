@@ -1,0 +1,51 @@
+.article {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+
+ h4 {
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+
+  .categoryBtn_box {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  &BtnNotSelected {
+    box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.5), 2px 2px 5px rgba(170, 170, 204, 0.25), 5px 5px 10px rgba(170, 170, 204, 0.5), -5px -5px 10px #FFFFFF;
+    border-radius: 15px;
+    width: 60px;
+  }
+
+  &Pic {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    background-color: $hy-green;
+    height: 30vh; 
+    border-radius: 15px;
+    margin-bottom: 20px;
+  }
+
+  textarea {
+    background-color: $hy-green;
+    border-radius: 15px;
+    height: 20vh;
+  }
+
+  &Submit {
+    background-color: $freditgreen;
+    color: white;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 7px 0px;
+  }
+}
+
+
+
