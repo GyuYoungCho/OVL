@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.project.ovl.controller.UserController;
+import com.project.ovl.controller.user.UserController;
 import com.project.ovl.model.user.User;
 
 import io.jsonwebtoken.Claims;

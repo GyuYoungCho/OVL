@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.ReportDao;
-import com.project.ovl.dao.UserDao;
+import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.model.report.Report;
 import com.project.ovl.model.user.User;
 

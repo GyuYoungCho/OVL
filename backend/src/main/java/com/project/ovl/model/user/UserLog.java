@@ -1,4 +1,4 @@
-package com.project.ovl.model.challenge;
+package com.project.ovl.model.user;
 
 import java.util.Date;
 
@@ -12,7 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.project.ovl.model.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,19 +22,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ChallengeHistory {
+public class UserLog {
+	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "challenge_history_id")
-	private int challengeHistoryId;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "challengeId")
-    private Challenge challengeId;
+	@Column(name = "user_log_id")
+    private int UserLogId;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;
 	
-	private Date completeDate;
+	private Date logDate;
+	private int type;
+	private int categori;
+	private int contentId;
+	private int score;
 }
