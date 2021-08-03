@@ -24,8 +24,8 @@ export default  {
   search_id (name, phone) {
     return `/user/search_id/${name}/${phone}`
   },
-  modify_pw () {
-    return '/user/modify_pw'
+  modify_pw (email, password) {
+    return `/user/modify_pw/${email}/${password}`
   },
   // PathVariable, RequestPart, RequestParam
   modify_user (nickname, phone) {
