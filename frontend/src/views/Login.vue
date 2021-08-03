@@ -3,15 +3,15 @@
     <div class="login-form">
         <h1>LOG IN</h1>
         <div class="txtb">
-          <input v-model="credentials.username" :class="{'focus':isUsernameFocus}" type="text" @focus="usernameFocus" @blur="usernameBlur">
+          <input v-model="userinfo.email" :class="{'focus':isUseremailFocus}" type="text" @focus="useremailFocus" @blur="useremailBlur">
           <span data-placeholder="Username"></span>
         </div>
 
         <div class="txtb">
-          <input v-model="credentials.password" :class="{'focus':isPasswordFocus}" type="password" @focus="passwordFocus"  @blur="passwordBlur">
+          <input v-model="userinfo.password" :class="{'focus':isPasswordFocus}" type="password" @focus="passwordFocus"  @blur="passwordBlur">
           <span data-placeholder="Password"></span>
         </div>
-        <button class="logbtn" @click="login">로그인</button>
+        <button class="logbtn" @click="login()">로그인</button>
         <div class="bottom-text">
           아이디가 없으신가요?
         <RouterLink :to="{ name: 'Signup' }">
@@ -25,47 +25,52 @@
 <script>
 // import axios from 'axios'
 
+// import axios from 'axios'
+// import API from '@/api/index.js'
+// import userAPI from '@/api/user.js'
+import {mapActions} from 'vuex'
+
 export default {
   data () {
     return {
-      credentials: {
-        username: '',
+      userinfo: {
+        email: '',
         password: '',
       },
-      isUsernameFocus : false,
+      isUseremailFocus : false,
       isPasswordFocus : false,
     }
   },
   methods: {
-    usernameFocus () {
-      if (this.credentials.username.length !== 0) {
-        this.isUsernameFocus = true
+    useremailFocus () {
+      if (this.userinfo.email.length !== 0) {
+        this.isUseremailFocus = true
       } else {
-        this.isUsernameFocus = !this.isUsernameFocus 
+        this.isUseremailFocus = !this.isUseremailFocus 
       }
     },
     passwordFocus () {
-      if (this.credentials.password.length !== 0) {
+      if (this.userinfo.password.length !== 0) {
         this.isPasswordFocus = true
       } else {
         this.isPasswordFocus = !this.isPasswordFocus 
       }
     },
-    usernameBlur () {
-      if (this.credentials.username.length === 0) {
-        this.isUsernameFocus = !this.isUsernameFocus
+    useremailBlur () {
+      if (this.userinfo.email.length === 0) {
+        this.isUseremailFocus = !this.isUseremailFocus
       } else {
-        this.isUsernameFocus = true
+        this.isUseremailFocus = true
       }
     },
     passwordBlur () {
-      if (this.credentials.password.length === 0) {
+      if (this.userinfo.password.length === 0) {
         this.isPasswordFocus = !this.isPasswordFocus
       } else {
         this.isPasswordFocus = true
       }
     },
-    login () {
+    //login () {
     //   axios({
     //     method: 'post',
     //     url: '',
@@ -78,7 +83,51 @@ export default {
     //     })
     //     .catch(err => console.log(err))
     // }
-  }
+  //}
+    //   login () {
+    //   axios({
+    //     method: 'post',
+    //     url: API.url + userAPI.login(),
+    //     data: this.userinfo,
+    //   })
+    //     .then(res => {
+    //       localStorage.setItem("access-token",  res.header["access-token"])
+    //       this.$router.push('/')
+    //       this.$store.state.isLoggedIn = true
+    //     })
+    //     .catch((err) => {
+    //       alert("이메일과 비밀번호를 확인하세요.");
+    //       console.log(err);
+    //     } )
+    // },
+  
+   ...mapActions (["login"]),
+      async login(){
+        ///if(this.identify()){
+          await this.$store.dispatch("user/login", this.userinfo);
+          //await this.$store.dispatch("login", this.userinfo);
+          await this.$store.dispatch("user/getUserInfo").
+          then(()=>{
+            this.move();
+          })
+       // }
+      },
+      move(){
+        this.$router.push({
+          name: 'Main',
+        })
+      },
+
+      identify(){
+        let keys = ["email", "password"];
+        for(let key of keys){
+          if(!this.userinfo[key]){
+            alert(key + "를 입력해주세요.");
+            return false;
+          }
+        }
+        return true;
+      },
  }
 }
 </script>

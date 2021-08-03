@@ -18,6 +18,9 @@ export default  {
   login () {
     return '/user/login'
   },
+  info () {
+    return '/user/info'
+  },
   search_id (name, phone) {
     return `/user/search_id/${name}/${phone}`
   },
