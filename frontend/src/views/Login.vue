@@ -104,8 +104,9 @@ export default {
    ...mapActions (["login"]),
       async login(){
         ///if(this.identify()){
-          await this.$store.dispatch("login", this.userinfo);
-          await this.$store.dispatch("getUserInfo").
+          await this.$store.dispatch("user/login", this.userinfo);
+          //await this.$store.dispatch("login", this.userinfo);
+          await this.$store.dispatch("user/getUserInfo").
           then(()=>{
             this.move();
           })
