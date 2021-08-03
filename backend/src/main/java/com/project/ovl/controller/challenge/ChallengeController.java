@@ -75,7 +75,7 @@ public class ChallengeController {
 	
 	@GetMapping("/complete/{use_id}")
 	@ApiOperation(value = "사용자가 챌린지 완료")
-	public ResponseEntity<String> complete(@PathVariable int user_id) {
+	public ResponseEntity<String> complete(@PathVariable int user_id,@PathVariable int div) {
 		User user = userDao.getUserByUserid(user_id);
 		Challenge endChallenge = user.getChallengeId();
 		
@@ -83,7 +83,7 @@ public class ChallengeController {
 		challengeHistoryDao.save(new ChallengeHistory(0, endChallenge, user));
 		
 		// 경험치 획득 및 챌린지 없는 상태로 만들기
-		user.setExperience(user.getExperience() + endChallenge.getScore());
+		user.setExperience(user.getExperience() + endChallenge.getScore()/div);
 		user.setChallengeId(challengeDao.findByChallengeId(1));
 		userDao.save(user);
 		

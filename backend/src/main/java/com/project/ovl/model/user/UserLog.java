@@ -33,7 +33,7 @@ public class UserLog {
     @JoinColumn(name = "userId")
     private User userId;
 	
-	private Date log_date;
+	private Date logDate;
 	private int type;
 	private int categori;
 	private int contentId;

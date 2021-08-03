@@ -120,7 +120,7 @@ public class RecipePhotoHandler {
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				
 				RecipeProcess process = new RecipeProcess(0, contentList.get(i), multipartFiles.get(i).getOriginalFilename(), path + "/" + new_file_name, multipartFiles.get(i).getSize()+"", recipe);
-						
+					
 				processList.add(process);
 				
 				// 업로드 한 파일 데이터를 지정한 파일에 저장

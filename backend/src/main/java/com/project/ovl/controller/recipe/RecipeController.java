@@ -93,9 +93,10 @@ public class RecipeController {
 		
 		photoHandler.saveProfile(pic, recipe.getRecipeId());
 		
+		
 		// 레시피 과정 등록
 		List<RecipeProcess> processList = photoHandler.getProcessList(files, processContent, recipe.getRecipeId());
-
+		
 		for (RecipeProcess rp : processList) {
 			processDao.save(rp);
 		}
@@ -112,7 +113,7 @@ public class RecipeController {
 			for(ChallengeCertification cc : cert) {
 				Date start = cc.getCertification_date();
 				cal.setTime(start);
-				cal.add(Calendar.DATE, ch.getPeriod());
+				cal.add(Calendar.DATE, ch.getCycle());
 				Date end = cal.getTime();
 				
 				if(now.after(start) && now.before(end)) {
@@ -215,7 +216,7 @@ public class RecipeController {
 			cal.set(Calendar.MILLISECOND, 0);
 
 			Date startDate = cal.getTime();
-			cal.add(Calendar.DATE, user.getChallengeId().getPeriod()-1);
+			cal.add(Calendar.DATE, user.getChallengeId().getCycle()-1);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 59);
 			cal.set(Calendar.SECOND, 59);
@@ -226,14 +227,22 @@ public class RecipeController {
 			
 			// 하나일 경우 취소
 			if(count==1) {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				
 				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
+				Date now = new Date();
 				
 				for(ChallengeCertification cc : cert) {
-					if(sdf.format(cc.getCertification_date()).equals(sdf.format(startDate))) {
+					
+					Date start = cc.getCertification_date();
+					cal.setTime(start);
+					cal.add(Calendar.DATE, user.getChallengeId().getCycle());
+					Date end = cal.getTime();
+					
+					if(now.after(start) && now.before(end)) {
 						
 						cc.setCertification(0);
 						challengeCertificationDao.save(cc);
+						
 						break;
 					}
 				}

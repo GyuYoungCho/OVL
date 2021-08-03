@@ -33,7 +33,7 @@ public class UserLogController {
 	@GetMapping("/select/{user_id}")
 	public ResponseEntity<List<UserLog>> select(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
-		List<UserLog> list = userLogDao.findByUserId(user);
+		List<UserLog> list = userLogDao.findTop300ByUserIdOrderByLogDateDesc(user);
 		if (user!=null) {
             return new ResponseEntity<>(list, HttpStatus.OK);
         } else {

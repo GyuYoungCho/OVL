@@ -8,6 +8,6 @@ import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
 
 public interface UserLogDao extends JpaRepository<UserLog, String> {
-	List<UserLog> findByUserId(User user);
+	List<UserLog> findTop300ByUserIdOrderByLogDateDesc(User user);
 	UserLog findByTypeAndContentId(int type, int content_id);
 }

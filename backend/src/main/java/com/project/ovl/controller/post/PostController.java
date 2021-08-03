@@ -123,7 +123,7 @@ public class PostController {
 				
 				Date start = cc.getCertification_date();
 				cal.setTime(start);
-				cal.add(Calendar.DATE, ch.getPeriod());
+				cal.add(Calendar.DATE, ch.getCycle());
 				Date end = cal.getTime();
 				
 				if(now.after(start) && now.before(end)) {
@@ -147,6 +147,12 @@ public class PostController {
 	public ResponseEntity<String> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
 			@RequestPart("content") String content, @RequestPart("postId") int postId) throws Exception {
 		Post post = postDao.findPostByPostId(postId);
+		
+		if(categori!=post.getCategori()) {
+			
+		}
+		
+		
 		post.setCategori(categori);
 		post.setContent(content);
 		
@@ -164,6 +170,9 @@ public class PostController {
 		for (PostPhoto pp : photoList) {
 			postPhotoDao.save(pp);
 		}
+		
+		
+		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	} 
 	
@@ -217,7 +226,7 @@ public class PostController {
 			cal.set(Calendar.MILLISECOND, 0);
 
 			Date startDate = cal.getTime();
-			cal.add(Calendar.DATE, user.getChallengeId().getPeriod()-1);
+			cal.add(Calendar.DATE, user.getChallengeId().getCycle()-1);
 			cal.set(Calendar.HOUR_OF_DAY, 23);
 			cal.set(Calendar.MINUTE, 59);
 			cal.set(Calendar.SECOND, 59);
@@ -228,14 +237,22 @@ public class PostController {
 			
 			// 하나일 경우 취소
 			if(count==1) {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				
 				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
+				Date now = new Date();
 				
 				for(ChallengeCertification cc : cert) {
-					if(sdf.format(cc.getCertification_date()).equals(sdf.format(startDate))) {
+					
+					Date start = cc.getCertification_date();
+					cal.setTime(start);
+					cal.add(Calendar.DATE, user.getChallengeId().getCycle());
+					Date end = cal.getTime();
+					
+					if(now.after(start) && now.before(end)) {
 						
 						cc.setCertification(0);
 						challengeCertificationDao.save(cc);
+						
 						break;
 					}
 				}

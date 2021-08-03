@@ -33,12 +33,11 @@ public class ChallengeSchedular {
 	@Autowired
 	ChallengeController challengeController;
 
-	@Scheduled(cron = "0 30 0 * * *")
+	@Scheduled(cron = "0 53 11 * * *")
 	public void challengeJobSchedualing() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date now = new Date();
 		String strDate = sdf.format(now);
-		System.out.println(strDate);
 		List<Challenge> challList = challengeDao.findAll();
 
 		for (Challenge ch : challList) {
@@ -60,10 +59,16 @@ public class ChallengeSchedular {
 						for(ChallengeCertification c : ccList) {
 							if(c.getCertification()==1) count++;
 						}
-						//모든 챌린지 완료시 여기로
 						
+						float complete_percent = (float)count/all;
+						int div =1;
+						
+						if(complete_percent==1) div=1;
+						else if(complete_percent>0.9) div=2;
+						else if(complete_percent>0.8) div=4;
+						else continue;
 						//여기서 complete 처리
-						challengeController.complete(user.getUserid());
+						challengeController.complete(user.getUserid(),div);
 						
 						
 						// 인증 기록 db 지우기
@@ -83,8 +88,6 @@ public class ChallengeSchedular {
 					int dat = ch.getPeriod() / ch.getCycle();
 
 					for (User user : attendList.get()) {
-						
-						System.out.println(user.getUserid());
 						
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(ch.getStart_date());
