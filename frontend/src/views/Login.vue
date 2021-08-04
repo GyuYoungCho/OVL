@@ -13,10 +13,18 @@
         </div>
         <button class="logbtn" @click="login()">로그인</button>
         <div class="bottom-text">
-          아이디가 없으신가요?
-        <RouterLink :to="{ name: 'Signup' }">
-          회원가입
-        </RouterLink>
+          <div>
+            아이디가 없으신가요?
+            <RouterLink :to="{ name: 'Signup' }">
+              회원가입
+            </RouterLink>
+          </div>
+          <div>
+            비밀번호를 잊으셨나요?
+            <RouterLink :to="{ name: 'FindPassword' }">
+              비밀번호 찾기
+            </RouterLink>
+          </div>
         </div>
       </div>
   </section>

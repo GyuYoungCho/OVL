@@ -1,7 +1,7 @@
 <template>
   <div class="bg-vegan">
     <v-container>
-      <Carousel />
+      <!-- <Carousel /> -->
       <h1 class="text-center">Welcome Page</h1>
       <h2 class="text-center vertical-center">슬로건과 기업 소개 써 넣을 자리</h2>
       <!-- <img src="C:\Users\multicampus\git\S05P12A606\backend\src\main\resources\static\post\15\13726747712500.png" alt=""> -->
@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import Carousel from './Carousel.vue'
+// import Carousel from './Carousel.vue'
 export default {
   components: {
-    Carousel,
+    // Carousel,
   },
   data: () => ({
   }),
