@@ -224,6 +224,7 @@ public class UserController {
 		
 		try {
 			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
+			System.out.println(userlogin.getNickname()+ "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			token = jwtService.create(userlogin);
 			
 			resultMap.putAll(jwtService.get(token));
