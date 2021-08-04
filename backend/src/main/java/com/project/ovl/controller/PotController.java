@@ -45,9 +45,9 @@ public class PotController {
 	@Autowired
     UserDao userDao;
 	
-	@PostMapping("/regist")
+	@PostMapping("/regist/{userid}")
 	@ApiOperation(value = "pot 등록")
-	public ResponseEntity<String> regist(@RequestBody Pot pot, @RequestParam int userid){
+	public ResponseEntity<String> regist(@RequestBody Pot pot, @PathVariable int userid){
 		User user = userDao.getUserByUserid(userid);
 		Pot savePot = new Pot(0, pot.getTitle(), pot.getPlace(), 
 				pot.getStep(), pot.getTime(), pot.getTotal_people(),
