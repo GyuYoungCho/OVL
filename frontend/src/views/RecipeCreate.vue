@@ -112,32 +112,62 @@ export default {
     
     onRecipeBtnClick() {
       let contentList = []
-      let formData = new FormData()
+      const formData = new FormData()
 
       formData.append('title', this.title)
       formData.append('picture', this.picture)
       formData.append('content', this.content)
       formData.append('ingredient', this.ingredient)
-      formData.append('userId', 7) // 임의로 넣은 값
+      formData.append('userId', 1) // 임의로 넣은 값
       for(let i=0; i < this.processImgFiles.length; i++ ) {
         contentList.push(this.processImgFiles[i].text)
         formData.append('files', this.processImgFiles[i])
       }
 
-
+      
       const URL = API.url + recipeAPI.regist()
-      axios.post(URL, formData, 
-        { headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then(res => {
-          console.log(res)
-          axios.post(API.url + recipeAPI.contentList, contentList)
-          .then(res => console.log(res))
+      console.log(API.url + recipeAPI.contentList())
+      console.log(URL)
+
+      axios.post(API.url + recipeAPI.contentList(), contentList, {
+            headers: {
+              "access-token": localStorage.getItem('access-token')
+            }
+          })
+          .then(res =>  {
+            console.log(res)
+            axios.post(URL, formData, 
+              { headers: {
+                  "access-token": localStorage.getItem('access-token'),
+                  "Content-Type": 'multipart/form-data',
+                }
+              })
+              .then(res => {
+                console.log(res)
+                this.$router.push({ name: 'RecipeSearch' })
+              })
+              .catch(err => console.error(err))
+          })
           .catch(err => console.error(err))
-        })
-        .catch(err => console.error(err))
+
+
+      // axios.post(URL, formData, 
+      //   { headers: {
+      //       "access-token": localStorage.getItem('access-token'),
+      //       "Content-Type": 'multipart/form-data',
+      //     }
+      //   })
+      //   .then(res => {
+      //     console.log(res)
+      //     axios.post(API.url + recipeAPI.contentList, contentList, {
+      //       headers: {
+      //         "access-token": localStorage.getItem('access-token')
+      //       }
+      //     })
+      //     .then(res => console.log(res))
+      //     .catch(err => console.error(err))
+      //   })
+      //   .catch(err => console.error(err))
 
       // this.$router.push({ name: 'Profile' })
     }
