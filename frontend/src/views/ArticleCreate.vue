@@ -3,15 +3,26 @@
     <v-container>
       <section class="article">
         <h4>게시글 작성</h4>
+        <!-- 버튼들 -->
         <div class="categoryBtn_box">
           <button @click="foodClick" :class="{'articleBtnNotSelected':!foodSelected, 'articleBtnSelected':foodSelected}">음식</button>
           <button @click="clothClick" :class="{'articleBtnNotSelected':!clothSelected, 'articleBtnSelected':clothSelected}">옷</button>
           <button @click="cosmeticClick" :class="{'articleBtnNotSelected':!cosmeticSelected, 'articleBtnSelected':cosmeticSelected}">화장품</button>
         </div>
+        <!-- 파일 업로드 영역  -->
         <div class='articlePic'>
           <label for="file"><v-icon>mdi-plus</v-icon></label>
           <input id="file" type="file" ref="files" multiple @input="fileUpload">
         </div>
+        <!-- 캐러셀 영역 -->
+        <v-carousel hide-delimiters>
+          <v-carousel-item
+            v-for="(previewItem,i) in previewItems"
+            :key="i"
+            :src="previewItem.src"
+          ></v-carousel-item>
+        </v-carousel>
+        <!-- 게시글 컨텐츠 입력 영역 -->
         <textarea v-model="content" placeholder="게시글 입력..."></textarea>
         <button @click="send" class=articleSubmit>등록</button>
       </section>
@@ -29,7 +40,8 @@
         foodSelected: false,
         clothSelected: false,
         cosmeticSelected: false,
-        btnSelected: false,
+        // preview 위한 item 들
+        previewItems : [],
         // 백에 보내기 위한 데이터들
         categori: "",
         content: "",
@@ -46,7 +58,8 @@
         this.cosmeticSelected = false
         // 백 데이터 설정용
         this.categori = '1'
-        // console.log(this.categori)
+        // 로그를 찍어보면 this.categori 가 변함을 알 수 있어요.
+        // console.log(this.categori) 
       },
       clothClick () {
         this.foodSelected = false
@@ -62,12 +75,17 @@
         this.categori = '3'
         // console.log(this.categori)
       },
-      fileUpload (event) {
-        console.log(this.$refs.files.files)
-        // const inputFiles = this.$refs.files.files
-        // console.log(inputFiles)
-        console.log(event)
-      },
+      fileUpload () {
+        // 1. 파일 업로드를 클릭 했을 시, 백에 보낼 sendList 를 포문 돌려 완성해 줍니다.
+        for (let i = 0; i < this.$refs.files.files.length; i++) {
+          this.sendList.push(this.$refs.files.files[i])
+        }
+        // 2. 이번엔 preview 로 띄울 URL 을 포문 돌면서 생성해주고 캐러셀에 붙여 줍니다.
+        for (let j = 0; j < this.$refs.files.files.length; j++) {
+          const previewUrl = URL.createObjectURL(this.$refs.files.files[j])
+          this.previewItems.push({src:previewUrl})
+        }
+       },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수
         const formData = new FormData();
