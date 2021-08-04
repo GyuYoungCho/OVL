@@ -7,6 +7,7 @@ export default {
 namespaced: true,
 	state: {
 		userinfo: {
+			userid:"",
 			email: "",
 			password: "",
 			name: "",
@@ -22,8 +23,9 @@ namespaced: true,
 			state.userinfo = payload;
 		},
 		setLogout(state) {
-			state.isLogin = true;
+			state.isLogin = false;
 			state.userinfo = {
+				userid:"",
 				email: "",
 				password: "",
 				name:"",
@@ -54,10 +56,14 @@ namespaced: true,
 				url: API.url + userAPI.info(),
 				headers: { "access-token" : token}
 			}).then((res) => {
-				console.log(res.data.User.nickname);
+				console.log(res.data.UserDto.nickname);
+
 				if (res.data) {
-					console.log(res.data.User);
-					store.commit("setUserInfo", res.data.User);
+					console.log(res.data.UserDto);
+					console.log("성공!!!!!!!!!!!!");
+					store.commit("setUserInfo", res.data.UserDto);
+					this.state.isLogin = true;
+					console.log(this.state)
 				}
 				else
 					console.log("실패.");
@@ -75,8 +81,7 @@ namespaced: true,
 				url: API.url + userAPI.login(),
 				data: loginObj,
 			}).then((res) => {
-				localStorage.setItem("access-token", res.headers["access-token"]);
-				//console.log("확인한다 로그인2");
+				localStorage.setItem("access-token", res.headers["access-token"])
 				resolve();
 				//console.log("확인한다 로그인3");
 			}).catch((err) => {
@@ -88,7 +93,26 @@ namespaced: true,
 	},
 		logout(store) {
 			store.commit('setLogout');
-	},
+		},
+		
+		confirmuserinfo(store, payload) {
+			return new Promise(function (resolve) {
+				let token = localStorage.getItem("access-token");
+				axios({
+					method: "post",
+					url: API.url + userAPI.info(),
+					data: payload,
+					headers: { "access-token" : token}
+				}).then((res) => {
+					console.log(res.data.UserDto + "확인");
+					localStorage.setItem("access-token", res.headers["access-token"]);
+					store.commit("setUserInfo", payload);
+					resolve();
+				}).catch((err) => {
+					console.log(err)
+				})
+			})
+		}
 
 }
 }
