@@ -10,12 +10,12 @@
           <button @click="cosmeticClick" :class="{'articleBtnNotSelected':!cosmeticSelected, 'articleBtnSelected':cosmeticSelected}">화장품</button>
         </div>
         <!-- 파일 업로드 영역  -->
-        <div class='articlePic'>
+        <div class='articlePic' v-if="!sendList.length">
           <label for="file"><v-icon>mdi-plus</v-icon></label>
           <input id="file" type="file" ref="files" multiple @input="fileUpload">
         </div>
         <!-- 캐러셀 영역 -->
-        <v-carousel hide-delimiters>
+        <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
           <v-carousel-item
             v-for="(previewItem,i) in previewItems"
             :key="i"
@@ -32,6 +32,7 @@
 
 <script>
   import axios from "axios";
+  import {mapState} from "vuex";
 
   export default {
     data () {
@@ -46,9 +47,11 @@
         categori: "",
         content: "",
         // userId 는 vuex로 관리될거니까 작성.vue 에선 보일 필요 없음
-        userId: "",
         sendList: [],
       }
+    },
+    computed: {
+      ...mapState("user", ["userinfo", "isLogin"]),
     },
     methods: {
       foodClick () {
@@ -95,7 +98,7 @@
         this.sendList=[]; // formData에 append 후 이미지 리스트 비워주기
         formData.append('categori', this.categori); // 카테고리 
         formData.append('content', this.content); // 내용
-        formData.append('userId', this.userId); // 유저 아이디
+        formData.append('userId', this.userinfo.userid); // 유저 아이디
 
         // console.log(formData)
         // console.log(formData.entries())

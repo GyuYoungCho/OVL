@@ -13,8 +13,13 @@
   .categoryBtn_box {
     display: flex;
     justify-content: space-evenly;
+    margin-bottom: 20px;
   }
 
+  .carouselBorder {
+    border-radius: 8px;
+  }
+  
   &BtnNotSelected {
     box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.5), 2px 2px 5px rgba(170, 170, 204, 0.25), 5px 5px 10px rgba(170, 170, 204, 0.5), -5px -5px 10px #FFFFFF;
     border-radius: 15px;
@@ -32,11 +37,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
     background-color: $hy-green;
     height: 30vh; 
-    border-radius: 15px;
-    margin-bottom: 20px;
+    border-radius: 8px;
 
     label {
       width: 100%;
@@ -57,9 +60,11 @@
   }
 
   textarea {
+    margin-top: 20px;
     background-color: $hy-green;
     border-radius: 15px;
     height: 20vh;
+    padding: 10px 10px;
   }
 
   &Submit {
