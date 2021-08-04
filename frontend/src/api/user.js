@@ -1,37 +1,40 @@
 // /@/api/user.js
 
-export default  {
-  url: '/user/',
+export default  { 
+  // url: '/user/',
     
   nickname_check (nickname) {
-    return `nickname_check/${nickname}`
+    return `/user/nickname_check/${nickname}`
   },
   join () {
-    return 'join'
+    return '/user/join'
   },
-  email_auth (email) {
-    return `email_auth/${email}`
+  email_auth (type, email) {
+    return `/user/email_auth/${type}/${email}`
   },
-  email_auth_check (authNumber) {
-    return `email_auth_check/${authNumber}`
+  email_auth_check (email, authNumber) {
+    return `/user/email_auth_check/${email}/${authNumber}`
   },
   login () {
-    return 'login'
+    return '/user/login'
+  },
+  info () {
+    return '/user/info'
   },
   search_id (name, phone) {
-    return `search_id/${name}/${phone}`
+    return `/user/search_id/${name}/${phone}`
   },
-  modify_pw () {
-    return 'modify_pw'
+  modify_pw (email, password) {
+    return `/user/modify_pw/${email}/${password}`
   },
   // PathVariable, RequestPart, RequestParam
   modify_user (nickname, phone) {
-    return `modify_user/${nickname}/${phone}`
+    return `/user/modify_user/${nickname}/${phone}`
   },
   select (user_id) {
-    return `select/${user_id}`
+    return `/user/select/${user_id}`
   },
   delete (user_id) {
-    return `delete/${user_id}`
+    return `/user/delete/${user_id}`
   }
 }

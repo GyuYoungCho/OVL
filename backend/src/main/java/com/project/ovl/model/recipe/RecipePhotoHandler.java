@@ -11,8 +11,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.ovl.dao.RecipeDao;
-import com.project.ovl.dao.RecipeProcessDao;
+import com.project.ovl.dao.recipe.RecipeDao;
+import com.project.ovl.dao.recipe.RecipeProcessDao;
 
 @Component
 public class RecipePhotoHandler {
@@ -120,7 +120,7 @@ public class RecipePhotoHandler {
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				
 				RecipeProcess process = new RecipeProcess(0, contentList.get(i), multipartFiles.get(i).getOriginalFilename(), path + "/" + new_file_name, multipartFiles.get(i).getSize()+"", recipe);
-						
+					
 				processList.add(process);
 				
 				// 업로드 한 파일 데이터를 지정한 파일에 저장

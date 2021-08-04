@@ -10,7 +10,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.ovl.dao.PostDao;
+import com.project.ovl.dao.post.PostDao;
 import com.project.ovl.model.post.Post;
 
 @Component

@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.ovl.dao.PotDao;
-import com.project.ovl.dao.PotRelationDao;
-import com.project.ovl.dao.UserDao;
+import com.project.ovl.dao.pot.PotDao;
+import com.project.ovl.dao.pot.PotRelationDao;
+import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.model.pot.Pot;
 import com.project.ovl.model.pot.PotRelation;
 import com.project.ovl.model.pot.PotRequest;

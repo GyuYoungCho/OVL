@@ -1,5 +1,7 @@
 package com.project.ovl.model.challenge;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,4 +36,6 @@ public class ChallengeHistory {
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
     private User userId;
+	
+	private Date completeDate;
 }
