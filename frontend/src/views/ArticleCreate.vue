@@ -25,7 +25,7 @@
   export default {
     data () {
       return {
-        // 버튼 관련 css class list toggle 용 변수들
+        // 버튼 관련 css class list toggle 용 변수들 설정
         foodSelected: false,
         clothSelected: false,
         cosmeticSelected: false,
