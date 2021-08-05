@@ -21,6 +21,9 @@ export default  {
   info () {
     return '/user/info'
   },
+  tokenValid () {
+    return '/user/tokenValid'
+  },
   search_id (name, phone) {
     return `/user/search_id/${name}/${phone}`
   },

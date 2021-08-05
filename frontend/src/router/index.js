@@ -16,7 +16,7 @@ import RecipeSearch from '../views/RecipeSearch.vue'
 import VetPartyCreate from '../views/VetPartyCreate.vue'
 import VetPartyDetail from '../views/VetPartyDetail.vue'
 import VetPartyList from '../views/VetPartyList.vue'
-
+import ModifyUser from '../views/ModifyUser.vue'
 
 Vue.use(VueRouter)
 
@@ -100,6 +100,11 @@ const routes = [
     path: '/vetparty_list',
     name: 'VetPartyList',
     component: VetPartyList
+  },
+  {
+    path: '/modify_user',
+    name: 'ModifyUser',
+    component: ModifyUser
   },
 ]
 
