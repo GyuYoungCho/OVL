@@ -1,13 +1,17 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import examples from '@/store/modules/examples.js'
-import user from '@/store/modules/user.js'
+import Vue from "vue";
+import Vuex from "vuex";
+import examples from "./modules/examples.js";
+import user from "./modules/user.js";
+import recipe from "./modules/recipe.js";
+import pot from "./modules/pot.js";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     examples,
     user,
-  }
-})
+    recipe,
+    pot,
+  },
+});

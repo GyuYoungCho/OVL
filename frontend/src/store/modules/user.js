@@ -7,7 +7,7 @@ export default {
 namespaced: true,
 	state: {
 		userinfo: {
-			userid:"",
+			userid: "",
 			email: "",
 			password: "",
 			name: "",
@@ -85,6 +85,7 @@ namespaced: true,
 			}).then((res) => {
 				localStorage.setItem("access-token", res.headers["access-token"])
 				resolve();
+				store.commit("setUserInfo", res.data.data);
 				//console.log("확인한다 로그인3");
 			}).catch((err) => {
 				alert("이메일과 비밀번호를 확인하세요.");
