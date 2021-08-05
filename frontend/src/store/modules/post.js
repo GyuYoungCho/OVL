@@ -7,23 +7,47 @@ export default {
 namespaced: true,
 	state: {
         postList:[],
-
+        postLikeList:[],
 	},
 	mutations: {
         GET_POST_LIST(state, payload) {
             state.postList = payload;
-            console.log("postList : "+state.postList);
+        },
+        GET_POST_LIKE_LIST(state, payload) {
+            state.postLikeList = payload;
+            console.log("좋아요 리스트 ! : "+state.postLikeList);
         }
 	},
 	actions: {
         getPostList(store, payload) {
-            console.log("payload : "+payload);
-            console.log("url path : "+postAPI.select_all(payload));
             axios({
                 method:"get",
                 url: API.url + postAPI.select_all(payload),
             }).then((res)=>{
                 store.commit("GET_POST_LIST", res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        getPostLikeList(store, payload) {
+            axios({
+                method:"get",
+                url: API.url + postAPI.like_list(payload),
+            }).then((res)=>{
+                store.commit("GET_POST_LIKE_LIST", res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        postLike(store, payload) {
+            axios({
+                method:"get",
+                url: API.url + postAPI.like(payload.userId, payload.postId),
+            }).then((res)=>{
+                if (res.data=="success") {
+                    store.dispatch("getPostLikeList", payload.userId);
+                    store.dispatch("getPostList", payload.userId);
+                }
             }).catch((err)=>{
                 console.log(err);
             })
