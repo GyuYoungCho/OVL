@@ -78,6 +78,6 @@ namespaced: true,
             }).catch((err)=>{
                 console.log(err);
             })
-        }
+        },
     }
 }

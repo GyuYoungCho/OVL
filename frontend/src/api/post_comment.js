@@ -12,10 +12,10 @@ export default {
     return `/post/comment/delete/${post_comment_id}`
   },
   select_all (post_id) {
-    return `/post/comment/select_all/${post_id}`
+    return `/post/comment/search_all/${post_id}`
   },
-  like_list (user_id) {
-    return `/post/comment/like_list/${user_id}`
+  like_list (user_id, post_id) {
+    return `/post/comment/like_list/${user_id}/${post_id}`
   },
   like (user_id, post_comment_id) {
     return `/post/comment/like/${user_id}/${post_comment_id}`

@@ -10,7 +10,7 @@
         ></v-carousel-item>
       </v-carousel> -->
 
-      <div v-for="(info, idx) in postList" :key="idx">
+      <div v-for="(info, idx) in postList" :key="idx" class="mt-9">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
@@ -87,7 +87,6 @@ export default {
       else return false;
     }, 
     like(idx) { // 좋아요 버튼 눌렀슴
-      console.log("좋아요버튼 클릭");
       var payload = {
         "userId" : this.userinfo.userid,
         "postId" : this.postList[idx].postId.postId,
