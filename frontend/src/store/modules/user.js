@@ -13,6 +13,7 @@ namespaced: true,
 			name: "",
 			nickname: "",
 			phone: "",
+			stored_file_path: "",
 		},
 		isLogin: false,
 
@@ -31,6 +32,7 @@ namespaced: true,
 				name:"",
 				nickname: "",
 				phone: "",
+				stored_file_path: "",
 			};
 			localStorage.removeItem("access-token");
 		},
@@ -56,7 +58,7 @@ namespaced: true,
 				url: API.url + userAPI.info(),
 				headers: { "access-token" : token}
 			}).then((res) => {
-				console.log(res.data.UserDto.nickname);
+				console.log(res);
 
 				if (res.data) {
 					console.log(res.data.UserDto);
@@ -94,25 +96,60 @@ namespaced: true,
 		logout(store) {
 			store.commit('setLogout');
 		},
-		
-		confirmuserinfo(store, payload) {
-			return new Promise(function (resolve) {
-				let token = localStorage.getItem("access-token");
-				axios({
-					method: "post",
-					url: API.url + userAPI.info(),
-					data: payload,
-					headers: { "access-token" : token}
-				}).then((res) => {
-					console.log(res.data.UserDto + "확인");
-					localStorage.setItem("access-token", res.headers["access-token"]);
-					store.commit("setUserInfo", payload);
-					resolve();
-				}).catch((err) => {
-					console.log(err)
-				})
+
+		modifyUserInfo(store) {
+			let token = localStorage.getItem("access-token");
+			console.log("저장된 token" + token);
+			
+			if (!token) {
+				alert("인증이 만료되었어요!! 다시 로그인해주세요.");
+				return;
+			}
+			axios({
+				method: "post",
+				url: API.url + userAPI.info(),
+				headers: { "access-token": token }
+			}).then((res) => {
+				console.log(res.resultMap);
+				store.commit("setUserInfo", res.resultMap.claims.UserDto);
+				// if (res.data) {
+				// 	console.log(res.data.UserDto);
+				// 	console.log("성공!!!!!!!!!!!!");
+				// 	store.commit("setUserInfo", res.data.UserDto);
+				// 	this.state.isLogin = true;
+				// 	console.log(this.state)
+				// }
+				// else
+				// 	console.log("실패.");
+			}).catch((err) => {
+				console.log();
+				console.log(err);
 			})
-		}
+		},
+		getTokenUserInfo(store) {
+			let token = localStorage.getItem("access-token");
+			if (!token) {
+				return;
+			}
+			axios({
+				method: "get",
+				url: API.url + userAPI.tokenValid(),
+				headers: { "access-token" : token}
+			}).then((res) => {
+				if (res.data) {
+					console.log(res.data.UserDto);
+					store.commit("setUserInfo", res.data.UserDto);
+					this.state.isLogin = true;
+				}
+				else
+					console.log("실패.");
+			}).catch((err) => {
+				console.log(err);
+			})
+
+	},
+
+		
 
 }
 }

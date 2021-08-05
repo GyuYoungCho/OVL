@@ -1,15 +1,15 @@
 <template>
   <div>
         <v-container>
-      <h1>프로필 페이지</h1>
-        <Userinfo v-if="isLogin"/>
+    <h1>회원 정보 수정</h1>
+      <UserModify v-if="isLogin"/>
         <JoinUs v-else/>
-        </v-container>
+            </v-container>
   </div>
 </template>
 
 <script>
-import Userinfo from '@/components/user/Userinfo.vue'
+import UserModify from '@/components/user/UserModify.vue'
 import JoinUs from '@/components/JoinUs.vue'
 import {mapGetters, mapState} from "vuex"
 
@@ -17,13 +17,18 @@ export default {
     computed:{
     ...mapGetters('user',["userinfo","isLogin"]),
     ...mapState('user', ["isLogin"]),
-
+ 
   },
   components: {
-    Userinfo, JoinUs,
+    UserModify, JoinUs,
   },
   created(){
-    this.$store.dispatch("user/getTokenUserInfo");
+    let token = localStorage.getItem("access-token");
+    console.log("무어ㅑ뭐야" + token);
+
+    this.$store.dispatch("user/getUserInfo");
+
+
   },
 
   
