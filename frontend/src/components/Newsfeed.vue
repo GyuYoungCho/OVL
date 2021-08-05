@@ -25,16 +25,16 @@
           </v-row>
 
           <!-- post 대표 사진 -->
-          <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="mt-1" @click="moveDetail(idx)"> 
+          <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1" @click="moveDetail(idx)"> 
           <!-- 내용 -->
           {{info.postId.content}} <br>
           <!-- 좋아요, 댓글 -->
           <!-- 좋아요 눌렀으면 꽉 찬 하트 -->
-          <div v-if="isLike(idx)" class="inline" @click="like(idx)">  
+          <div v-if="isLike(idx)" class="inline mt-1" @click="like(idx)">  
             <v-icon style="color:#20683D">mdi-heart</v-icon>
           </div>
           <!-- 좋아요 안눌렀으면 빈 하트 -->
-          <div v-else class="inline" @click="like(idx)">
+          <div v-else class="inline mt-1" @click="like(idx)">
             <v-icon style="color:#BABABA">mdi-heart-outline</v-icon>
           </div>
           <span class="color-gray inline">
@@ -65,8 +65,8 @@ export default {
     iconPath(idx) { // 카테고리 이미지 출력
       var category = this.postList[idx].postId.categori;
       if (category==1) return require("@/assets/image/meal.png");
-      else if (category==2) return require("@/assets/image/cosmetics.png");
-      else require("@/assets/image/clothes.png");
+      else if (category==2) return require("@/assets/image/clothes.png");
+      else return require("@/assets/image/cosmetics.png");
     },
     userPath(idx) { // 프로필 사진 이미지 출력
       if (this.postList[idx].postId.userId.stored_file_path==null) {
