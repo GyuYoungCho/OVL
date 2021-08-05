@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,6 +86,7 @@ import io.swagger.annotations.ApiOperation;
 public class UserController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
+	private HttpSession session;
 	
 	@Autowired
 	private JwtService jwtService;
@@ -164,22 +166,22 @@ public class UserController {
 	@ApiOperation(value = "이메일 인증")
 	public ResponseEntity<String> join_auth(@PathVariable String type, @PathVariable String email, HttpServletRequest request) throws UnsupportedEncodingException {
 		User isEmail = userDao.getUserByEmail(email);
-		if (isEmail==null) {
-	    	HttpSession session = request.getSession();
+		if ((isEmail==null && type.equals("join")) || (isEmail!=null && type.equals("password"))) {
+			session = request.getSession();
 	    	int authorization = mService.mailSend(email, type);
 	    	session.setAttribute(email, authorization);
-	    	System.out.println("join_auth email : "+email+", session : "+session.getAttribute(email));
 			if (authorization!=0) return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-		}
+		} 
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
 	
 	@GetMapping("/email_auth_check/{email}/{confirm}")
 	@ApiOperation(value = "이메일 인증번호 확인")
-	public ResponseEntity<String> join_auth_check( @PathVariable String email, @PathVariable String confirm, HttpSession session) throws UnsupportedEncodingException {
+	public ResponseEntity<String> join_auth_check(@PathVariable String email, @PathVariable String confirm) throws UnsupportedEncodingException {
     	try {
     		int authorization = (int) session.getAttribute(email);
-    		if (authorization>0) {
+    		if (authorization==Integer.parseInt(confirm)) {
+    			session.setAttribute(email, null);
     			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
     		} else {
     			return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
@@ -208,6 +210,7 @@ public class UserController {
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
 				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
+		System.out.println("saveUser : "+saveUser);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
