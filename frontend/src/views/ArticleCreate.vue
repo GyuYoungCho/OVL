@@ -32,6 +32,7 @@
 
 <script>
   import axios from "axios";
+  import {mapState} from "vuex";
 
   export default {
     data () {
@@ -49,6 +50,9 @@
         userId: "",
         sendList: [],
       }
+    },
+    computed: {
+      ...mapState("user", ["userinfo", "isLogin"]),
     },
     methods: {
       foodClick () {
@@ -87,7 +91,7 @@
         }
        },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수
+      send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
         const formData = new FormData();
         for (var index=0;index<this.sendList.length;index++) {  // 등록할 사진들 저장
           formData.append('files', this.sendList[index]);
@@ -95,7 +99,7 @@
         this.sendList=[]; // formData에 append 후 이미지 리스트 비워주기
         formData.append('categori', this.categori); // 카테고리 
         formData.append('content', this.content); // 내용
-        formData.append('userId', this.userId); // 유저 아이디
+        formData.append('userId', this.userinfo.userid); // 유저 아이디
 
         // console.log(formData)
         // console.log(formData.entries())

@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    {{this.$route.params.postId}} 
   </div>
 </template>
 
