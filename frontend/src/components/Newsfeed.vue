@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container>
+    <v-container class="px-7 mt-4">
       <!-- 캐러셀 영역 -->
       <!-- <v-carousel hide-delimiters>
         <v-carousel-item
@@ -12,34 +12,38 @@
 
       <div v-for="(info, idx) in postList" :key="idx">
         
-        <div class="pa-7">
+        <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
           <v-row>
             <v-col cols="6" md="1">
-              <img :src="userPath(idx)" width=17% style="border-radius: 50%;">
-              {{info.postId.userId.nickname}}
+              <div class="postProfile">
+                <img :src="userPath(idx)" width=17% style="border-radius: 50%;">
+                <div class="ml-1 inline" style="font-size:large">{{info.postId.userId.nickname}}</div>
+              </div>
             </v-col>
             <v-col cols="6" md="1" style="text-align:right">
               <img :src="iconPath(idx)" width=15%>
             </v-col>
           </v-row>
 
-          <!-- post 대표 사진 -->
-          <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1" @click="moveDetail(idx)"> 
-          <!-- 내용 -->
-          {{info.postId.content}} <br>
+          <!-- post 대표 사진, 내용-->
+          <div @click="moveDetail(idx)">
+             <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">  
+             {{info.postId.content}}
+          </div>
+
           <!-- 좋아요, 댓글 -->
           <!-- 좋아요 눌렀으면 꽉 찬 하트 -->
           <div v-if="isLike(idx)" class="inline mt-1" @click="like(idx)">  
-            <v-icon style="color:#20683D">mdi-heart</v-icon>
+            <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
           </div>
           <!-- 좋아요 안눌렀으면 빈 하트 -->
           <div v-else class="inline mt-1" @click="like(idx)">
-            <v-icon style="color:#BABABA">mdi-heart-outline</v-icon>
+            <v-icon style="color:#BABABA">mdi-heart-outline</v-icon> &nbsp;
           </div>
           <span class="color-gray inline">
             {{info.postId.like_count}}  &nbsp;
-            <v-icon style="color:#BABABA" @click="moveDetail(idx)">mdi-message-reply-outline</v-icon>
+            <v-icon style="color:#BABABA" @click="moveDetail(idx)">mdi-chat-outline</v-icon>
             {{info.postId.comment_count}}
           </span>
         </div>
@@ -87,6 +91,7 @@ export default {
       var payload = {
         "userId" : this.userinfo.userid,
         "postId" : this.postList[idx].postId.postId,
+        "type": 1 // 뉴스피드
       }
       this.$store.dispatch("post/postLike", payload);
     }
