@@ -79,13 +79,11 @@
         // console.log(this.categori)
       },
       fileUpload () {
-        // 1. 파일 업로드를 클릭 했을 시, 백에 보낼 sendList 를 포문 돌려 완성해 줍니다.
         for (let i = 0; i < this.$refs.files.files.length; i++) {
+          // 1. 파일 업로드를 클릭 했을 시, 백에 보낼 sendList 를 포문 돌려 완성해 줍니다.
           this.sendList.push(this.$refs.files.files[i])
-        }
-        // 2. 이번엔 preview 로 띄울 URL 을 포문 돌면서 생성해주고 캐러셀에 붙여 줍니다.
-        for (let j = 0; j < this.$refs.files.files.length; j++) {
-          const previewUrl = URL.createObjectURL(this.$refs.files.files[j])
+          // 2. 이번엔 preview 로 띄울 URL 을 포문 돌면서 생성해주고 캐러셀에 붙여 줍니다.
+          const previewUrl = URL.createObjectURL(this.$refs.files.files[i])
           this.previewItems.push({src:previewUrl})
         }
        },
