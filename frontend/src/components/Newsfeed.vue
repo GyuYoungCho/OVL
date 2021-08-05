@@ -13,7 +13,7 @@
       <div v-for="(info, idx) in postList" :key="idx" @click="moveDetail(idx)">
         <!-- <img :src="userPath(idx)"> -->
         {{info.postId.userId.nickname}} <br>
-        <img :src="postPath(idx)"> <br>
+        <img :src="postPath(idx)" height="30vh"> <br>
         {{info.postId.content}} <br>
         {{info.postId.like_count}} | {{info.postId.comment_count}} <br>
       </div>
