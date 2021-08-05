@@ -9,8 +9,7 @@
 <script>
 import Newsfeed from '@/components/Newsfeed.vue'
 import Welcome from '@/components/Welcome.vue'
-import {mapState} from "vuex";
-
+import { mapGetters } from 'vuex'
 export default {
   components: {
     Newsfeed, Welcome,
@@ -19,7 +18,7 @@ export default {
     isLoggedIn: false,
   }),
   computed: {
-    ...mapState("user", (["isLogin"]))
+    ...mapGetters('user', ['isLogin'])
   }
 }
 </script>

@@ -10,12 +10,12 @@
           <button @click="cosmeticClick" :class="{'articleBtnNotSelected':!cosmeticSelected, 'articleBtnSelected':cosmeticSelected}">화장품</button>
         </div>
         <!-- 파일 업로드 영역  -->
-        <div class='articlePic'>
+        <div class='articlePic' v-if="!sendList.length">
           <label for="file"><v-icon>mdi-plus</v-icon></label>
           <input id="file" type="file" ref="files" multiple @input="fileUpload">
         </div>
         <!-- 캐러셀 영역 -->
-        <v-carousel hide-delimiters>
+        <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
           <v-carousel-item
             v-for="(previewItem,i) in previewItems"
             :key="i"
@@ -47,7 +47,6 @@
         categori: "",
         content: "",
         // userId 는 vuex로 관리될거니까 작성.vue 에선 보일 필요 없음
-        userId: "",
         sendList: [],
       }
     },
