@@ -47,7 +47,7 @@ const routes = [
     component: ArticleCreate
   },
   {
-    path: '/article_detail',
+    path: '/article_detail/:postId',
     name: 'ArticleDetail',
     component: ArticleDetail
   },

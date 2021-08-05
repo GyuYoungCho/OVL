@@ -90,7 +90,7 @@
         }
        },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수
+      send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
         const formData = new FormData();
         for (var index=0;index<this.sendList.length;index++) {  // 등록할 사진들 저장
           formData.append('files', this.sendList[index]);

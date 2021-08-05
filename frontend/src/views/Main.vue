@@ -10,7 +10,6 @@
 import Newsfeed from '@/components/Newsfeed.vue'
 import Welcome from '@/components/Welcome.vue'
 import { mapGetters } from 'vuex'
-
 export default {
   components: {
     Newsfeed, Welcome,
