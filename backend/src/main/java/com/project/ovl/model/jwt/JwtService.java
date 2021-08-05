@@ -62,7 +62,12 @@ public class JwtService {
 	 */
 	public void checkValid(final String jwt) {
 	    logger.info("토큰 점검: {}", jwt);
-	    Jwts.parser().setSigningKey(salt.getBytes()).parseClaimsJws(jwt);
+	    try {
+		    Jwts.parser().setSigningKey(salt.getBytes()).parseClaimsJws(jwt);
+	    }catch (Exception e){
+	    	e.printStackTrace();
+	    }
+
 	}
 	
 	/*

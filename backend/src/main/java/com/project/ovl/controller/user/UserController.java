@@ -227,6 +227,7 @@ public class UserController {
 		
 		try {
 			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
+			System.out.println(userlogin.getNickname());
 			token = jwtService.create(userlogin);
 			
 			resultMap.putAll(jwtService.get(token));
@@ -256,7 +257,31 @@ public class UserController {
 
 		try {
 			resultMap.putAll(jwtService.get(req.getHeader("access-token")));
-			System.out.println(jwtService.get(req.getHeader("access-token")));
+			resultMap.put("status", true);
+
+			status = HttpStatus.ACCEPTED;
+			
+		}catch(RuntimeException e){
+			//Logger.info("로그인 실패",e);
+			System.out.println("여기서 실패");
+			resultMap.put("message", e.getMessage());
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		
+		return new ResponseEntity<Map<String,Object>>(resultMap, status);
+		
+	}
+	
+	@Transactional
+	@GetMapping("/tokenValid")
+	@ApiOperation(value = "토큰 점검 & 유저 정보 확인")
+	public ResponseEntity<Map<String, Object>> gettokenValid(HttpServletRequest req) throws Exception{
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = null;
+
+		try {
+			resultMap.putAll(jwtService.get(req.getHeader("access-token")));
 			resultMap.put("status", true);
 
 			status = HttpStatus.ACCEPTED;

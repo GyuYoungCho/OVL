@@ -109,7 +109,7 @@ export default {
     //     } )
     // },
   
-   ...mapActions (["login"]),
+   ...mapActions ("user",["login"]),
       async login(){
         ///if(this.identify()){
           await this.$store.dispatch("user/login", this.userinfo);

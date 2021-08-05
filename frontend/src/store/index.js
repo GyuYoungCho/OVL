@@ -9,6 +9,7 @@ import pot from "./modules/pot.js";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  // plugins: [createPersistedState()],
   modules: {
     examples,
     user,
