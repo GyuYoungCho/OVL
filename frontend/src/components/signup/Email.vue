@@ -4,9 +4,9 @@
     cols="12">
       <v-text-field
         color="green lighten-4"
+        rounded
         v-model="email"
         :rules="emailRules"
-        label="이메일"
         required
         placeholder="example@example.com"
       >
@@ -23,6 +23,8 @@
         인증번호 발송
       </v-btn>
     </v-col>
+
+
     <div v-if="emailBtnClicked">
       
         <v-text-field
