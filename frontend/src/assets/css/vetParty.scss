@@ -3,11 +3,17 @@
   flex-direction: column;
   margin-left: 10px;
   margin-right: 10px;
-
+  text-align: center;
   h4 {
-    text-align: center;
     margin-top: 15px;
     margin-bottom: 15px;
+  }
+
+  .categoryBtn_box {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
   }
 
   &BtnNotSelected {
@@ -18,7 +24,7 @@
   }
 
   &BtnSelected {
-    @extend .articleBtnNotSelected;
+    @extend .vetpartyBtnNotSelected;
     color: white;
     background-color: $freditgreen;
   }
@@ -27,7 +33,7 @@
     margin-top: 20px;
     background-color: $hy-green;
     border-radius: 15px;
-    height: 20vh;
+    height: 10vh;
     padding: 10px 10px;
   }
 
@@ -42,6 +48,16 @@
     margin-top: 20px;
     border: none;
     padding: 10px 10px;
+    background-color: $hy-green;
+  }
+  .icon-btn {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+  }
+  img {
+    width: 20px;
+    height: 20px;
   }
 
   .BtnComp {
@@ -50,5 +66,9 @@
     border-radius: 8px;
     margin-top: 15px;
     padding: 7px 0px;
+  }
+
+  button:disabled {
+    background-color: $hy-grey;
   }
 }
