@@ -69,6 +69,38 @@ namespaced: true,
             }).catch((err)=>{
                 console.log(err);
             })
+        },
+        commentModify(store, payload) {
+            axios({
+                method:"put",
+                url: API.url + commentAPI.modify(),
+                params:{
+                    "comment_id":payload.commentId,
+                    "content":payload.content,
+                }
+            }).then((res)=>{
+                if (res.data=="success") {
+                    // 성공하면 댓글 리스트 다시 불러오기
+                    alert("수정 되었습니다!");
+                    store.dispatch("getCommentList", payload.postId); 
+                }
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        commentDelete(store, payload) {
+            axios({
+                method:"delete",
+                url: API.url + commentAPI.delete(payload.commentId),
+            }).then((res)=>{
+                if (res.data=="success") {
+                    // 성공하면 댓글 리스트 다시 불러오기
+                    store.dispatch("getCommentList", payload.postId); 
+                    store.dispatch("post/getPost", payload.postId, { root: true });
+                }
+            }).catch((err)=>{
+                console.log(err);
+            })
         }
     }
 }

@@ -5,8 +5,8 @@ export default {
   regist () {
     return '/post/comment/regist'
   },
-  modify (post_comment_id) {
-    return `/post/comment/modify/${post_comment_id}`
+  modify () {
+    return '/post/comment/modify'
   },
   delete (post_comment_id) {
     return `/post/comment/delete/${post_comment_id}`

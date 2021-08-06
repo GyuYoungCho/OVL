@@ -13,6 +13,7 @@
             </div>
           </v-col>
 
+          <!-- 좋아요, 댓글 -->
           <v-col cols="6" md="1" style="text-align:right">
             <div v-if="isPostLike()" class="inline" @click="postLike">
               <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
@@ -25,6 +26,20 @@
               <v-icon style="color:#BABABA">mdi-chat-outline</v-icon>
               {{post.comment_count}}
             </span>
+
+            <!-- 수정, 삭제 버튼 -->
+            <v-menu offset-y class="inline" v-if="isUser()">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on">
+                  &nbsp; <v-icon>mdi-dots-horizontal</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)">
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-col>
 
         </v-row>
@@ -47,7 +62,7 @@
         <div>
           <v-icon>mdi-subdirectory-arrow-right</v-icon>
           <input type="text" class="pa-1" style="width:80%; font-size:small" :placeholder="holder" v-model="commentInput">
-          <button @click="regist"><span style="color:#004627">게시</span></button>
+          <button @click="regist"><span style="color:#004627">{{inputBtn}}</span></button>
           <hr class="mt-1">
         </div>
         
@@ -74,7 +89,11 @@
           <!-- 좋아요, 답글 달기 -->
           <div class="ml-5 color-gray smallFont"> 
             좋아요 {{info.like_count}}개 &nbsp;
-            <button @click="replyRegist(info)">답글 달기</button>
+            <button @click="replyRegist(info)">{{replyBtn}}</button> &nbsp;
+            <div class="inline" v-if="isCommentUser(info)">
+              <button @click="commentModify(info)">수정</button> | 
+              <button @click="commentDelete(info)">삭제</button>
+            </div>
           </div>
 
           <!-- 답글 수, 클릭 시 답글 보기 -->
@@ -107,7 +126,11 @@
                 
                 <!-- 답글 좋아요 표시 -->
                 <div class="ml-6 color-gray smallFont"> 
-                  좋아요 {{replyInfo.like_count}}개
+                  좋아요 {{replyInfo.like_count}}개 &nbsp;
+                  <div class="inline" v-if="isReplyUser(replyInfo)">
+                    <button @click="replyModify(replyInfo)">수정</button> | 
+                    <button @click="replyDelete(replyInfo)">삭제</button>
+                  </div>
                 </div>
 
               </div>
@@ -125,15 +148,82 @@ import {mapState} from "vuex";
 export default {
   data() {
     return {
-      commentInput:"",
-      holder:"댓글 입력..",
+      commentInput:"", // 댓글 입력 창
+      holder:"댓글 입력..", // 댓글 입력 창 placeholder
       isComment:true, // 댓글 입력? or 답글 입력?
-      commentId:0,
+      commentId:0, // 댓글 아이디
+      replyId:0, // 답글 아이디
       showReply:[], // 답글 보여줄 거?
+      replyBtn:"답글 달기", // 답글 달기 or 답글 취소
+      items: [
+        { title: '수정'},
+        { title: '삭제'},
+      ],
+      inputBtn:"게시", // 댓글 입력 창 게시 or 수정
     }
   },
   methods: {
-    replyClick(info) {
+    alertDeleteConfirm() { // 삭제 alert
+      var result = confirm("정말 삭제하시겠습니까?");
+      return result;
+    },
+    commentModify(info) { // 댓글 수정 
+      this.isComment = true;
+      this.inputBtn = "수정";
+      this.commentInput = info.content;
+      this.commentId = info.postCommentId;
+    },
+    replyModify(replyInfo) { // 답글 수정
+      console.log("답글 수정");
+      this.isComment = false;
+      this.inputBtn = "수정";
+      this.commentInput = replyInfo.content;
+      this.replyId = replyInfo.postReplyId;
+    },
+    commentDelete(info) { // 댓글 삭제
+      if (this.alertDeleteConfirm()) {
+        let paylaod = {
+          "commentId" : info.postCommentId,
+          "postId" : this.post.postId
+        }
+        this.$store.dispatch("postComment/commentDelete", paylaod);
+      }
+    },
+    replyDelete(replyInfo) { // 답글 삭제
+      if (this.alertDeleteConfirm()) {
+        let paylaod = {
+          "replyId" : replyInfo.postReplyId,
+          "postId" : this.post.postId
+        }
+        this.$store.dispatch("postReply/replyDelete", paylaod);
+      }
+    },
+    isUser() { // 유저가 맞다면 수정, 삭제 버튼 생기기
+      if (this.post.userId.userid == this.userinfo.userid) return true;
+      else return false;
+    },
+    isCommentUser(info) { // 댓글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
+      if (info.postId.userId.userid == this.userinfo.userid) return true;
+      else return false;
+    },
+    isReplyUser(replyInfo) { // 답글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
+      if (replyInfo.postCommentId.postId.userId.userid == this.userinfo.userid) return true;
+      else return false;
+    },
+    postModify(title) { // 게시글 수정, 삭제 버튼 클릭
+      if (title=="수정") console.log("수정입니다^^")
+      else { // 삭제
+        if (this.alertDeleteConfirm()) {
+          var payload = {
+            "userId" : this.userinfo.userid,
+            "postId" : this.post.postId
+          }
+          var move = this.$store.dispatch("post/postDelete", payload);
+          if (move) this.$router.push({path:"/"});
+        }
+      }
+    },
+    replyClick(info) { // 답글 보기 or 숨기기
       if (this.showReply.includes(info.postCommentId)) { // 답글 이제 숨겨주자!!
         // 답글 보여주는 리스트에서 해당 게시글 아이디 삭제 해주기
         var idx = this.showReply.indexOf(info.postCommentId);
@@ -149,24 +239,24 @@ export default {
       else return false;
     },  
     userPath() { // 프로필 사진 이미지 출력
-      if (this.post.userId.stored_file_path==null) {
+      if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
         return require("@/assets/image/defalutImg.jpg");
       } else {
-        return "http://localhost:8080/post/"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
+        return "http://localhost:8080/profile"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
-      if (this.post.userId.stored_file_path==null) {
+      if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
         return require("@/assets/image/defalutImg.jpg");
       } else {
-        return "http://localhost:8080/post/"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
+        return "http://localhost:8080/profile"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     replyUserPath(info) { // 답글 프로필 사진 이미지 출력
-      if (this.post.userId.stored_file_path==null) {
+      if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
         return require("@/assets/image/defalutImg.jpg");
       } else {
-        return "http://localhost:8080/post/"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
+        return "http://localhost:8080/profile"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     photoPath(idx){ // 대표 이미지 출력
@@ -208,35 +298,60 @@ export default {
       }
       this.$store.dispatch("postReply/replyLike", payload);
     },
-    regist() { // 댓글 등록
-      console.log("postId : "+this.post.postId);
-      if (this.isComment) {
-        let payload = {
+    regist() { // 댓글, 답글 등록
+      if (this.isComment) { // 댓글
+        let registPayload = {
           "userId" : this.userinfo.userid,
+          "postId" : this.post.postId,
+          "content" : this.commentInput,
+        };
+        let modifyPayload = {
+          "commentId" : this.commentId,
           "postId" : this.post.postId,
           "content" : this.commentInput,
         }
         this.commentInput = "";
-        this.$store.dispatch("postComment/commentAdd", payload);
+        if (this.inputBtn=="게시") this.$store.dispatch("postComment/commentAdd", registPayload); // 댓글 등록일 때
+        else {
+          this.inputBtn = "게시";
+          this.$store.dispatch("postComment/commentModify", modifyPayload); // 댓글 수정일 때
+        }
       } else { // 답글
-        let payload = {
+        let registpayload = {
           "userId" : this.userinfo.userid,
           "commentId" : this.commentId,
           "content" : this.commentInput,
           "postId" : this.post.postId,
+        };
+        let modifyPayload = {
+          "replyId" : this.replyId,
+          "postId" : this.post.postId,
+          "content" : this.commentInput,
         }
         this.commentInput = "";
-        this.$store.dispatch("postReply/replyAdd", payload);
-        // 댓글 리스트 새로 가져오기 -> 답글 개수 업데이트 위함
-        this.$store.dispatch("postComment/getCommentList", this.$route.params.postId); 
+        
+        if (this.inputBtn=="게시") this.$store.dispatch("postReply/replyAdd", registpayload);
+        else {
+          this.inputBtn = "게시";
+          this.$store.dispatch("postReply/replyModify", modifyPayload);
+        }
       }
-      this.$store.dispatch("post/getPost", this.$route.params.postId);
     }, 
     replyRegist(info) { // 답글 달기 버튼 클릭 시
-      this.holder = info.postId.userId.nickname+"님에게 답글 달기..";
-      this.isComment = false;
-      this.commentId = info.postCommentId;
-      this.showReply.push(info.postCommentId);
+      if (this.isComment) { // 댓글 달기로 되어있을 때 답글 다는 걸로 변경
+        this.holder = info.postId.userId.nickname+"님에게 답글 달기..";
+        this.replyBtn = "답글 취소";
+        this.isComment = false;
+        this.commentId = info.postCommentId;
+        this.showReply.push(info.postCommentId);
+      } else { // 답글 달기로 되어있을 때 댓글 다는 걸로 변경
+        this.holder = "댓글 달기..";
+        this.replyBtn = "답글 달기";
+        this.isComment = true;
+        var idx = this.showReply.indexOf(this.commentId);
+        this.showReply.splice(idx, 1);
+      } 
+      
     }
   },
   computed: {

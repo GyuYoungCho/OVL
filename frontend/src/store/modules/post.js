@@ -79,5 +79,21 @@ namespaced: true,
                 console.log(err);
             })
         },
+        postDelete(store, payload) {
+            axios({
+                method:"delete",
+                url: API.url + postAPI.delete(payload.postId),
+            }).then((res)=>{
+                if (res.data.job=="success") {
+                    store.dispatch("getPostList", payload.userId);
+                    alert("삭제가 완료되었습니다.");
+                    return true;
+                } else {
+                    alert("삭제에 실패했습니다.");
+                }
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
     }
 }
