@@ -1,33 +1,31 @@
 <template>
-  <section>
-    <div class="login-form">
-        <h1>LOG IN</h1>
-        <div class="txtb">
-          <input v-model="userinfo.email" :class="{'focus':isUseremailFocus}" type="text" @focus="useremailFocus" @blur="useremailBlur">
-          <span data-placeholder="Username"></span>
-        </div>
-
-        <div class="txtb">
-          <input v-model="userinfo.password" :class="{'focus':isPasswordFocus}" type="password" @focus="passwordFocus"  @blur="passwordBlur">
-          <span data-placeholder="Password"></span>
-        </div>
-        <button class="logbtn" @click="login()">로그인</button>
-        <div class="bottom-text">
-          <div>
-            아이디가 없으신가요?
-            <RouterLink :to="{ name: 'Signup' }">
-              회원가입
-            </RouterLink>
-          </div>
-          <div>
-            비밀번호를 잊으셨나요?
-            <RouterLink :to="{ name: 'FindPassword' }">
-              비밀번호 찾기
-            </RouterLink>
-          </div>
-        </div>
+  <v-container>
+    <section class="login">
+      <img src="@/assets/image/OVL_logo.png" alt="">
+      
+      <div>
+        <input type="text" placeholder="이메일" v-model="userinfo.email">
       </div>
-  </section>
+      
+      <div>
+        <input type="text" placeholder="비밀번호" v-model="userinfo.password">
+      </div>
+      
+      <div>
+        <button class="bg-freditgreen finalBtn" @click="login">로그인</button>
+      </div>
+      <div>
+        <hr>
+      </div>
+      <div class="infoBelow">
+        <p>
+          <RouterLink :to="{ name: 'Signup' }" class="grey-link">회원가입 | </RouterLink>  
+          <RouterLink :to="{ name: 'FindPassword' }" class="grey-link">비밀번호 찾기</RouterLink>
+        </p>
+      </div>
+
+    </section>
+  </v-container>
 </template>
 
 <script>
@@ -141,7 +139,7 @@ export default {
 </script>
 
 <style scoped>
-  *{
+  /* *{
     margin: 0;
     padding: 0;
     text-decoration: none;
@@ -152,7 +150,7 @@ export default {
   section {
     height: calc(100vh - 48px);
     background-image: linear-gradient(120deg,#4CAF50,#004627);
-  }
+  } */
 
   .login-form{
     width: 360px;

@@ -8,6 +8,7 @@ import ArticleCreate from '../views/ArticleCreate.vue'
 import ArticleDetail from '../views/ArticleDetail.vue'
 import ChallengeDetail from '../views/ChallengeDetail.vue'
 import ChallengeList from '../views/ChallengeList.vue'
+import FindEmail from '../views/FindEmail.vue'
 import FindPassword from '../views/FindPassword.vue'
 import Profile from '../views/Profile.vue'
 import RecipeCreate from '../views/RecipeCreate.vue'
@@ -60,6 +61,11 @@ const routes = [
     path: '/challenge_list',
     name: 'ChallengeList',
     component: ChallengeList
+  },
+  {
+    path: '/find_email',
+    name: 'FindEmail',
+    component: FindEmail
   },
   {
     path: '/find_password',
