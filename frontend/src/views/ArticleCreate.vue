@@ -86,7 +86,7 @@
           const previewUrl = URL.createObjectURL(this.$refs.files.files[i])
           this.previewItems.push({src:previewUrl})
         }
-       },
+      },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
         const formData = new FormData();

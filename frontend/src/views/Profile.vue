@@ -1,15 +1,16 @@
 <template>
   <div>
         <v-container>
-      <h1>프로필 페이지</h1>
-        <Userinfo v-if="isLogin"/>
+          <!-- Mypage Profile 페이지로 이동 -->
+        <ProfilePage v-if="isLogin"/>
         <JoinUs v-else/>
         </v-container>
   </div>
 </template>
 
 <script>
-import Userinfo from '@/components/user/Userinfo.vue'
+
+import ProfilePage from '@/components/user/Profilepage.vue'
 import JoinUs from '@/components/JoinUs.vue'
 import {mapGetters, mapState} from "vuex"
 
@@ -20,7 +21,7 @@ export default {
 
   },
   components: {
-    Userinfo, JoinUs,
+    ProfilePage, JoinUs,
   },
   created(){
     this.$store.dispatch("user/getTokenUserInfo");
