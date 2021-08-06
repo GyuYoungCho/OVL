@@ -1,20 +1,25 @@
 /<template>
-    <div>
-      <v-list-item-content>
-        <v-list-item-title v-text="userpot.step"></v-list-item-title>
+    <div style="text-align: left">
+        <v-row>
+ 
+            <v-list-item-content>
+        fd
+            <v-list-item-subtitle
+            
+            v-text="userpot.total_people"
+            ></v-list-item-subtitle>
 
-        <v-list-item-subtitle
-        class="text--primary"
-        v-text="userpot.total_people"
-        ></v-list-item-subtitle>
-
-        <v-list-item-subtitle v-text="userpot.content"></v-list-item-subtitle>
+            
+            </v-list-item-content>
+        </v-row>
+        <v-row>
         
-    </v-list-item-content>
-
-    <v-list-item-action>
-        <v-list-item-action-text v-text="userpot.restaurantName"></v-list-item-action-text>
-    </v-list-item-action>
+            <v-list-item-subtitle v-text="userpot.content"></v-list-item-subtitle>
+        </v-row>
+        <v-row>
+        
+        
+        </v-row>
     </div>  
 </template>
 
@@ -23,7 +28,7 @@ import { mapGetters} from 'vuex';
 export default {
     data() {
         return {
-            
+            step :'',
         };
     },
     props: {

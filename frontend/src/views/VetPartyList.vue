@@ -1,16 +1,16 @@
 <template>
   <div>
     <v-container>
-    <section  class="vetparty">
-    <h4>채식팟</h4>
-    <map-view></map-view>
-    <v-list>
-      <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot" />
-    </v-list>
-    <v-list two-line>
-      <all-pot-list v-for="(potitem, index) in potitems" :key="index" :potitem="potitem" />
-    </v-list>
-    </section>
+      <section  class="vetparty">
+      <h4>채식팟</h4>
+      <map-view></map-view>
+      <v-list >
+        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot" />
+      </v-list>
+      <v-list>
+        <all-pot-list v-for="(potitem, index) in potitems" :key="index" :potitem="potitem" />
+      </v-list>
+      </section>
     </v-container>
   </div>
 </template>
@@ -23,6 +23,13 @@ import MapView from '@/components/basic/MapView.vue';
 
 export default {
   components: { AllPotList, UserPotList, MapView },
+  data(){
+    return{
+      allSteps: [
+        "과일채소", "계란","유제품","생선","고기"
+      ],
+    }
+  },
   computed:{
     ...mapGetters("pot", ['potitems','userpots']),
     ...mapGetters("user", ['userinfo']),
