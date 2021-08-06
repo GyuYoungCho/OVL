@@ -54,6 +54,7 @@ public class PotController {
 				pot.getRestaurant_name(),
 				 pot.getType(),pot.getContent(),user);
 		potDao.save(savePot);
+		attend(savePot.getPotid(),userid);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	

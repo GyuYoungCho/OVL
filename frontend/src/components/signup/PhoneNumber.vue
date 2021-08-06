@@ -1,8 +1,8 @@
 <template>
   <v-text-field
     v-model="phoneNumber"
+    rounded
     :rules="phoneNumberRules"
-    label="전화번호"
     required
     placeholder="01012341234 형식으로 적어주세요"
     @input="onPhoneNumberChanged"
