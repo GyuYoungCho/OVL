@@ -1,8 +1,8 @@
 <template>
   <v-text-field
     v-model="password"
+    rounded
     :rules="passwordRules"
-    label="비밀번호"
     required
     placeholder="문자/숫자/특수문자의 조합으로 적어주세요"
     class='mb-6'
