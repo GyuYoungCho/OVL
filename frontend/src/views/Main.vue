@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <h1>MAIN PAGE</h1> -->
     <Newsfeed v-if="isLogin" />
     <Welcome v-else />
   </div>
@@ -15,7 +14,6 @@ export default {
     Newsfeed, Welcome,
   },
   data: () => ({
-    isLoggedIn: false,
   }),
   computed: {
     ...mapGetters('user', ['isLogin'])
