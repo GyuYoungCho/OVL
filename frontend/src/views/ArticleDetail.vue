@@ -72,7 +72,7 @@
           <v-row>
             <v-col cols="10" md="1">
               <img :src="commentUserPath(info)" width=10% style="border-radius: 50%;">
-              {{info.postId.userId.nickname}} &nbsp;
+              {{info.userId.nickname}} &nbsp;
               {{info.content}}
             </v-col>
             <v-col cols="2" md="1" style="text-align:right">
@@ -89,7 +89,12 @@
           <!-- 댓글 좋아요, 답글 달기 -->
           <div class="ml-5 color-gray smallFont"> 
             좋아요 {{info.like_count}}개 &nbsp;
-            <button @click="replyRegist(info)">{{replyBtn}}</button> &nbsp;
+            
+            <div @click="replyRegist(info)" class="inline">
+              <div class="inline" v-if="replyBtnClickId==info.postCommentId">답글 취소</div> 
+              <div class="inline" v-else>답글 달기</div>
+              &nbsp;
+            </div>
             <div class="inline" v-if="isCommentUser(info)">
               <button @click="commentModify(info)">수정</button> | 
               <button @click="commentDelete(info)">삭제</button>
@@ -110,7 +115,7 @@
                 <v-row>
                   <v-col cols="10" md="1">
                     <img :src="replyUserPath(replyInfo)" width=10% style="border-radius: 50%;">
-                    {{replyInfo.postCommentId.postId.userId.nickname}} &nbsp;
+                    {{replyInfo.userId.nickname}} &nbsp;
                     {{replyInfo.content}}
                   </v-col>
                   <v-col cols="2" md="1" style="text-align:right">
@@ -154,12 +159,12 @@ export default {
       commentId:0, // 댓글 아이디
       replyId:0, // 답글 아이디
       showReply:[], // 답글 보여줄 거?
-      replyBtn:"답글 달기", // 답글 달기 or 답글 취소
       items: [
         { title: '수정'},
         { title: '삭제'},
       ],
       inputBtn:"게시", // 댓글 입력 창 게시 or 수정
+      replyBtnClickId:0,
     }
   },
   methods: {
@@ -203,11 +208,11 @@ export default {
       else return false;
     },
     isCommentUser(info) { // 댓글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
-      if (info.postId.userId.userid == this.userinfo.userid) return true;
+      if (info.userId.userid == this.userinfo.userid) return true;
       else return false;
     },
     isReplyUser(replyInfo) { // 답글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
-      if (replyInfo.postCommentId.postId.userId.userid == this.userinfo.userid) return true;
+      if (replyInfo.userId.userid == this.userinfo.userid) return true;
       else return false;
     },
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
@@ -300,6 +305,7 @@ export default {
     },
     regist() { // 댓글, 답글 등록
       if (this.isComment) { // 댓글
+        
         let registPayload = {
           "userId" : this.userinfo.userid,
           "postId" : this.post.postId,
@@ -339,14 +345,14 @@ export default {
     }, 
     replyRegist(info) { // 답글 달기 버튼 클릭 시
       if (this.isComment) { // 댓글 달기로 되어있을 때 답글 다는 걸로 변경
-        this.holder = info.postId.userId.nickname+"님에게 답글 달기..";
-        this.replyBtn = "답글 취소";
+        this.holder = info.userId.nickname+"님에게 답글 달기..";
+        this.replyBtnClickId = info.postCommentId;
         this.isComment = false;
         this.commentId = info.postCommentId;
         this.showReply.push(info.postCommentId);
       } else { // 답글 달기로 되어있을 때 댓글 다는 걸로 변경
         this.holder = "댓글 달기..";
-        this.replyBtn = "답글 달기";
+        this.replyBtnClickId = 0;
         this.isComment = true;
         var idx = this.showReply.indexOf(this.commentId);
         this.showReply.splice(idx, 1);
@@ -361,6 +367,7 @@ export default {
     ...mapState("postReply", (["replyList", "replyLikeList"]))
   },
   created() {
+    console.log("현재 유저!!!!!!! : "+this.userinfo.userid);
     this.isComment = true;
     // 게시글 가져오기
     this.$store.dispatch("post/getPost", this.$route.params.postId); 
