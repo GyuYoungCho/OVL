@@ -72,7 +72,7 @@
 
             <v-list-item class="mb-2">
               <v-icon>mdi-home-remove-outline</v-icon>
-              <v-list-item-title class="ms-4">로그아웃</v-list-item-title>
+              <v-list-item-title class="ms-4" @click.prevent="onClickLogout()">로그아웃</v-list-item-title>
             </v-list-item>
 
             
@@ -83,6 +83,8 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+
   export default {
     data: () => ({
       drawer: false,
@@ -99,13 +101,24 @@
         this.drawer = false
       },
     },
+    computed:{
+        ...mapGetters("user", ["userinfo", "isLogin"]),
+    },
+    methods: {
+      ...mapActions ("user", ["getTokenUserInfo", "logout"]),
+
+      onClickLogout(){
+        alert("로그아웃 되었습니다.");
+        this.$store.dispatch("user/logout");
+      }
+    },
   }
 </script>
 
 <style lang="scss" scoped>
- .text-dec {
-   text-decoration: none !important;
-   color: black !important;
- }
+.text-dec {
+  text-decoration: none !important;
+  color: black !important;
+}
 
 </style>
