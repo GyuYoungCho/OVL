@@ -71,4 +71,27 @@
   button:disabled {
     background-color: $hy-grey;
   }
+
+  .subinfo {
+    font-size: 13px;
+
+    i {
+      font-size: 18px;
+    }
+
+    span {
+      padding-top: 3px;
+    }
+  }
+
+  .v-image {
+    width: 17px;
+    height: 17px;
+  }
+
+  .icon_frame {
+    width: 17px;
+    height: 17px;
+    margin-top: 2px;
+  }
 }

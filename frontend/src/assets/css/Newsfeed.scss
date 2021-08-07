@@ -5,3 +5,16 @@
 .color-gray {
     color: #BABABA;
 }
+
+.postProfile {
+    display: flex;
+    align-items: center;
+}
+
+.comment {
+    background-color: $hy-green;
+}
+
+.smallFont {
+    font-size: small ;
+}

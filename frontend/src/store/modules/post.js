@@ -8,6 +8,8 @@ namespaced: true,
 	state: {
         postList:[],
         postLikeList:[],
+        post:{},
+        postPhotoList:[],
 	},
 	mutations: {
         GET_POST_LIST(state, payload) {
@@ -15,7 +17,12 @@ namespaced: true,
         },
         GET_POST_LIKE_LIST(state, payload) {
             state.postLikeList = payload;
-            console.log("좋아요 리스트 ! : "+state.postLikeList);
+        },
+        GET_POST(state, payload) {
+            state.post = payload;
+        }, 
+        GET_PHOTO_LIST(state, payload) {
+            state.postPhotoList = payload
         }
 	},
 	actions: {
@@ -25,6 +32,25 @@ namespaced: true,
                 url: API.url + postAPI.select_all(payload),
             }).then((res)=>{
                 store.commit("GET_POST_LIST", res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        getPost(store, payload) {
+            axios({
+                method:"get",
+                url: API.url + postAPI.select_detail_photo(payload),
+            }).then((res)=>{
+                store.commit("GET_PHOTO_LIST", res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+
+            axios({
+                method:"get",
+                url: API.url + postAPI.select_detail(payload),
+            }).then((res)=>{
+                store.commit("GET_POST", res.data);
             }).catch((err)=>{
                 console.log(err);
             })
@@ -46,7 +72,24 @@ namespaced: true,
             }).then((res)=>{
                 if (res.data=="success") {
                     store.dispatch("getPostLikeList", payload.userId);
+                    if (payload.type==1) store.dispatch("getPostList", payload.userId);
+                    else store.dispatch("getPost", payload.postId);
+                }
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        postDelete(store, payload) {
+            axios({
+                method:"delete",
+                url: API.url + postAPI.delete(payload.postId),
+            }).then((res)=>{
+                if (res.data.job=="success") {
                     store.dispatch("getPostList", payload.userId);
+                    alert("삭제가 완료되었습니다.");
+                    return true;
+                } else {
+                    alert("삭제에 실패했습니다.");
                 }
             }).catch((err)=>{
                 console.log(err);

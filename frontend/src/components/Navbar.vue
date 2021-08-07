@@ -116,9 +116,9 @@ import {mapActions, mapGetters} from "vuex";
 </script>
 
 <style lang="scss" scoped>
- .text-dec {
-   text-decoration: none !important;
-   color: black !important;
- }
+.text-dec {
+  text-decoration: none !important;
+  color: black !important;
+}
 
 </style>

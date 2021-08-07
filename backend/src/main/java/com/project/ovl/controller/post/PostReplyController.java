@@ -107,14 +107,14 @@ public class PostReplyController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@GetMapping("/select_all/{comment_id}")
-	@ApiOperation(value = "모든 대댓글 조회")
-	public ResponseEntity<List<PostReply>> seelct_all(@PathVariable int comment_id) {
+	@GetMapping("/select_all/{post_id}")
+	@ApiOperation(value = "해당 게시글의 모든 대댓글 조회")
+	public ResponseEntity<List<PostReply>> seelct_all(@PathVariable int post_id) {
 		List<PostReply> replyList = postReplyDao.findAll();
 		List<PostReply> returnList = new ArrayList<>();
 		
 		for (PostReply pp : replyList) {
-			if (pp.getPostCommentId().getPostCommentId() == comment_id) returnList.add(pp);
+			if (pp.getPostCommentId().getPostId().getPostId() == post_id) returnList.add(pp);
 		}
 		
 		return new ResponseEntity<List<PostReply>>(returnList, HttpStatus.OK);
@@ -153,7 +153,8 @@ public class PostReplyController {
 		
 		// 좋아요 데이터에 있는 user_id와 나의 user_id가 일치할 시 reply_id를 set에 저장
 		for (PostReplyLike prl : likeList) {
-			if (prl.getUserId().getUserid()==user_id) returnSet.add(prl.getPostReplyId().getPostReplyId());
+			if (prl.getUserId().getUserid()==user_id) 
+				returnSet.add(prl.getPostReplyId().getPostReplyId());
 		}
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
 	}
