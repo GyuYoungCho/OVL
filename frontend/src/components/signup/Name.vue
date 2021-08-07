@@ -1,18 +1,14 @@
 <template>
-  <v-row>
-    <v-col cols="12">
-      <v-text-field
-        v-model="name"
-        label="이름"
-        required
-        placeholder="이름을 적어주세요"
-        :rules="nameRules"
-        @input="onNameChange"
-      >
+  <v-text-field
+    v-model="name"
+    rounded
+    required
+    placeholder="이름"
+    :rules="nameRules"
+    @input="onNameChange"
+  >
 
-      </v-text-field>
-    </v-col>
-  </v-row>
+  </v-text-field>
 </template>
 
 <script>

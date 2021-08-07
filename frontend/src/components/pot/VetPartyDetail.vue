@@ -1,18 +1,24 @@
 <template>
   <div>
     <v-dialog
-          v-model="rest_list_modal"
+          v-model="pot_detail_modal"
           hide-overlay
+          fullscreen
           transition="dialog-bottom-transition"
           max-width="500px"
-          scrollable
-        >
+          scrollable>
         <v-card>
-            <v-card-title>
-              식당 검색
-            
-            </v-card-title>
-            
+          <v-toolbar color="#004627" dark>
+            <v-btn icon dark @click="cancelDetail">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+            <v-row>
+              <v-icon>mdi-map-marker</v-icon>
+                  <span>{{this.potitem.restaurant_name}}</span>
+              </v-row>
           </v-card>
     </v-dialog>
   </div>
@@ -24,7 +30,14 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 
 export default {
+  props:{
+    pot_detail_modal : Boolean,
+    potitem : Object,
+  },
   methods:{
+    cancelDetail() {
+      this.$emit('openDetailModal', false)
+    },
 
     potattend() {
       axios.get(API.url + potAPI.attend(1,1))

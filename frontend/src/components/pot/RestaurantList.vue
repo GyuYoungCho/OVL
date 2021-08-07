@@ -5,7 +5,9 @@
         :items="restitems"
         :page.sync="page"
         :items-per-page="itemsPerPage"
+        :search="search"
         hide-default-footer
+        hide-default-header	
         class="elevation-1"
         @page-count="pageCount = $event"
         @click:row="chooseRestaurant"
@@ -31,6 +33,10 @@ export default {
             { text: '주소', value: 'place' },],
         };
     },
+    props:{
+        search : String,
+    },
+
     computed: {
         ...mapGetters("pot", ["restitems"]),
         rows() {
@@ -39,6 +45,7 @@ export default {
     },
     created() {
         this.$store.dispatch("pot/setRestItems");
+        console.log(this.search)
     },
     methods: {
     

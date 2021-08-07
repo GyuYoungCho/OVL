@@ -4,9 +4,9 @@
     <v-col cols="12">
       <v-text-field
         v-model="nickname"
+        rounded
         :counter="10"
         :rules="nicknameRules"
-        label="닉네임"
         required
         placeholder="닉네임을 적어주세요"
       ></v-text-field>

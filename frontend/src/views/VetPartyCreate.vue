@@ -1,23 +1,47 @@
 <template>
-  <div class="vetparty">
+  <div>
+    <v-container>
+    <section  class="vetparty">
     <h4>채식팟 생성</h4>
     <!-- 채식팟 제목 -->
-    <div>
-      <input type="text" v-model="pot.title" placeholder="제목">
-    </div>
-    <div>
-      <textarea v-model="pot.content" placeholder="내용"></textarea>
-    </div>
+     
+      <div>
+        <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
+          <img src="@/assets/icon/notmeat.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(0)">
+          <img src="@/assets/icon/meat.png" alt="" ></button>
 
-     <!-- 식당 / 도시락 --> 
-    <div>
-      <v-select name="" id="" v-model="pot.type"
-        :items="eatType" placeholder="어떻게 먹을까용"
-        @input="changedStep"
-        dense solo>
+        <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/notfish.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/fish.png" alt=""></button>
+
+        <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/notmilk.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/milk.png" alt=""></button>
         
-      </v-select>
-    </div>
+        <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/notegg.png" alt="" ></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/egg.png" alt="" ></button>
+          
+        <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/notvege.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/vege.png" alt="" ></button>
+      </div>
+
+      <div class="categoryBtn_box">
+        <button @click="changedRest" :class="{'vetpartyBtnNotSelected':!isRestaurant, 'vetpartyBtnSelected':isRestaurant}">식당</button>
+        <button @click="changedAdd" :class="{'vetpartyBtnNotSelected':!isAddress, 'vetpartyBtnSelected':isAddress}">도시락</button>
+      </div>
+
+
+      <input type="text" v-model="pot.title" placeholder="제목">
+    
+      <textarea v-model="pot.content" placeholder="내용"></textarea>
+        
 
     <!--식당 선택 관련-->
     <v-dialog
@@ -28,8 +52,18 @@
           scrollable
         >
         <v-card>
+          <v-toolbar
+        color="#004627"
+        dark
+      >
+        <v-toolbar-title>식당 검색</v-toolbar-title>
+        <v-spacer></v-spacer>
+  
+        <v-btn @click="cancelAddres">
+          cancel
+        </v-btn>
+        </v-toolbar>
             <v-card-title>
-              식당 검색
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
@@ -39,84 +73,38 @@
             ></v-text-field>
             </v-card-title>
             
-            <restaurant-list></restaurant-list>
+            <restaurant-list :search="search"></restaurant-list>
           </v-card>
     </v-dialog>
     <!-- 주소 넣기 관련 부분 -->
     <div >
-      <p> 도로명 주소 : <input type="text" v-model="roadAddress" placeholder="제목"></p><button class=BtnComp @click="onAddressBtnClick">검색</button>
-      <p> 참고 : {{ extraAddress }}</p>
-      <p> 상세 주소 : <input type="text" id="detailAddress" placeholder="상세주소" v-model="detailAddress"></p>
+       <input type="text" v-model="roadAddress" readonly placeholder="주소"
+       style="width:80%;">
+       <button class=BtnComp @click="onAddressBtnClick"
+       style="width:20%;">검색</button>
     </div>
-
-    <!-- 날짜 -->
-    <v-date-picker
-      v-model="date"
-      color="green darken-5"
-      elevation="10"
-      locale="ko-kr"
-    >
-
-
-    </v-date-picker>
-
-    <!-- 시간 -->
-    <!-- 뷰티파이 time picker 안 이뻐보여서 일단 순수 html로 -->
+    <input type="text" v-model="detailAddress" placeholder="상세주소">
     <div>
-      <v-row>
-        <v-col>
+    
+      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:50%;">
       
-          <v-select name="" id="" v-model="partyAmPm" 
-            :items="timePart" placeholder="-시간-"
-            dense solo>
-          </v-select>
-      </v-col>
-      <v-col>
-        <v-select name="" id="" v-model="partyHour" 
-          :items="times" placeholder="-시-"
-          dense solo>
-        </v-select>
-      </v-col>
-      <v-col> 시</v-col>
-      <v-col>
-        <v-select name="" id="" v-model="partyMinute" 
-          :items="minutes" placeholder="-분-"
-          dense solo>
-        </v-select>
-      </v-col>
-      <v-col> 분</v-col>
-      </v-row>
-    </div>
-
-    <!-- 인원수 -->
-    <div>
-      <input type="number" placeholder=0 v-model="pot.total_people">명
-    </div>
-
-    <!-- 비건종류 -->
-    <div>
-      <v-select name="" id="" v-model="pot.step"
-        :items="allSteps" placeholder="어떤 거까지 되시나용"
-        dense solo>
-      </v-select>
+      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:50%;">
     </div>
    
 
-    <!-- 생성버튼 -->
-    <div>
-      <v-btn
-        :disabled="!isValid"
-        @click="onCreateBtnClick"
-      >
-        생성하기
-      </v-btn>
-    </div>
+    <!-- 인원수 -->
+    
+    <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
+      
+      <button :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
+    
+    </section>
+    </v-container>
   </div>
 </template>
 
 
 <!-- 주소 찾기 관련 api -->
-<!-- 여기에 안 넣으면 shell에서 오류 남(index.html에서도 적고 여기서도 적는 이유) -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
 import _ from 'lodash';
@@ -125,42 +113,36 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import RestaurantList from '@/components/pot/RestaurantList.vue';
 import { mapGetters } from 'vuex';
-// import RestaurantList from '../components/pot/RestaurantList.vue';
 
 
 export default {
   components : {
     RestaurantList,
   },
-  data: () => ({
-    date:  (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-    times: _.range(1, 13),
-    minutes: _.range(1, 60),
-    pot : {},
-    
-    partyAmPm: '',
-    partyHour: 0,
-    partyMinute: 0,
+  data() {
+      return {
+        date:  (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+        pot : {
+          type : "식당",
+          step : "과일채소",
+        },
+        times : '',
+        roadAddress: '',
+        detailAddress: '',
 
-    roadAddress: '',
-    detailAddress: '',
-    extraAddress: '',
-    isAddress: false,
-    isRestaurant: false,
-    rest_list_modal : false,
+        isAddress: false,
+        isRestaurant: true,
+        rest_list_modal : false,
 
-    search: '',
+        search: '',
 
-    allSteps: [
-      "과일채소", "유제품1","유제품all","생선","고기"
-    ],
-    eatType: [
-      "식당", "도시락"
-    ],
-    timePart: [
-      "오전", "오후"
-    ],
-  }),
+        allSteps: [
+          "과일채소", "계란","유제품","생선","고기"
+        ],
+        
+        btnActive: {0:false,1:false,2:false,3:false,4:true},
+      }
+  },
   methods: {
 
     // 주소 넣는 팝업창 생성
@@ -168,7 +150,7 @@ export default {
       if(this.isAddress){
         new daum.Postcode({
           oncomplete: (data) => {
-              console.log(data)
+              
               var extraRoadAddr = ''; // 참고 항목 변수
               this.roadAddress = data.roadAddress
 
@@ -196,20 +178,16 @@ export default {
       
     },
 
+    //데이터 받은거 보내기
     onCreateBtnClick () {
       
-
-      let formData = new FormData()
       this.pot.place = this.roadAddress
       this.pot.restaurant_name = this.detailAddress
       
       let date = new Date(this.date + ' 00:00')
+      date.setHours(this.times.split(":")[0])
       
-      date.setHours(this.partyHour)
-      if(this.partyAmPm=="PM"){
-        date.setHours(date.getHours() + 12)
-      }
-      date.setMinutes(this.partyMinute)
+      date.setMinutes(this.times.split(":")[1])
       
       this.pot.time = date
       
@@ -225,17 +203,41 @@ export default {
       
       this.$router.push({ name: "VetPartyList" })
     },
-    changedStep(type){
+
+    changedRest(){
+      this.isRestaurant = true;
+      this.isAddress = false
+      if(this.pot.type="도시락"){
+        this.roadAddress = ''
+        this.detailAddress = ''
+      }
+      this.pot.type="식당"
+    },
+
+    changedAdd(){
+      this.isRestaurant = false;
+      this.isAddress = true;
+      if(this.pot.type="도시락"){
+        this.roadAddress = ''
+        this.detailAddress = ''
+      }
+      this.pot.type="도시락"
+    },
+
+    selectTypeIcon(num){
+      for (var i = 0; i < num; i++) {
+        this.btnActive[i] = false
+      }
+      this.pot.step = this.allSteps[4-num]
       
-      if(type==this.eatType[0]) {
-        this.isRestaurant = true;
-        this.isAddress = false
+      for (var i = num; i < 5; i++) {
+        this.btnActive[i] = true
       }
-      else if(type==this.eatType[1]) {
-        this.isAddress = true;
-        this.isRestaurant = false;
-      }
+    },
+    cancelAddres(){
+      this.rest_list_modal = false
     }
+
   },
   computed: {
     ...mapGetters("pot", ["rest"]),
@@ -244,8 +246,7 @@ export default {
     },
     isValid () {
       return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.pot.total_people && 
-      !!this.partyAmPm && !!this.partyHour && !!this.partyMinute && !!this.pot.type &&
-      !!this.pot.step
+      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step
     },
   },
   watch:{
@@ -254,7 +255,7 @@ export default {
           this.detailAddress = newVal.restaurantName
           this.rest_list_modal = false
           this.isAddress = false
-          // this.isRes = false
+          
           oldVal
       },
   }
