@@ -1,0 +1,23 @@
+// @font-face 들은 폰트를 가져오는 CDN 입니다.
+
+@font-face {
+  font-family: 'SDSamliphopangche_Basic';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Basic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// 이쪽 영역에 각 컴포넌트의 클래스에 해당하는 글꼴이 무엇인지 지정해 줍니다.
+
+// 1. 기본적으로 특정 클래스에 어떤 글꼴을 설정할지 명시하지 않는다면,
+// 삼립빵체가 전체 프로젝트의 default 글꼴로 설정되게 합니다.
+
+* {
+  font-family: 'SDSamliphopangche_Basic';
+}
+
+.welcome-text {
+  font-family: 'Shadows Into Light', cursive;
+}
+
+// 2. 각 클레스에 맞는 font를 설정할 수 있습니다.
