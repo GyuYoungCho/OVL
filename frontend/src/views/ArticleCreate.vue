@@ -2,7 +2,12 @@
   <div>
     <v-container>
       <section class="article">
-        <h4>게시글 작성</h4>
+        <div v-if="type==0">
+          <h4>게시글 작성</h4>
+        </div>
+        <div v-else>
+          <h4>게시글 수정</h4>
+        </div>
         <!-- 버튼들 -->
         <div class="categoryBtn_box">
           <button @click="foodClick" :class="{'articleBtnNotSelected':!foodSelected, 'articleBtnSelected':foodSelected}">음식</button>
@@ -10,21 +15,36 @@
           <button @click="cosmeticClick" :class="{'articleBtnNotSelected':!cosmeticSelected, 'articleBtnSelected':cosmeticSelected}">화장품</button>
         </div>
         <!-- 파일 업로드 영역  -->
-        <div class='articlePic' v-if="!sendList.length">
-          <label for="file"><v-icon>mdi-plus</v-icon></label>
-          <input id="file" type="file" ref="files" multiple @input="fileUpload">
+        <div v-if="type==0">
+          <div class='articlePic' v-if="!sendList.length">
+            <label for="file"><v-icon>mdi-plus</v-icon></label>
+            <input id="file" type="file" ref="files" multiple @input="fileUpload">
+          </div>
+          <!-- 캐러셀 영역 -->
+          <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
+            <v-carousel-item
+              v-for="(previewItem,i) in previewItems"
+              :key="i"
+              :src="previewItem.src"
+            ></v-carousel-item>
+          </v-carousel>
         </div>
-        <!-- 캐러셀 영역 -->
-        <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
-          <v-carousel-item
-            v-for="(previewItem,i) in previewItems"
-            :key="i"
-            :src="previewItem.src"
-          ></v-carousel-item>
-        </v-carousel>
+        <!-- 수정 시 캐러셀 영역 -->
+        <div v-else>
+          <v-carousel class="carouselBorder" hide-delimiters height="30vh">
+            <v-carousel-item
+              v-for="(info,idx) in postPhotoList"
+              :key="idx"
+              :src="photoPath(idx)"
+            ></v-carousel-item>
+          </v-carousel>
+        </div>
+        
         <!-- 게시글 컨텐츠 입력 영역 -->
         <textarea v-model="content" placeholder="게시글 입력..."></textarea>
-        <button @click="send" class=articleSubmit>등록</button>
+        
+        <div v-if="type==0" class=buttonDiv><button @click="send">등록</button></div>
+        <div v-else class=buttonDiv><button @click="modify">수정</button></div>
       </section>
     </v-container>
   </div>
@@ -48,10 +68,12 @@
         content: "",
         // userId 는 vuex로 관리될거니까 작성.vue 에선 보일 필요 없음
         sendList: [],
+        type:0,
       }
     },
     computed: {
       ...mapState("user", ["userinfo", "isLogin"]),
+      ...mapState("post", ["post", "postPhotoList"]),
     },
     methods: {
       foodClick () {
@@ -86,7 +108,10 @@
           const previewUrl = URL.createObjectURL(this.$refs.files.files[i])
           this.previewItems.push({src:previewUrl})
         }
-       },
+      },
+      photoPath(idx) {
+        return "http://localhost:8080/post/"+this.post.postId+"/"+this.postPhotoList[idx].filepath.split('/').reverse()[0];
+      },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
       send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
         const formData = new FormData();
@@ -114,6 +139,25 @@
           alert("못보냈슴!");
           console.log(error);
         })
+      },
+      modify() { // 게시글 수정
+        console.log("게시글 수정할겁니다~~");
+      }
+    },
+    created() {
+      this.type = this.$route.params.type;
+      if (this.$route.params.type!=0) {
+        this.$store.dispatch("post/getPost", this.$route.params.type);
+      }
+
+      if (this.post.postId == this.$route.params.type) {
+        // 카테고리 선택
+        if (this.post.categori==1) this.foodClick();
+        else if (this.post.categori==2) this.clothClick();
+        else this.cosmeticClick();
+
+        // 내용 보여주기
+        this.content = this.post.content;
       }
     }
   }

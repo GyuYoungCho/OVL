@@ -13,7 +13,7 @@
             </div>
           </v-col>
 
-          <!-- 좋아요, 댓글 -->
+          <!-- 게시글 좋아요, 댓글 -->
           <v-col cols="6" md="1" style="text-align:right">
             <div v-if="isPostLike()" class="inline" @click="postLike">
               <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
@@ -27,7 +27,7 @@
               {{post.comment_count}}
             </span>
 
-            <!-- 수정, 삭제 버튼 -->
+            <!-- 게시글 수정, 삭제 버튼 -->
             <v-menu offset-y class="inline" v-if="isUser()">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
@@ -68,7 +68,7 @@
         
         <!-- 댓글 가져오기 -->
         <div v-for="(info, idx) in commentList" :key="idx" class="my-1 ">
-          <!-- 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
+          <!-- 댓글 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
           <v-row>
             <v-col cols="10" md="1">
               <img :src="commentUserPath(info)" width=10% style="border-radius: 50%;">
@@ -76,7 +76,7 @@
               {{info.content}}
             </v-col>
             <v-col cols="2" md="1" style="text-align:right">
-              <!-- 하트 확인-->
+              <!-- 댓글 하트 확인-->
               <div v-if="isCommentLike(info.postCommentId)" class="inline" @click="commentLike(info.postCommentId)">
                 <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
               </div>
@@ -86,7 +86,7 @@
             </v-col>
           </v-row>
           
-          <!-- 좋아요, 답글 달기 -->
+          <!-- 댓글 좋아요, 답글 달기 -->
           <div class="ml-5 color-gray smallFont"> 
             좋아요 {{info.like_count}}개 &nbsp;
             <button @click="replyRegist(info)">{{replyBtn}}</button> &nbsp;
@@ -114,7 +114,7 @@
                     {{replyInfo.content}}
                   </v-col>
                   <v-col cols="2" md="1" style="text-align:right">
-                    <!-- 하트 확인-->
+                    <!-- 답글 하트 확인-->
                     <div v-if="isReplyLike(replyInfo.postReplyId)" class="inline" @click="replyLike(replyInfo.postReplyId)">
                       <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
                     </div>
@@ -211,7 +211,7 @@ export default {
       else return false;
     },
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
-      if (title=="수정") console.log("수정입니다^^")
+      if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
       else { // 삭제
         if (this.alertDeleteConfirm()) {
           var payload = {
