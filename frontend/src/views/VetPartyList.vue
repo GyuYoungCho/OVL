@@ -22,12 +22,18 @@ import UserPotList from '@/components/pot/UserPotList.vue'
 import MapView from '@/components/basic/MapView.vue';
 
 export default {
-  components: { AllPotList, UserPotList, MapView },
+  components: { 
+    AllPotList, 
+    UserPotList, 
+    MapView
+  },
   data(){
     return{
+      
       allSteps: [
         "과일채소", "계란","유제품","생선","고기"
       ],
+      modalOpen : false,
     }
   },
   computed:{
@@ -41,7 +47,7 @@ export default {
   },
   method:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
-    
+
   }
 }
 </script>

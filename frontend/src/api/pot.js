@@ -21,6 +21,6 @@ export default {
     return `/pot/select/${user_id}`;
   },
   attendcount(pot_id) {
-    return `/pot/attendcount/${pot_id}`;
+    return `/pot/attendCount/${pot_id}`;
   },
 };
