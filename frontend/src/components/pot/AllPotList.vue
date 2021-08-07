@@ -39,12 +39,14 @@
             <span>{{this.rows}}명/</span>
             <span>{{this.potitem.total_people}}명</span>
             <v-divider vertical class="mx-3"></v-divider>
+
+            <div class="icon_frame">
             <v-img src="@/assets/icon/meat.png" alt="" v-if="btnActive[4]"> </v-img>
             <v-img src="@/assets/icon/fish.png" alt="" v-else-if="btnActive[3]"> </v-img>
             <v-img src="@/assets/icon/milk.png" alt="" v-else-if="btnActive[2]"> </v-img>
             <v-img src="@/assets/icon/egg.png" alt="" v-else-if="btnActive[1]"> </v-img>
             <v-img src="@/assets/icon/vege.png" alt="" v-else> </v-img>
-
+            </div>
             <v-spacer></v-spacer>
         <button class="py-0 px-2 BtnComp mt-0" style="font-size:14px">참여하기</button>
         

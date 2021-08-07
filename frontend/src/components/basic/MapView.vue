@@ -53,7 +53,7 @@ export default {
             this.deleteMarkers()
             
             if(!datas) return;
-            var imageSrc = require('@/assets/icon/meatmarker.png'),
+            var imageSrc = require('@/assets/image/marker.png'),
             imageSize = new kakao.maps.Size(30, 40), // 마커이미지의 크기입니다
             imageOption = { offset: new kakao.maps.Point(30, 40) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
             var geocoder = new kakao.maps.services.Geocoder();

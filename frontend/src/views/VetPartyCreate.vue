@@ -94,7 +94,7 @@
 
     <!-- 인원수 -->
     
-    <input type="number" placeholder="인원" v-model="pot.total_people">
+    <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
       <button :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
     
