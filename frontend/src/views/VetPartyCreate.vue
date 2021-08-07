@@ -52,8 +52,18 @@
           scrollable
         >
         <v-card>
+          <v-toolbar
+        color="#004627"
+        dark
+      >
+        <v-toolbar-title>식당 검색</v-toolbar-title>
+        <v-spacer></v-spacer>
+  
+        <v-btn @click="cancelAddres">
+          cancel
+        </v-btn>
+        </v-toolbar>
             <v-card-title>
-              식당 검색
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
@@ -76,26 +86,15 @@
     <input type="text" v-model="detailAddress" placeholder="상세주소">
     <div>
     
-    <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:50%;">
-    
-    <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:50%;">
+      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:50%;">
+      
+      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:50%;">
     </div>
-    <!-- 날짜 -->
-    <v-dialog>
-    <v-date-picker
-      v-model="date"
-      color="green darken-5"
-      elevation="10"
-      locale="ko-kr"
-    >
-    </v-date-picker>
-    </v-dialog>
-    <!-- 시간 -->
    
 
     <!-- 인원수 -->
     
-    <input type="number" placeholder="인원" v-model="pot.total_people">
+    <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
       <button :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
     
@@ -106,7 +105,6 @@
 
 
 <!-- 주소 찾기 관련 api -->
-<!-- 여기에 안 넣으면 shell에서 오류 남(index.html에서도 적고 여기서도 적는 이유) -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
 import _ from 'lodash';
@@ -115,7 +113,6 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import RestaurantList from '@/components/pot/RestaurantList.vue';
 import { mapGetters } from 'vuex';
-// import RestaurantList from '../components/pot/RestaurantList.vue';
 
 
 export default {
@@ -181,6 +178,7 @@ export default {
       
     },
 
+    //데이터 받은거 보내기
     onCreateBtnClick () {
       
       this.pot.place = this.roadAddress
@@ -235,6 +233,9 @@ export default {
       for (var i = num; i < 5; i++) {
         this.btnActive[i] = true
       }
+    },
+    cancelAddres(){
+      this.rest_list_modal = false
     }
 
   },
@@ -254,7 +255,7 @@ export default {
           this.detailAddress = newVal.restaurantName
           this.rest_list_modal = false
           this.isAddress = false
-          // this.isRes = false
+          
           oldVal
       },
   }
