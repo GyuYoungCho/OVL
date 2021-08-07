@@ -101,7 +101,6 @@ import {mapActions, mapGetters} from "vuex";
         this.drawer = false
       },
     },
-
     computed:{
         ...mapGetters("user", ["userinfo", "isLogin"]),
     },
