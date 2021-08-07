@@ -121,15 +121,15 @@ public class PostCommentController {
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
-	@GetMapping("/like_list/{user_id}")
-	@ApiOperation(value = "내가 좋아요 누른 게시글 목록")
-	public ResponseEntity<Set<Integer>> like_list(@PathVariable int user_id) {
+	@GetMapping("/like_list/{user_id}/{post_id}")
+	@ApiOperation(value = "내가 좋아요 누른 댓글 목록")
+	public ResponseEntity<Set<Integer>> like_list(@PathVariable int user_id, @PathVariable int post_id) {
 		// 모든 좋아요 데이터 가져오기
 		List<PostCommentLike> likeList = postCommentLikeDao.findAll();
 		Set<Integer> returnSet = new HashSet<>();
 		
 		for (PostCommentLike pcl : likeList) {
-			if (pcl.getUserId().getUserid()==user_id)
+			if (pcl.getUserId().getUserid()==user_id && pcl.getPostCommentId().getPostId().getPostId()==post_id)
 				returnSet.add(pcl.getPostCommentId().getPostCommentId());
 		}
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
