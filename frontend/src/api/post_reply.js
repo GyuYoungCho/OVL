@@ -11,8 +11,8 @@ export default {
   delete (reply_id) {
     return `/post/reply/delete/${reply_id}`
   },
-  select_all (comment_id) {
-    return `/post/reply/select_all/${comment_id}`
+  select_all (post_id) {
+    return `/post/reply/select_all/${post_id}`
   },
   like_list (user_id) {
     return `/post/reply/like_list/${user_id}`
