@@ -37,6 +37,9 @@ export default  {
   select (user_id) {
     return `/user/select/${user_id}`
   },
+  rank (user_id) {
+    return `/user/rank/${user_id}`
+  },
   delete (user_id) {
     return `/user/delete/${user_id}`
   }

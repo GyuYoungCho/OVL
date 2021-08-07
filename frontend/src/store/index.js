@@ -5,6 +5,7 @@ import user from './modules/user.js'
 import post from "./modules/post.js"
 import recipe from "./modules/recipe.js";
 import pot from "./modules/pot.js";
+import follow from "./modules/follow.js";
 import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
@@ -17,5 +18,6 @@ export default new Vuex.Store({
     post,
     recipe,
     pot,
+    follow,
   }
 })

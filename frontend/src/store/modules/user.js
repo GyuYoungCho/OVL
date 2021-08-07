@@ -16,7 +16,7 @@ namespaced: true,
 			stored_file_path: "",
 		},
 		isLogin: false,
-
+		rank:null,
 	},
 	mutations: {
 		setUserInfo(state, payload) {
@@ -36,6 +36,9 @@ namespaced: true,
 			};
 			localStorage.removeItem("access-token");
 		},
+		setUserRank(state, payload) {
+			state.rank = payload;
+		}
 
 	},
 	getters: {
@@ -147,10 +150,37 @@ namespaced: true,
 			}).catch((err) => {
 				console.log(err);
 			})
-
-	},
-
+		},
 		
+		deleteUser(store) {
+			let token = localStorage.getItem("access-token");
+			axios({
+				method: "delete",
+				url: API.url + userAPI.delete(store.state.userinfo.userid),
+				headers: {"access-token" : token}
+			}).then(() => {
+				alert("탈퇴가 정상적으로 처리 되었습니다.");
+				store.commit("setLogout");
+			}).catch((err) => {
+				console.log(err);
+			})
+		},
+		getUserRank(store, payload) {
+			axios({
+				method: "get",
+				url: API.url + userAPI.rank(payload),
+			}).then((res) => {
+				if (res) {
+					console.log(res.data.rank);
+					store.commit("setUserRank", res.data.rank);
+					this.state.rank = res.rank;
+				}
+				else
+					console.log("랭크 가져오기 실패.");
+			}).catch((err) => {
+				console.log(err);
+			})
+		}
 
 }
 }
