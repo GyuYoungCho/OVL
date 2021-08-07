@@ -64,7 +64,7 @@ export default {
             datas.forEach(pos=> {
                 let addr = pos.place.split(' ')
                 let address = addr[0]+" " +addr[1]+" " +addr[2] +" " +addr[3]
-                console.log(address)
+               
                 geocoder.addressSearch(address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
 
