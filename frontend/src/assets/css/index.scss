@@ -1,19 +1,14 @@
-// 기본 글꼴 설정
-@font-face {
-  font-family: 'SDSamliphopangche_Basic';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Basic.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
-
-* {
-  font-family: 'SDSamliphopangche_Basic';
-}
 // 여기에 프로젝트 전체의 scss 가 import 됩니다.
 
 // 기초 세팅 관련 scss import 구문도 cascading 되므로 주의
 @import "./reset.scss";
 @import "./color.scss";
+
+// 글꼴 설정 관련
+@import "./fonts.scss";
+
+// 웰컴 화면 scss
+@import "./welcome.scss";
 
 // 유저 인증 관련 scss
 @import "./login.scss";
@@ -30,3 +25,5 @@
 
 // VetParty 관련 scss
 @import "./VetParty.scss";
+
+
