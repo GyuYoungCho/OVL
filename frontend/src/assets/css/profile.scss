@@ -1,4 +1,4 @@
-.signup {
+.modifyuser {
   display: flex;
   flex-direction: column;
 
@@ -18,8 +18,8 @@
     text-align: center;
     .logo-img {
       text-align: center;
-      width: 200px;
-      height: 200px;
+      width: 100px;
+      height: 100px;
     }
   }
 
@@ -60,6 +60,7 @@
     font-size: small;
   }
 }
+//프로필 scss
 .profilepage {
   display: flex;
   flex-direction: column;
@@ -78,5 +79,24 @@
   }
   .testarea {
     background-color: $hy-green;
+  }
+  .bg-freditgreen {
+    background-color: $mild-bg !important;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 5px 10px;
+    width: 100px;
+  }
+  .postArea {
+    .wrapper {
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-gap: 10px;
+      background-color: #fff;
+    }
+  }
+  .ingdate {
+    font-size: medium;
+    color: $freditgreen;
   }
 }
