@@ -245,21 +245,21 @@ export default {
     },  
     userPath() { // 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     replyUserPath(info) { // 답글 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
       }
@@ -367,7 +367,6 @@ export default {
     ...mapState("postReply", (["replyList", "replyLikeList"]))
   },
   created() {
-    console.log("현재 유저!!!!!!! : "+this.userinfo.userid);
     this.isComment = true;
     // 게시글 가져오기
     this.$store.dispatch("post/getPost", this.$route.params.postId); 
