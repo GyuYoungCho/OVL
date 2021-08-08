@@ -2,6 +2,7 @@
 import axios from "axios";
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
+import challengeAPI from '@/api/challenge.js'
 
 export default {
 namespaced: true,
@@ -14,9 +15,10 @@ namespaced: true,
 			nickname: "",
 			phone: "",
 			stored_file_path: "",
+			challengeId: Object,
 		},
 		isLogin: false,
-		rank:null,
+		rank: null,
 	},
 	mutations: {
 		setUserInfo(state, payload) {
@@ -33,11 +35,15 @@ namespaced: true,
 				nickname: "",
 				phone: "",
 				stored_file_path: "",
+				challengeId: Object,
 			};
 			localStorage.removeItem("access-token");
 		},
 		setUserRank(state, payload) {
 			state.rank = payload;
+		},
+		setChallenge(state, payload) {
+			state.challenge = payload;
 		}
 
 	},
@@ -48,6 +54,9 @@ namespaced: true,
 		isLogin(state) {
 			return state.isLogin;
 		},
+		challenge(state) {
+			return state.challenge;
+		}
 	},
 	actions: {
 		getUserInfo(store) {
@@ -180,7 +189,24 @@ namespaced: true,
 			}).catch((err) => {
 				console.log(err);
 			})
-		}
+		},
+		getChallenge(store, payload) {
+			axios({
+				method: "get",
+				url: API.url + challengeAPI.search_detail(payload),
+			}).then((res) => {
+				if (res) {
+					console.log(res.data);
+					store.commit("setChallenge", res.data);
+					this.state.challenge = res.data;
+				}
+				else {
+					console.log("챌린지를 가져올 수 없습니다.");
+				}
+			}).catch((err) => {
+				console.log(err);
+			})
+		},
 
 }
 }

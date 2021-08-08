@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <section class="signup">
+    <section class="modifyuser">
     <div class="logo">
         <img src="@/assets/logo.png" class="logo-img"><br>
     </div>

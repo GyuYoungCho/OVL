@@ -54,7 +54,7 @@ export default {
       console.log(data.userId)
       const URL = API.url + recipeCommentAPI.regist()
       console.log(URL)
- 
+
 
       axios.post(URL, data)
         .then(res => {
