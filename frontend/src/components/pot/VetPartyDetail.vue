@@ -7,7 +7,7 @@
           transition="dialog-bottom-transition"
           max-width="500px"
           scrollable>
-        <v-card>
+        <v-card tile>
           <v-toolbar color="#004627" dark>
             <v-btn icon dark @click="cancelDetail">
               <v-icon>mdi-close</v-icon>
@@ -16,9 +16,18 @@
             <v-spacer></v-spacer>
           </v-toolbar>
             <v-row>
-              <v-icon>mdi-map-marker</v-icon>
+              <v-col>
+                  <v-icon>mdi-map-marker</v-icon>
                   <span>{{this.potitem.restaurant_name}}</span>
-              </v-row>
+                  <v-icon>mdi-map-marker</v-icon>
+                  <span>{{this.potitem.restaurant_name}}</span>
+                  <v-icon>mdi-map-marker</v-icon>
+                  <span>{{this.potitem.restaurant_name}}</span>
+              </v-col>
+              <v-col>
+                  <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
+              </v-col>
+            </v-row>
           </v-card>
     </v-dialog>
   </div>
@@ -28,13 +37,27 @@
 import axios from "axios";
 import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
+import { mapGetters, mapActions} from 'vuex';
+import ProfileName from '@/components/basic/ProfileName.vue';
 
 export default {
+  components: { 
+    ProfileName 
+  },
   props:{
     pot_detail_modal : Boolean,
     potitem : Object,
   },
+  data(){
+    return{
+
+    }
+  },
+  computed:{
+    ...mapGetters("pot", ["potattendusers"]),
+  },
   methods:{
+    ...mapActions("pot",["setPotAttendUsers"]),
     cancelDetail() {
       this.$emit('openDetailModal', false)
     },
@@ -80,6 +103,10 @@ export default {
           console.log(error);
         })
     },
+  },
+
+  mounted(){
+
   }
 }
 </script>

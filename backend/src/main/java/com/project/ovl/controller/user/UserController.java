@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.ovl.controller.post.PostCommentController;
+import com.project.ovl.controller.post.PostReplyController;
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.ReportDao;
 import com.project.ovl.dao.challenge.ChallengeDao;
@@ -153,6 +155,12 @@ public class UserController {
 	
 	@Autowired
 	ChallengeHistoryDao challengeHistoryDao;
+	
+	@Autowired
+	PostCommentController postCommentController;
+
+	@Autowired
+	PostReplyController postReplyController;
 	
 	@GetMapping("/nickname_check/{nickname}")
 	@ApiOperation(value = "닉네임 중복 체크")
@@ -435,16 +443,6 @@ public class UserController {
 			}
 			
 			// 내가 다른 곳에서 쓴 거 삭제
-			List<PostReplyLike> prlList = postReplyLikeDao.findByUserId(user);
-			for (PostReplyLike prl : prlList) {
-				postReplyLikeDao.delete(prl);
-			}
-			
-			List<PostCommentLike> pclList = postCommentLikeDao.findByUserId(user);
-			for (PostCommentLike pcl : pclList) {
-				postCommentLikeDao.delete(pcl);
-			}
-			
 			List<PostLike> plList = postLikeDao.findByUserId(user);
 			for (PostLike pl : plList) {
 				postLikeDao.delete(pl);
@@ -452,12 +450,12 @@ public class UserController {
 			
 			List<PostReply> prList = postReplyDao.findByUserId(user);
 			for (PostReply pr : prList) {
-				postReplyDao.delete(pr);
+				postReplyController.delete(pr.getPostReplyId());
 			}
 			
 			List<PostComment> pcList = postCommentDao.findByUserId(user);
 			for (PostComment pc : pcList) {
-				postCommentDao.delete(pc);
+				postCommentController.delete(pc.getPostCommentId());
 			}
 			
 			

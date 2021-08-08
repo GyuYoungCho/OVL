@@ -241,6 +241,7 @@ export default {
   },
   computed: {
     ...mapGetters("pot", ["rest"]),
+    ...mapGetters("user", ['userinfo']),
     address () {
       return this.roadAddress + this.extraAddress
     },
