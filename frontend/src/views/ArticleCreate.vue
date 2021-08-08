@@ -171,8 +171,8 @@
           type: "text/plain",
         });
 
-        if (this.modifyPhotoList.length==0) formData.append('modifyPhotoList', file) // 수정을 하나도 안할 때
-        if (this.plusPhotoList.length==0) formData.append('plusPhotoList', file) // 추가를 하나도 안할 때
+        formData.append('modifyPhotoList', file) // 수정을 하나도 안할 때를 위해 추가
+        formData.append('plusPhotoList', file) // 추가를 하나도 안할 때를 위해 추가
 
         // 수정할 사진 리스트
         for (let i=0;i<this.modifyPhotoList.length;i++) {
@@ -185,7 +185,7 @@
         
         formData.append('category', this.categori); // 카테고리 
         formData.append('content', this.content); // 내용
-        formData.append('postId', this.post.postId);
+        formData.append('postId', this.post.postId); // 게시글 아이디
         
 
         var params = new URLSearchParams();
