@@ -4,7 +4,7 @@
       <section  class="vetparty">
       <h4>채식팟</h4>
       <map-view></map-view>
-      <v-list >
+      <v-list class="user-potlist mt-5 px-0" color="#EBF4ED">
         <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot" />
       </v-list>
       <v-list>
@@ -41,14 +41,14 @@ export default {
     ...mapGetters("user", ['userinfo']),
   },
   created() {
-      this.$store.dispatch("pot/setPotItems")
       this.$store.dispatch("pot/setUsersPots",2)
+      this.$store.dispatch("pot/setPotItems")
       //  this.setUsersPots(userinfo.userid);
   },
   method:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
-
-  }
+    
+  },
 }
 </script>
 

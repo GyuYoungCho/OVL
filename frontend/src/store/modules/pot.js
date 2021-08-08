@@ -34,7 +34,19 @@ export default {
       state.restitems = payload;
     },
     set_Pot_Items(state, payload) {
-      state.potitems = payload;
+      let datas = [];
+      let user = [];
+      state.userpots.forEach((item) => {
+        user.push(item.potid);
+      });
+
+      payload.forEach((item) => {
+        if (!user.includes(item.potid)) {
+          datas.push(item);
+        }
+      });
+
+      state.potitems = datas;
     },
     set_Pot_Attend_Users(state, payload) {
       state.potattendusers = payload;
