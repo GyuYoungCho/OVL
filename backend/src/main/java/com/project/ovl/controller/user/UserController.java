@@ -217,7 +217,7 @@ public class UserController {
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
 		System.out.println("saveUser : "+saveUser);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -367,7 +367,7 @@ public class UserController {
     			file.delete();
     		}
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile" + useropt.getUserid();
+            String path = "src/main/resources/static/profile/" + useropt.getUserid();
             file = new File(path);
             
             if(!file.exists()){
