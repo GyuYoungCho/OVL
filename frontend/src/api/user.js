@@ -1,43 +1,46 @@
 // /@/api/user.js
 
-export default  { 
+export default {
   // url: '/user/',
-    
-  nickname_check (nickname) {
-    return `/user/nickname_check/${nickname}`
+
+  nickname_check(nickname) {
+    return `/user/nickname_check/${nickname}`;
   },
-  join () {
-    return '/user/join'
+  join() {
+    return "/user/join";
   },
-  email_auth (type, email) {
-    return `/user/email_auth/${type}/${email}`
+  join_profile() {
+    return "/user/join/profile";
   },
-  email_auth_check (email, authNumber) {
-    return `/user/email_auth_check/${email}/${authNumber}`
+  email_auth(type, email) {
+    return `/user/email_auth/${type}/${email}`;
   },
-  login () {
-    return '/user/login'
+  email_auth_check(email, authNumber) {
+    return `/user/email_auth_check/${email}/${authNumber}`;
   },
-  info () {
-    return '/user/info'
+  login() {
+    return "/user/login";
   },
-  tokenValid () {
-    return '/user/tokenValid'
+  info() {
+    return "/user/info";
   },
-  search_id (name, phone) {
-    return `/user/search_id/${name}/${phone}`
+  tokenValid() {
+    return "/user/tokenValid";
   },
-  modify_pw (email, password) {
-    return `/user/modify_pw/${email}/${password}`
+  search_id(name, phone) {
+    return `/user/search_id/${name}/${phone}`;
+  },
+  modify_pw(email, password) {
+    return `/user/modify_pw/${email}/${password}`;
   },
   // PathVariable, RequestPart, RequestParam
-  modify_user (nickname, phone) {
-    return `/user/modify_user/${nickname}/${phone}`
+  modify_user(nickname, phone) {
+    return `/user/modify_user/${nickname}/${phone}`;
   },
-  select (user_id) {
-    return `/user/select/${user_id}`
+  select(user_id) {
+    return `/user/select/${user_id}`;
   },
-  delete (user_id) {
-    return `/user/delete/${user_id}`
-  }
-}
+  delete(user_id) {
+    return `/user/delete/${user_id}`;
+  },
+};
