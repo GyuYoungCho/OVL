@@ -22,7 +22,7 @@ export default {
     },
     computed:{
         profile() {
-            return API.url + "/profile" + this.user.userid + "/"+ this.user.stored_file_path.split('/').reverse()[0]
+            return API.url + "/profile/" + this.user.userid + "/"+ this.user.stored_file_path.split('/').reverse()[0]
         },
     }
 }
