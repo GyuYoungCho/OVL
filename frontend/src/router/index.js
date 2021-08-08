@@ -42,7 +42,7 @@ const routes = [
     component: NotFound,
   },
   {
-    path: "/article_create",
+    path: "/article_create/:type",
     name: "ArticleCreate",
     component: ArticleCreate,
   },

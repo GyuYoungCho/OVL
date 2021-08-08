@@ -67,12 +67,19 @@
     padding: 10px 10px;
   }
 
-  &Submit {
+  .buttonDiv {
     background-color: $freditgreen;
-    color: white;
     border-radius: 8px;
     margin-top: 15px;
     padding: 7px 0px;
+    color: white;
+    text-align: center;
+  }
+
+  .photoClick {
+    color: $freditgreen;
+    border-radius: 50%;
+    background-color: white;
   }
 }
 

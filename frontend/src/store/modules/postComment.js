@@ -52,6 +52,7 @@ namespaced: true,
             })
         },
         commentAdd(store, payload) {
+            console.log("댓글 유저 : "+payload.userId);
             axios({
                 method:"post",
                 url: API.url + commentAPI.regist(),

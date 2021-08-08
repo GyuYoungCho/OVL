@@ -13,7 +13,7 @@
             </div>
           </v-col>
 
-          <!-- 좋아요, 댓글 -->
+          <!-- 게시글 좋아요, 댓글 -->
           <v-col cols="6" md="1" style="text-align:right">
             <div v-if="isPostLike()" class="inline" @click="postLike">
               <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
@@ -27,7 +27,7 @@
               {{post.comment_count}}
             </span>
 
-            <!-- 수정, 삭제 버튼 -->
+            <!-- 게시글 수정, 삭제 버튼 -->
             <v-menu offset-y class="inline" v-if="isUser()">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
@@ -68,15 +68,15 @@
         
         <!-- 댓글 가져오기 -->
         <div v-for="(info, idx) in commentList" :key="idx" class="my-1 ">
-          <!-- 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
+          <!-- 댓글 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
           <v-row>
             <v-col cols="10" md="1">
               <img :src="commentUserPath(info)" width=10% style="border-radius: 50%;">
-              {{info.postId.userId.nickname}} &nbsp;
+              {{info.userId.nickname}} &nbsp;
               {{info.content}}
             </v-col>
             <v-col cols="2" md="1" style="text-align:right">
-              <!-- 하트 확인-->
+              <!-- 댓글 하트 확인-->
               <div v-if="isCommentLike(info.postCommentId)" class="inline" @click="commentLike(info.postCommentId)">
                 <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
               </div>
@@ -86,10 +86,15 @@
             </v-col>
           </v-row>
           
-          <!-- 좋아요, 답글 달기 -->
+          <!-- 댓글 좋아요, 답글 달기 -->
           <div class="ml-5 color-gray smallFont"> 
             좋아요 {{info.like_count}}개 &nbsp;
-            <button @click="replyRegist(info)">{{replyBtn}}</button> &nbsp;
+            
+            <div @click="replyRegist(info)" class="inline">
+              <div class="inline" v-if="replyBtnClickId==info.postCommentId">답글 취소</div> 
+              <div class="inline" v-else>답글 달기</div>
+              &nbsp;
+            </div>
             <div class="inline" v-if="isCommentUser(info)">
               <button @click="commentModify(info)">수정</button> | 
               <button @click="commentDelete(info)">삭제</button>
@@ -110,11 +115,11 @@
                 <v-row>
                   <v-col cols="10" md="1">
                     <img :src="replyUserPath(replyInfo)" width=10% style="border-radius: 50%;">
-                    {{replyInfo.postCommentId.postId.userId.nickname}} &nbsp;
+                    {{replyInfo.userId.nickname}} &nbsp;
                     {{replyInfo.content}}
                   </v-col>
                   <v-col cols="2" md="1" style="text-align:right">
-                    <!-- 하트 확인-->
+                    <!-- 답글 하트 확인-->
                     <div v-if="isReplyLike(replyInfo.postReplyId)" class="inline" @click="replyLike(replyInfo.postReplyId)">
                       <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
                     </div>
@@ -154,12 +159,12 @@ export default {
       commentId:0, // 댓글 아이디
       replyId:0, // 답글 아이디
       showReply:[], // 답글 보여줄 거?
-      replyBtn:"답글 달기", // 답글 달기 or 답글 취소
       items: [
         { title: '수정'},
         { title: '삭제'},
       ],
       inputBtn:"게시", // 댓글 입력 창 게시 or 수정
+      replyBtnClickId:0,
     }
   },
   methods: {
@@ -203,15 +208,15 @@ export default {
       else return false;
     },
     isCommentUser(info) { // 댓글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
-      if (info.postId.userId.userid == this.userinfo.userid) return true;
+      if (info.userId.userid == this.userinfo.userid) return true;
       else return false;
     },
     isReplyUser(replyInfo) { // 답글 쓴 유저가 맞다면 수정, 삭제 버튼 생기기
-      if (replyInfo.postCommentId.postId.userId.userid == this.userinfo.userid) return true;
+      if (replyInfo.userId.userid == this.userinfo.userid) return true;
       else return false;
     },
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
-      if (title=="수정") console.log("수정입니다^^")
+      if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
       else { // 삭제
         if (this.alertDeleteConfirm()) {
           var payload = {
@@ -240,21 +245,21 @@ export default {
     },  
     userPath() { // 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
       }
     },
     replyUserPath(info) { // 답글 프로필 사진 이미지 출력
       if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
       }
@@ -300,6 +305,7 @@ export default {
     },
     regist() { // 댓글, 답글 등록
       if (this.isComment) { // 댓글
+        
         let registPayload = {
           "userId" : this.userinfo.userid,
           "postId" : this.post.postId,
@@ -339,14 +345,14 @@ export default {
     }, 
     replyRegist(info) { // 답글 달기 버튼 클릭 시
       if (this.isComment) { // 댓글 달기로 되어있을 때 답글 다는 걸로 변경
-        this.holder = info.postId.userId.nickname+"님에게 답글 달기..";
-        this.replyBtn = "답글 취소";
+        this.holder = info.userId.nickname+"님에게 답글 달기..";
+        this.replyBtnClickId = info.postCommentId;
         this.isComment = false;
         this.commentId = info.postCommentId;
         this.showReply.push(info.postCommentId);
       } else { // 답글 달기로 되어있을 때 댓글 다는 걸로 변경
         this.holder = "댓글 달기..";
-        this.replyBtn = "답글 달기";
+        this.replyBtnClickId = 0;
         this.isComment = true;
         var idx = this.showReply.indexOf(this.commentId);
         this.showReply.splice(idx, 1);

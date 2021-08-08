@@ -14,7 +14,7 @@
           <v-list>
           <v-list-item v-for="(item, index) in items" :key="index">
             <v-list-item-title>
-              <RouterLink class='text-dec' :to="{ name: item.routerName }">
+              <RouterLink class='text-dec' :to="{ name: item.routerName, params: { type: 0 } }">
                 {{ item.title }}
               </RouterLink>
             </v-list-item-title>

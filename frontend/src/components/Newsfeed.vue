@@ -74,7 +74,7 @@ export default {
     },
     userPath(idx) { // 프로필 사진 이미지 출력
       if (this.postList[idx].postId.userId.stored_file_path==null || this.postList[idx].postId.userId.stored_file_path=="") {
-        return require("@/assets/image/defalutImg.jpg");
+        return require("@/assets/image/defaultImg.jpg");
       } else {
         return "http://localhost:8080/profile"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
       }
