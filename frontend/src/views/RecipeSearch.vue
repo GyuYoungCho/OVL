@@ -1,58 +1,69 @@
 <template>
-  <div>
-    <h1>레시피들이 보여질 공간</h1>
-    <!-- 레시피 검색 부분 -->
-    <input type="text" placeholder="검색" v-model="query">
-
-    <div v-for="(recipe, idx) in recipes" :key="idx">
-      <div v-if="containmentValid(recipe)">
-        ------------
-        <p>제목 : {{ recipe.title }}</p>
-        <p>작성자 : {{ recipe.userid.name }}</p>
-        <img :src="srcPath(recipe)" alt="" @click="onImgClick(recipe)">
-        <p>내용 : {{ recipe.content }}</p>
-        <p>시간 : {{ calTime(recipe) }}</p>
-        
-        -------------
-
+  <v-container>
+    <section class="recipeSearch">
+      <!-- 레시피 검색 부분 -->
+      <div class="recipeSearchHeader">
+        <select class="sortSelect" v-model="selectedOption" @change="sortRecipes(selectedOption)">
+          <option value="new" selected>최신순</option>
+          <option value="like">인기순</option>
+          <option value="comment">댓글순</option>
+        </select>
+        <input type="text" placeholder="검색" v-model="query" class="searchBar">
       </div>
-      
-    </div>
 
-  </div>
+
+      <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
+        
+        <div v-if="containmentValid(recipe)">
+          <ProfileName :user="recipe.userid"></ProfileName>
+          <img :src="srcPath(recipe)" alt="" @click="onImgClick(recipe)" class="recipePic">
+          <div class="oneRecipeContent">
+            <span>{{ recipe.title }}</span>
+            <span class="oneRecipeTime">{{ calTime(recipe) }}</span>
+          </div>
+          <div>
+            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe)">mdi-heart</v-icon>
+            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe)">mdi-heart-outline</v-icon>
+            {{ recipe.like_count}}
+            
+            <v-icon class="chatIcon">mdi-chat-outline</v-icon>
+            {{ recipe.comment_count }}
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </v-container>
 </template>
 
 <script>
-import axios from 'axios'
-import API from '@/api/index.js'
-import recipeAPI from '@/api/recipe.js'
 import moment from 'moment'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import ProfileName from '@/components/basic/ProfileName.vue'
 
 export default {
+  components: {
+    ProfileName
+  },
   data: () => ({
-    recipes: [],
     query: "",
+    selectedOption: "",
   }),
   methods: {
-    ...mapActions(['fetchRecipeDetail', 'fetchRecipeComments',]),
-    fetchRecipes () {
-      const URL = API.url + recipeAPI.select_all()
-      axios.get(URL)
-        .then(res => {
-          const data = res.data.sort(function(recipe1, recipe2) {
-            const time1 = new Date(recipe1.time)
-            const time2 = new Date(recipe2.time)
-            return time2 - time1
-          })
-          this.recipes = data
-        })
-        .catch(err => console.error(err))
-    },
+    ...mapActions(['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes',]),
+    
     onImgClick (recipe) {
       this.fetchRecipeDetail(recipe.recipeId)
       this.fetchRecipeComments(recipe.recipeId)
       this.$router.push({ name: 'RecipeDetail' })
+    },
+    onHeartIconClick (recipe) {
+      const data = {
+        userId: this.userinfo.userid,
+        recipeId: recipe.recipeId,
+      }
+      this.likeRecipe(data)
     },
     srcPath(recipe){
       return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
@@ -65,9 +76,14 @@ export default {
     }
     
   },
+  computed: {
+    ...mapGetters(['recipes', 'recipeLikeList', ]),
+    ...mapGetters("user", (["userinfo"])),
+  },
 
   created () {
     this.fetchRecipes()
+    this.fetchRecipeLikeList(this.userinfo.userid)
   },
 }
 </script>

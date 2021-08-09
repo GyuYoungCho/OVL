@@ -23,8 +23,8 @@ export default {
   search (search_title) {
     return `/recipe/search/${search_title}`
   },
-  like_list (user_id, recipe_id) {
-    return `/recipe/like_list/${user_id}/${recipe_id}`
+  like_list (user_id) {
+    return `/recipe/like_list/${user_id}`
   },
   like (user_id, recipe_id) {
     return `/recipe/like/${user_id}/${recipe_id}`

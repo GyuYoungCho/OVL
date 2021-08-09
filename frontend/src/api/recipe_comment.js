@@ -8,8 +8,8 @@ export default {
   modify () {
     return '/recipe/comment/modify'
   },
-  delete (post_comment_id) {
-    return `/recipe/comment/delete/${post_comment_id}`
+  delete (recipe_comment_id) {
+    return `/recipe/comment/delete/${recipe_comment_id}`
   },
   search_all (recipe_id) {
     return `/recipe/comment/search_all/${recipe_id}`
