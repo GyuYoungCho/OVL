@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -45,6 +44,7 @@ import com.project.ovl.dao.post.PostCommentDao;
 import com.project.ovl.dao.post.PostCommentLikeDao;
 import com.project.ovl.dao.post.PostDao;
 import com.project.ovl.dao.post.PostLIkeDao;
+import com.project.ovl.dao.post.PostPhotoDao;
 import com.project.ovl.dao.post.PostReplyDao;
 import com.project.ovl.dao.post.PostReplyLikeDao;
 import com.project.ovl.dao.pot.PotDao;
@@ -57,6 +57,7 @@ import com.project.ovl.dao.recipe.RecipeProcessDao;
 import com.project.ovl.dao.recipe.RecipeReplyDao;
 import com.project.ovl.dao.recipe.RecipeReplyLikeDao;
 import com.project.ovl.dao.user.UserDao;
+import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.dto.UserDto;
 import com.project.ovl.model.challenge.Challenge;
 import com.project.ovl.model.challenge.ChallengeHistory;
@@ -69,6 +70,7 @@ import com.project.ovl.model.like.RecipeCommentLike;
 import com.project.ovl.model.like.RecipeLike;
 import com.project.ovl.model.like.RecipeReplyLike;
 import com.project.ovl.model.mail.mailService;
+import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
@@ -81,6 +83,7 @@ import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.report.Report;
 import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
+import com.project.ovl.model.user.UserLog;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -120,6 +123,9 @@ public class UserController {
 	PostCommentDao postCommentDao;
 	
 	@Autowired
+	PostPhotoDao postPhotoDao;
+	
+	@Autowired
 	PostDao postDao;
 	
 	@Autowired
@@ -157,6 +163,9 @@ public class UserController {
 	
 	@Autowired
 	ChallengeHistoryDao challengeHistoryDao;
+	
+	@Autowired
+	UserLogDao userLogDao;
 	
 	@Autowired
 	PostCommentController postCommentController;
@@ -219,61 +228,13 @@ public class UserController {
 	
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
-	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request) throws IllegalStateException, IOException {
 		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
 				passwordEncoder.encode(request.getPassword()), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
 		
-		userDao.save(saveUser);
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-
-	}
-	
-	@PostMapping("/join/profile")
-	@ApiOperation(value = "가입 시 프로필 사진 등록")
-	public ResponseEntity<String> joinprofile(@RequestPart MultipartFile picture,
-								@RequestPart String user_id) throws IOException{
-		User saveUser = userDao.getUserByUserid(Integer.parseInt(user_id));
-		String originalFileExtension;
-		if(picture!=null) {
-    		
-            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile/" + user_id;
-            File file = new File(path);
-            
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            String contentType = picture.getContentType();
-
-            if(!ObjectUtils.isEmpty(contentType)) {
-
-                if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpg";
-                else if(contentType.contains("image/png"))
-                    originalFileExtension = ".png";
-              
-                else {
-                	userDao.save(saveUser);
-            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-                }
-                String new_file_name = System.nanoTime() + originalFileExtension;
-                saveUser.setStored_file_path(path + "/" + new_file_name);
-                saveUser.setOriginal_file_name(picture.getOriginalFilename());
-                
-                userDao.save(saveUser);
-                
-                file = new File(absolutePath + path + File.separator + new_file_name);
-                picture.transferTo(file);
-                
-                file.setWritable(true);
-                file.setReadable(true);
-            }
-            
-    	}
 		
-		System.out.println("saveUser : "+saveUser);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
@@ -461,8 +422,8 @@ public class UserController {
 	
 	@ApiOperation(value = "회원 정보 수정", response = String.class)
     @PutMapping(value = "/modify_user")
-	public ResponseEntity<String> modify_user(@RequestParam("userId") int user_id, @RequestParam("nickname") String nickname, @RequestParam("phone") String phone,
-			@RequestParam("password") String password) throws IOException {
+	public ResponseEntity<String> modify_user(@RequestPart("userId") int user_id, @RequestPart("nickname") String nickname, @RequestPart("phone") String phone,
+			@RequestPart("password") String password) throws IOException {
     	User user = userDao.getUserByUserid(user_id);
     	
     	user.setNickname(nickname);
@@ -507,6 +468,11 @@ public class UserController {
 				List<PostLike> plList = postLikeDao.findByPostId(p);
 				for (PostLike pl : plList) {
 					postLikeDao.delete(pl);
+				}
+				
+				List<PostPhoto> photoList = postPhotoDao.findPostPhotoByPostId(p);
+				for (PostPhoto pp : photoList) {
+					postPhotoDao.delete(pp);
 				}
 				postDao.delete(p);
 			}
@@ -636,6 +602,11 @@ public class UserController {
 				for(ChallengeHistory ch : chl.get()) {
 					challengeHistoryDao.delete(ch);
 				}
+			}
+			
+			List<UserLog> logList = userLogDao.findTop300ByUserIdOrderByLogDateDesc(user);
+			for (UserLog ul : logList) {
+				userLogDao.delete(ul);
 			}
 			
 			userDao.delete(user);
