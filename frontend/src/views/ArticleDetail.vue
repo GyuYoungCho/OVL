@@ -245,15 +245,12 @@ export default {
       else return false;
     },  
     userPath() { // 프로필 사진 이미지 출력
-      if (this.post.userId.stored_file_path==null || this.post.userId.stored_file_path=="") return require("@/assets/image/defaultImg.png");
       return API.url+"/profile"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
     },
     commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
-      if (info.postId.userId.stored_file_path==null || info.postId.userId.stored_file_path=="") return require("@/assets/image/defaultImg.png");
       return API.url+"/profile"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
     },
     replyUserPath(info) { // 답글 프로필 사진 이미지 출력
-      if (info.postCommentId.postId.userId.stored_file_path==null || info.postCommentId.postId.userId.stored_file_path=="") return require("@/assets/image/defaultImg.png");
       return API.url+"/profile"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
     },
     photoPath(idx){ // 대표 이미지 출력
