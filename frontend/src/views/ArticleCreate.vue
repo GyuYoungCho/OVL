@@ -33,12 +33,14 @@
         <div v-else>
           <v-carousel class="carouselBorder" hide-delimiters height="30vh">
             <v-carousel-item v-for="(info,idx) in photoList" :key="idx" :src="photoPath(idx)" style="text-align:right">
-              
+              <!-- 사진 수정 -->
               <span @click="photoModify(idx)">
                 <label for="modifyFile"><v-icon class="photoClick">mdi-check-circle-outline</v-icon></label>
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUpload" style="width:0; height:0">  
               </span>
+              <!-- 사진 삭제 -->
               <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
                 <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload" style="width:0; height:0">
@@ -75,8 +77,9 @@
         content: "",
         // userId 는 vuex로 관리될거니까 작성.vue 에선 보일 필요 없음
         sendList: [],
+
         // ↓ 여기서부터 게시글 수정 관련 변수
-        type:0,
+        type:0, // 등록인지 수정인지 구분하기 위함 0 : 등록, 나머지(postId) : 수정
         deleteIdList:[], // 삭제할 사진 아이디 저장하는 리스트
         photoList:[], // 게시글 수정 시 가져온 사진 리스트
         modifyPhotoList: [], // 게시글 수정 사진 저장할 리스트
@@ -88,7 +91,7 @@
     computed: {
       ...mapState("user", ["userinfo", "isLogin"]),
       ...mapState("post", ["post", "postPhotoList"]),
-      typeTrans() {
+      typeTrans() { // 수정에서 바로 등록하기 누를 때 전환하기 위함
         return this.$route.params.type;
       },
     },
@@ -167,7 +170,7 @@
       },
       modify() { // 게시글 수정
         const formData = new FormData();
-        var file = new File(["ex"], "ex.txt", {
+        var file = new File(["ex"], "ex.txt", { // 임시 파일
           type: "text/plain",
         });
 
@@ -187,7 +190,7 @@
         formData.append('content', this.content); // 내용
         formData.append('postId', this.post.postId); // 게시글 아이디
         
-
+        // 수정하는 postId 리스트, 삭제하는 postId 리스트
         var params = new URLSearchParams();
         params.append("deleteIdList", this.deleteIdList);
         params.append("modifyIdList", this.modifyIdList);

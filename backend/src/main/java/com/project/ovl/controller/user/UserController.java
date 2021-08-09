@@ -399,14 +399,10 @@ public class UserController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "회원 수정", response = String.class)
-    @PutMapping(value = "/modify_user/{user_id}")
-	public ResponseEntity<String> modify(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic,
-			@RequestParam("nickname") String nickname,
-			@RequestParam("phone") String phone) throws IOException {
+	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
+    @PutMapping(value = "/modify_pic/{user_id}")
+	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic) throws IOException {
     	User useropt = userDao.getUserByUserid(user_id);
-    	useropt.setNickname(nickname);
-    	useropt.setPhone(phone);
     	String originalFileExtension;
     	
     	if(pic!=null) {
@@ -451,8 +447,21 @@ public class UserController {
     	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "회원 정보 수정", response = String.class)
+    @PutMapping(value = "/modify_user")
+	public ResponseEntity<String> modify_user(@RequestParam("userId") int user_id, @RequestParam("nickname") String nickname, @RequestParam("phone") String phone,
+			@RequestParam("password") String password) throws IOException {
+    	User user = userDao.getUserByUserid(user_id);
+    	
+    	user.setNickname(nickname);
+    	user.setPhone(phone);
+    	if(password.length()>0) user.setPassword(password);
+    	userDao.save(user);
+    	
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
 
-    //
     @ApiOperation(value = "회원 탈퇴", response = String.class)
 	@DeleteMapping("/delete/{user_id}")
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
