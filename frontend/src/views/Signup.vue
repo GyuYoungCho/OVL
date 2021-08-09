@@ -86,7 +86,6 @@ export default {
       .catch(err => {
         console.log(err)
       })
-
     },
     onEmailBtnClick () {
     const URL = API.url + userAPI.email_auth('join', this.email)
