@@ -36,10 +36,12 @@ export default {
     set_Pot_Items(state, payload) {
       let datas = [];
       let user = [];
-      state.userpots.forEach((item) => {
-        user.push(item.potid);
-      });
-
+      if (state.userspots) {
+        state.userpots.forEach((item) => {
+          user.push(item.potid);
+        });
+      }
+      console.log(user);
       payload.forEach((item) => {
         if (!user.includes(item.potid)) {
           datas.push(item);
@@ -66,7 +68,6 @@ export default {
           store.commit("set_Rest_Items", res.data);
         })
         .catch((error) => {
-          alert("못가져옴");
           console.log(error);
         });
     },
@@ -77,7 +78,6 @@ export default {
           store.commit("set_Pot_Items", res.data);
         })
         .catch((error) => {
-          alert("못가져옴");
           console.log(error);
         });
     },
@@ -89,7 +89,6 @@ export default {
           commit("set_Pot_Attend_Users", res.data);
         })
         .catch((error) => {
-          alert("못가져옴");
           console.log(error);
         });
     },
@@ -100,7 +99,6 @@ export default {
           commit("set_User_Pots", res.data);
         })
         .catch((error) => {
-          alert("못가져옴");
           console.log(error);
         });
     },

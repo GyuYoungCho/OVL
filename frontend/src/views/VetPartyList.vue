@@ -2,9 +2,9 @@
   <div>
     <v-container>
       <section  class="vetparty">
-      <h4>채식팟</h4>
-      <map-view></map-view>
-      <v-list class="user-potlist mt-5 px-0" color="#EBF4ED">
+      <pot-search :search="search" class="mt-3"></pot-search>
+      <map-view class="mt-6"></map-view>
+      <v-list class="user-potlist mt-5 px-0" v-if="userpots" color="#EBF4ED">
         <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot" />
       </v-list>
       <v-list>
@@ -20,16 +20,18 @@ import { mapGetters, mapActions } from 'vuex';
 import AllPotList from '@/components/pot/AllPotList.vue'
 import UserPotList from '@/components/pot/UserPotList.vue'
 import MapView from '@/components/basic/MapView.vue';
+import PotSearch from '@/components/pot/PotSearch.vue';
 
 export default {
   components: { 
     AllPotList, 
     UserPotList, 
-    MapView
+    MapView,
+    PotSearch,
   },
   data(){
     return{
-      
+      search : '',
       allSteps: [
         "과일채소", "계란","유제품","생선","고기"
       ],
@@ -41,7 +43,7 @@ export default {
     ...mapGetters("user", ['userinfo']),
   },
   created() {
-      this.$store.dispatch("pot/setUsersPots",2)
+      this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
       this.$store.dispatch("pot/setPotItems")
       //  this.setUsersPots(userinfo.userid);
   },
