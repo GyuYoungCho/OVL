@@ -13,32 +13,17 @@
                                 <div style="margin: 10px">
                                     <div class="d-flex flex-column"> 
                                         <span class="following">following</span>
-                                            <v-dialog
-                                            v-if="isModalFollower"
-
-                                                transition="dialog-bottom-transition"
-                                                >
-                                                <v-card>
-                                                    <v-toolbar
-                                                    color="#004627"
-                                                    dark>
-                                                    <v-toolbar-title>식당 검색</v-toolbar-title>
-                                                    <v-spacer></v-spacer>
-                                                    </v-toolbar>
-                                                        <v-card-title>
-
-                                                        </v-card-title>
-                                                        
-                                                        
-                                                </v-card>
-                                            </v-dialog>
-                                        <button class="number2" @click="isModalFollowing=true">{{following}}</button>
+                                        <div @click="openDialog(0)">
+                                        <span class="number2">{{following}}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div style="margin: 10px"><div class="d-flex flex-column">
                                     <span class="follower">followers</span>
-                                    <ModalView v-if="isModalFollower" @close-modal="isModalFollower = false"> <Follower/> </ModalView>
-                                    <span class="number3" @click="isModalFollower=true">{{follower}}</span> </div></div>
+                                    <div @click="openDialog(1)">
+                                    <span class="number3">{{follower}}</span>
+                                    </div>
+                                </div></div>
                             </div>
 
                             <div> 
@@ -48,6 +33,30 @@
                         </div>
                     </div>
                 </div>
+                <v-dialog ref="modal1" v-model="dialog" persistent max-width="900px">
+                    <v-card>
+                        <v-card-title>
+                        <template>
+                            <v-icon style="margin-right:10px;" large color="#41B883" >List</v-icon> 
+                            <span class="headline" large>팔로잉 목록</span>
+                        </template>
+                        <v-spacer></v-spacer>
+                        <v-btn icon @click="closeDialog('modal1')"> <!-- closeDialog 클릭 이벤트 -->
+                            <v-icon>x</v-icon>
+                        </v-btn>
+                        </v-card-title>
+                        <v-card-text>
+                        <v-row>
+                            <v-col cols="12" sm="12" md="12" style="position: relative; border:1px solid #41B883; border-style:dashed; ">
+                            <!-- 업로드 컴포넌트 -->
+                            <ProfileName
+                                v-for="(auser, index) in detailFollowUser" :key="index" :user="auser">
+                            </ProfileName>
+                            </v-col>
+                        </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-dialog>
         </div>
     <div class="text-center">
         <v-tabs
@@ -83,13 +92,13 @@ import {mapGetters, mapState} from "vuex"
 import UserPosts from '@/components/profile/userPost.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
-import Follower from '@/components/profile/follower.vue'
-import ModalView from '@/components/profile/ModalView.vue'
+import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment';
 export default {
-  components: { UserPosts, UserRecipes, UserChallenges, Follower, ModalView},
+components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
     data () {
+        
         return{
         file: "",
 		lists: [],
@@ -97,13 +106,12 @@ export default {
         isModalFollower: false,
         isModalFollowing: false,
         start_date: 0,
+        dialog: false,
         }
-
-        
     },
     computed:{
     ...mapGetters("user",(["userinfo","isLogin", "challenge"])),
-    ...mapState("follow", (["followerList", "followingList"])),
+    ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
     ...mapState("user", (["isLogin", "rank"])),
     time() {
         const start = moment(this.start_date);
@@ -120,6 +128,8 @@ export default {
         this.$store.dispatch("user/getUserRank", this.userinfo.userid);
         this.$store.dispatch("follow/getFollowingList", this.userinfo.userid);
         this.$store.dispatch("follow/getFollowerList", this.userinfo.userid);
+
+        //console.log(this.followerList)
         this.follower = this.followerList.length;
         this.following = this.followingList.length;
         
@@ -131,6 +141,18 @@ export default {
         onClickEditUser(){
             this.$router.push({ name: "ModifyUser" });
         },
+    openDialog(num) { //Dialog 열리는 동작
+    if(num == 0){
+        this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
+    }else{
+        this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
+    }
+    this.dialog = true;
+
+    },
+    closeDialog() { //Dialog 닫히는 동작
+      this.dialog = false;
+    },
     },
 
 }

@@ -2,7 +2,6 @@
     <div class="d-flex">
         <v-list-item-avatar size=25>
             <v-img
-            
             :src="profile"
             ></v-img>
         </v-list-item-avatar>

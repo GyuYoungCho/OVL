@@ -7,6 +7,7 @@ export default {
     state: {
         followerList: [],
         followingList: [],
+        detailFollowUser: [],
     },
     mutations: {
         GET_FOLLOWER_LIST(state, payload) {
@@ -15,6 +16,10 @@ export default {
         GET_FOLLOWING_LIST(state, payload) {
             state.followingList = payload;
             //console.log("팔로잉: " + state.followingList);
+        },
+        GET_DETAIL_FOLLOWLIST(state, payload) {
+            state.detailFollowUser = payload;
+            //console.log("상세조회: " + state.detailFollowUser);
         }
     },
     actions: {
@@ -35,12 +40,26 @@ export default {
                 method: "get",
                 url: API.url + followAPI.select_following(payload),
             }).then((res) => {
+                //console.log("팔로워야~~: "+ res.data)
                 store.commit("GET_FOLLOWING_LIST", res.data);
             }).catch((err) => {
                 console.log("실패");
                 console.log(err);
             })
         },
+        getDetailFollowUser(store, payload) {
+            axios({
+                method: "post",
+                url: API.url + followAPI.select_detail(),
+                data: payload,
+            }).then((res) => {
+                console.log("Detail: " + res.data);
+                store.commit("GET_DETAIL_FOLLOWLIST", res.data);
+            }).catch((err) => {
+                console.log("실패");
+                console.log(err);
+            })
+        }
 
     }
 }

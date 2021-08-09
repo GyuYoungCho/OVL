@@ -7,20 +7,18 @@
     flex-direction: column;
     margin-top: 2vh;
   }
+
+  img {
+    max-width: 50vw;
+    align-self: center;
+  }
+
   .inputOnlyRead {
     background-color: $hy-green;
     border-radius: 15px;
     padding: 10px 10px;
     min-width: 75vw;
     color: $hy-grey;
-  }
-  .logo {
-    text-align: center;
-    .logo-img {
-      text-align: center;
-      width: 100px;
-      height: 100px;
-    }
   }
 
   input {
@@ -67,6 +65,7 @@
   margin-left: 10px;
   margin-right: 10px;
   text-align: center;
+
   .icon-btn {
     width: 20px;
     height: 20px;

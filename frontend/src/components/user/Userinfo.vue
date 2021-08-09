@@ -1,9 +1,7 @@
 <template>
 <v-container>
     <section class="modifyuser">
-    <div class="logo">
-        <img src="@/assets/logo.png" class="logo-img"><br>
-    </div>
+        <img src="@/assets/image/OVL_logo.png" alt="">
     <!-- 이름 -->
     <div class="inputOnlyRead">
         {{name}}
@@ -11,7 +9,7 @@
     <!-- 닉네임 -->
     <div class="inputBtnDiv">
         <input type="text" v-model="nickname">
-        <button class="bg-freditgreen" @click="onNicknameBtnClick">중복 확인</button>
+        <button class="bg-freditgreen" @click="onClickNicknameValidate()">확인</button>
     </div>
     <!-- 이메일 -->
     <div class="inputOnlyRead">
@@ -37,7 +35,7 @@
     </p>
     <!-- 회원가입 버튼 -->
     <div>
-        <button class="finalBtn" :class="{ 'bg-freditgreen': signupFormValid, 'disabledBtn': !signupFormValid }" :disabled="!signupFormValid" @click="onSignupBtnClick">회원 정보 수정</button>
+        <button class="finalBtn" :class="{ 'bg-freditgreen': modifyFormValid, 'disabledBtn': !modifyFormValid }" :disabled="!modifyFormValid" @click="onModifyUserBtnClick">회원 정보 수정</button>
     </div>
     </section>
     </v-container>
@@ -45,6 +43,9 @@
 
 <script>
 import {mapGetters, mapState} from "vuex"
+import axios from 'axios'
+import API from '@/api/index.js'
+import userAPI from '@/api/user.js'
 
 export default {
     data() {
@@ -68,12 +69,35 @@ export default {
     computed: {
         ...mapGetters("user", ["userinfo"]),
         ...mapState("user", ["isLogin"]),
+
+        passwordFormValid () {
+            return !this.password || ((this.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.password))
+        },
+        passwordCheckFormValid () {
+            return !this.passwordCheck || (this.password===this.passwordCheck)
+        },
+        modifyFormValid () {
+            const allExist = !!this.name && !!this.nickname && !!this.email && !!this.phone && !!this.password && !!this.passwordCheck
+            const allValid = this.nicknameValid && this.emailValid  && this.emailFormValid && this.passwordFormValid && this.passwordCheckFormValid
+            return allExist && allValid
+        }
     },
     methods: {
         onClickModify(){
             this.$router.push({ name : "ModifyUser"})
         },
-
+        onSignupBtnClick () {
+        const URL = API.url + userAPI.join()
+        const { email, name, nickname, password, phone } = this
+        const data = { email, name, nickname, password, phone }
+        console.log(data)
+        axios.post(URL, data)
+            .then(res => {
+            console.log(res)
+            this.$router.push({ name: 'Login' })
+            })
+            .catch(err => console.error(err))
+        },
     },
 }
 </script>
