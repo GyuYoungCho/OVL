@@ -55,6 +55,8 @@ public class ChallengeController {
 		// 참여 챌린지 없을 경우 등록 
 		if(user.getChallengeId().getChallengeId()==1) {
 			Challenge challenge = challengeDao.findByChallengeId(challenge_id);
+			challenge.setCount(challenge.getCount()+1); // 챌린지 참여 시 참여 인원 +1
+			challengeDao.save(challenge);
 			user.setChallengeId(challenge);
 			userDao.save(user);
 			return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
@@ -68,6 +70,11 @@ public class ChallengeController {
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
 		
+		// 이미 참여중인 챌린지
+		Challenge attend = user.getChallengeId();
+		attend.setCount(attend.getCount()-1);
+		challengeDao.save(attend);
+		
 		Challenge challenge = challengeDao.findByChallengeId(1);
 		user.setChallengeId(challenge);
 		userDao.save(user);
@@ -79,6 +86,9 @@ public class ChallengeController {
 	public ResponseEntity<String> complete(@PathVariable int user_id,@PathVariable int div) {
 		User user = userDao.getUserByUserid(user_id);
 		Challenge endChallenge = user.getChallengeId();
+		
+		// 챌린지 완료 시 해당 챌린지 참여 인원 -1
+		endChallenge.setCount(endChallenge.getCount()-1);
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(endChallenge.getStart_date());

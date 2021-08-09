@@ -1,5 +1,6 @@
 package com.project.ovl.model.report;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,6 +25,9 @@ public class Report {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int report_id;
+	
+	@Column(columnDefinition = "text")
+	private String reason;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fromId")
