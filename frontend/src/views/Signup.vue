@@ -72,19 +72,19 @@ export default {
   }),
   methods: {
     onNicknameBtnClick () {
-    const URL = API.url + userAPI.nickname_check(this.nickname)
-    axios.get(URL)
-      .then(res => {
-        if (res.data === "success") {
-          this.nicknameValid = true
-          alert('사용 가능한 닉네임입니다.')
-        } else {
-          alert(`${this.nickname}은(는) 이미 사용중인 닉네임입니다.`)
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      const URL = API.url + userAPI.nickname_check(this.nickname)
+      axios.get(URL)
+        .then(res => {
+          if (res.data === "success") {
+            this.nicknameValid = true
+            alert('사용 가능한 닉네임입니다.')
+          } else {
+            alert(`${this.nickname}은(는) 이미 사용중인 닉네임입니다.`)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
     },
     onEmailBtnClick () {
     const URL = API.url + userAPI.email_auth('join', this.email)
