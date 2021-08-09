@@ -93,7 +93,7 @@ public class PostController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String categori,
+	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String category,
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
@@ -104,15 +104,15 @@ public class PostController {
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
 		// 게시글 등록 시 유저에 경험치 5 추가
 		int value = 0;
-		if (Integer.parseInt(categori)==1) value = 5;
-		else if (Integer.parseInt(categori)==2) value = 3;
+		if (Integer.parseInt(category)==1) value = 5;
+		else if (Integer.parseInt(category)==2) value = 3;
 		else value = 2;
 		
 		user.setExperience(user.getExperience()+value);
 		userDao.save(user);
 		
 		// 게시글 등록
-		Post post = new Post(0, Integer.parseInt(categori), content, 0, 0, new Date(), user);
+		Post post = new Post(0, Integer.parseInt(category), content, 0, 0, new Date(), user);
 		postDao.save(post);
 		// 이미지 저장
 		photoHandler.parseFileInfo(files, post.getPostId(), 0, null);
@@ -120,7 +120,7 @@ public class PostController {
 		// 챌린지 중일 경우 인증
 		if(user.getChallengeId().getChallengeId()!=1
 				&& user.getChallengeId().getType()==1
-				&& user.getChallengeId().getCategori()==Integer.parseInt(categori)) {
+				&& user.getChallengeId().getCategory()==Integer.parseInt(category)) {
 			
 			Challenge ch = user.getChallengeId();
 			List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
@@ -146,7 +146,7 @@ public class PostController {
 		}
 		
 		// 로그 저장 post라 type 1
-		userLogDao.save(new UserLog(0, user, new Date(), 1 , Integer.parseInt(categori),post.getPostId(), value));
+		userLogDao.save(new UserLog(0, user, new Date(), 1 , Integer.parseInt(category),post.getPostId(), value));
 		
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
@@ -171,7 +171,7 @@ public class PostController {
 		
 		Post post = postDao.findPostByPostId(Integer.parseInt(postId));
 		User user = post.getUserId();
-		int user_chall_cate = user.getChallengeId().getCategori();
+		int user_chall_cate = user.getChallengeId().getCategory();
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -188,10 +188,10 @@ public class PostController {
 		cal.set(Calendar.MILLISECOND, 999);
 		Date endDate = cal.getTime();
 		
-		int count = postDao.countByUserIdAndCategoriAndTimeBetween(
+		int count = postDao.countByUserIdAndCategoryAndTimeBetween(
 				user,user_chall_cate,startDate,endDate);
 		// 카테고리 변경에 따른 챌린지 처리
-		if(Integer.parseInt(category)!=post.getCategori()) {
+		if(Integer.parseInt(category)!=post.getCategory()) {
 			
 			
 			// 챌린지로 인증됨
@@ -219,7 +219,7 @@ public class PostController {
 			}
 				
 			// 챌린지 인증 취소됨
-			if(user_chall_cate==post.getCategori() && count ==1) {
+			if(user_chall_cate==post.getCategory() && count ==1) {
 				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
 				Date now = new Date();
 				
@@ -243,12 +243,12 @@ public class PostController {
 			}
 			
 			UserLog log = userLogDao.findByTypeAndContentId(1, Integer.parseInt(postId));
-			log.setCategori(Integer.parseInt(category));
+			log.setCategory(Integer.parseInt(category));
 			userLogDao.save(log);
 		}
 		
 		
-		post.setCategori(Integer.parseInt(category));
+		post.setCategory(Integer.parseInt(category));
 		post.setContent(content);
 		
 		postDao.save(post);
@@ -283,8 +283,8 @@ public class PostController {
 		Post post = postDao.findPostByPostId(post_id);
 		
 		int value = 0;
-		if (post.getCategori()==1) value = 5;
-		else if (post.getCategori()==2) value = 3;
+		if (post.getCategory()==1) value = 5;
+		else if (post.getCategory()==2) value = 3;
 		else value = 2;
 		
 		User user = userDao.getUserByUserid(post.getUserId().getUserid());
@@ -316,7 +316,7 @@ public class PostController {
 		// 챌린지 중일 경우 조건에 따른 인증 취소 처리
 		if(user.getChallengeId().getChallengeId()!=1
 				&& user.getChallengeId().getType()==1
-				&& user.getChallengeId().getCategori()==post.getCategori()) {
+				&& user.getChallengeId().getCategory()==post.getCategory()) {
 			
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
@@ -333,8 +333,8 @@ public class PostController {
 			cal.set(Calendar.MILLISECOND, 999);
 			Date endDate = cal.getTime();
 
-			int count = postDao.countByUserIdAndCategoriAndTimeBetween(
-					user,post.getCategori(),startDate , endDate);
+			int count = postDao.countByUserIdAndCategoryAndTimeBetween(
+					user,post.getCategory(),startDate , endDate);
 			
 			// 하나일 경우 취소
 			if(count==1) {

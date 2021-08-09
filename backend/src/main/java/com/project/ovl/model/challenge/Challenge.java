@@ -32,8 +32,9 @@ public class Challenge {
 	private int period;
 	private int cycle;
 	
-	private int categori;
+	private int category;
 	private int type;
 	
 	private int score;
+	private int count;
 }

@@ -29,7 +29,7 @@ public class Post {
 	@Column(name = "post_id")
     private int postId;
 	
-	private int categori;
+	private int category;
 	
 	@Column(columnDefinition = "text")
 	private String content;

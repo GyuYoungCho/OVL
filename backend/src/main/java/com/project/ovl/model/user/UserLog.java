@@ -35,7 +35,7 @@ public class UserLog {
 	
 	private Date logDate;
 	private int type;
-	private int categori;
+	private int category;
 	private int contentId;
 	private int score;
 }
