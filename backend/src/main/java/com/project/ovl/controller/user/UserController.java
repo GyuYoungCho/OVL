@@ -219,14 +219,14 @@ public class UserController {
 	
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
-	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+	public ResponseEntity<Integer> join(@Valid @RequestBody SignupRequest request){
 		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
 				passwordEncoder.encode(request.getPassword()), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
 		
 		userDao.save(saveUser);
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return new ResponseEntity<>(saveUser.getUserid(), HttpStatus.OK);
 
 	}
 	

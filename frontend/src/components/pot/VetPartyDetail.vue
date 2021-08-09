@@ -2,17 +2,18 @@
   <div>
     <v-dialog
           v-model="pot_detail_modal"
-          hide-overlay
+          
           
           transition="dialog-bottom-transition"
           max-width="1000px">
         <v-card tile>
           <v-toolbar color="#004627" dark>
-            <v-btn icon dark @click="cancelDetail">
+          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
+            <profile-name :user="potitem.userid"></profile-name>
+            <v-spacer></v-spacer>
+            <v-btn icon dark @click="cancelDetail" justify="end">
               <v-icon>mdi-close</v-icon>
             </v-btn>
-          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
-            <v-spacer></v-spacer>
           </v-toolbar>
             <v-row>
               <v-col>
