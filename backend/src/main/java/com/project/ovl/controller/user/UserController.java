@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -162,6 +164,9 @@ public class UserController {
 	@Autowired
 	PostReplyController postReplyController;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/nickname_check/{nickname}")
 	@ApiOperation(value = "닉네임 중복 체크")
 	public ResponseEntity<String> nickname_check(@PathVariable String nickname) {
@@ -204,7 +209,7 @@ public class UserController {
 	public ResponseEntity<String> modify_pw(@PathVariable String email, @PathVariable String password){
 		try {
 			User isEmail = userDao.getUserByEmail(email);
-			isEmail.setPassword(password);
+			isEmail.setPassword(passwordEncoder.encode(password));
 			userDao.save(isEmail);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		} catch (Exception e) {
@@ -218,7 +223,8 @@ public class UserController {
 		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
+				passwordEncoder.encode(request.getPassword()), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
+		
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
@@ -283,18 +289,22 @@ public class UserController {
 		String token = "";
 		
 		try {
-			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
-			System.out.println(userlogin.getNickname());
-			token = jwtService.create(userlogin);
-			
-			resultMap.putAll(jwtService.get(token));
-			
-			resultMap.put("status", true);
-			resultMap.put("data", userlogin);
-			resultMap.put("token", token);
-			
-			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
-			
+			User userlogin = userDao.getUserByEmail(loginDto.getEmail());
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			if (encoder.matches(loginDto.getPassword(), userlogin.getPassword())) {
+				token = jwtService.create(userlogin);
+				
+				resultMap.putAll(jwtService.get(token));
+				
+				resultMap.put("status", true);
+				resultMap.put("data", userlogin);
+				resultMap.put("token", token);
+				
+				entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+			} else {
+				resultMap.put("message", "로그인 실패");
+				entity = ResponseEntity.badRequest().body(resultMap);
+			}
 		}catch(RuntimeException e){
 			//Logger.info("로그인 실패",e);
 			resultMap.put("message", e.getMessage());
@@ -370,6 +380,7 @@ public class UserController {
 	@GetMapping("/select/{user_id}")
 	public ResponseEntity<User> select(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
+		
 		if (user!=null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
@@ -456,7 +467,7 @@ public class UserController {
     	
     	user.setNickname(nickname);
     	user.setPhone(phone);
-    	if(password.length()>0) user.setPassword(password);
+    	if(password.length()>0) user.setPassword(passwordEncoder.encode(password));
     	userDao.save(user);
     	
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
