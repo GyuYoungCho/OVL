@@ -29,7 +29,7 @@
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
             <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">  
-            {{info.postId.content}}
+            <div v-html="contentReplace(info.postId.content)"></div>
           </div>
 
           <!-- 좋아요, 댓글 -->
@@ -55,6 +55,7 @@
 
 <script>
 import {mapState} from "vuex";
+import API from '@/api/index.js'
 
 export default {
   data() {
@@ -63,8 +64,11 @@ export default {
     }
   },
   methods: {
+    contentReplace(content) { // 줄바꿈
+      return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    },
     postPath(idx){ // 대표 이미지 출력
-      return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
+      return API.url+"/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
     },
     iconPath(idx) { // 카테고리 이미지 출력
       var category = this.postList[idx].postId.category;
@@ -73,7 +77,7 @@ export default {
       else return require("@/assets/image/cosmetics.png");
     },
     userPath(idx) { // 프로필 사진 이미지 출력
-      return "http://localhost:8080/profile"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
+      return API.url+"/profile/"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
     },
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
