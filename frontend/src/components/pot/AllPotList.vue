@@ -47,42 +47,15 @@
             <v-spacer></v-spacer>
             <v-col cols="2" class="pa-0">
                 <button class="py-0 px-3 BtnComp mt-0" style="font-size:12px"
-                    @click="openAttendModal(true)">참여</button>
+                    @click.stop="openAttendModal(true)">참여</button>
             </v-col>
         </v-container>
     </v-row>
-    <vet-party-detail :potitem="potitem" :pot_detail_modal="modalOpen"
+    <vet-party-detail :potitem="potitem" :pot_detail_modal="modalDetail"
         @openDetailModal="openDetailModal"></vet-party-detail>
-
-    <v-dialog
-        v-model="AttendModal"
-        persistent
-        max-width="300"
-        >
-        <v-card>
-          <v-card-title class="text-h5">
-            팟에 참여하시겠습니까?
-          </v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              color="green darken-1"
-              text
-              @click="AttendModal = false"
-            >
-              아니오
-            </v-btn>
-            <v-btn
-              color="green darken-1"
-              text
-              @click="potattend"
-            >
-              예
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+    <attend-modal :potitem="potitem" :modalopen="AttendModalT"
+              @openAttendModal="openAttendModal" @openSnackBar="openSnackBar"></attend-modal>
+   
     </div>  
 </template>
 
@@ -94,13 +67,15 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 import ProfileName from '@/components/basic/ProfileName.vue';
-import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
+import AttendModal from '@/components/pot/AttendModal.vue'
+// import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 
 export default {
     components:{
         VetPartyDetail,
         ProfileName,
-        ConfirmSnack,
+        AttendModal,
+        // ConfirmSnack,
     },
     data() {
         return {
@@ -109,16 +84,18 @@ export default {
             ],
             
             btnActive: {0:false,1:false,2:false,3:false,4:false},
-            modalOpen : false,
-            AttendModal : false,
-            message : "참여되었습니다.",
-            snackbar : false,
+            modalDetail : false,
+            AttendModalT : false,
         };
     },
     props: {
         potitem: Object,
     },
-
+    created(){
+        this.snackbar=false
+        this.AttendModalT=false
+        this.modal=false
+    },
     computed: {
         ...mapGetters("pot", ["potattendusers"]),
         ...mapGetters("user", ["userinfo"]),
@@ -137,10 +114,10 @@ export default {
     methods: {
         ...mapActions("pot",["setPotAttendUsers"]),
         openDetailModal(val){
-            this.modalOpen = val;
+            this.modalDetail = val;
         },
         openAttendModal(val){
-            this.AttendModal = val;
+            this.AttendModalT = val;
         },
 
         stepToIcon(item) {
@@ -165,14 +142,19 @@ export default {
             })
 
             this.snackbar = true;
-            this.AttendModal = false;
+            this.AttendModalT = false;
         },
+
+        openSnackBar(val){
+            this.$emit('openSnackBar', val)
+        }
     },
     mounted(){
         this.setPotAttendUsers(this.potitem.potid)
         this.stepToIcon(this.potitem.step)
         console.log(this.potitem.userid.challengeId.start_date)
     },
+    
 }
 </script>
 

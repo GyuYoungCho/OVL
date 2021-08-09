@@ -11,8 +11,11 @@ export default {
   delete(pot_id) {
     return `/pot/delete/${pot_id}`;
   },
-  attend(user_id, pot_id) {
-    return `/pot/attend/${user_id}/${pot_id}`;
+  attend(pot_id, user_id) {
+    return `/pot/attend/${pot_id}/${user_id}`;
+  },
+  attend_cancel(pot_id, user_id) {
+    return `/pot/attend/${pot_id}/${user_id}`;
   },
   select_all() {
     return "/pot/select_all";
