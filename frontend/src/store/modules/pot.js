@@ -2,6 +2,7 @@ import axios from "axios";
 import API from "@/api/index.js";
 import potAPI from "@/api/pot.js";
 import restaurantAPI from "@/api/restaurant.js";
+import bcode from "@/assets/image/defaultImg.png";
 
 export default {
   namespaced: true,
@@ -34,21 +35,7 @@ export default {
       state.restitems = payload;
     },
     set_Pot_Items(state, payload) {
-      let datas = [];
-      let user = [];
-      if (state.userspots) {
-        state.userpots.forEach((item) => {
-          user.push(item.potid);
-        });
-      }
-      console.log(user);
-      payload.forEach((item) => {
-        if (!user.includes(item.potid)) {
-          datas.push(item);
-        }
-      });
-
-      state.potitems = datas;
+      state.potitems = payload;
     },
     set_Pot_Attend_Users(state, payload) {
       state.potattendusers = payload;
@@ -75,6 +62,8 @@ export default {
       axios
         .get(API.url + potAPI.select_all())
         .then((res) => {
+          console.log(typeof bcode);
+
           store.commit("set_Pot_Items", res.data);
         })
         .catch((error) => {

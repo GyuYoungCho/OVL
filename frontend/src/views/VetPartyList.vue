@@ -7,10 +7,15 @@
       <v-list class="user-potlist mt-5 px-0" v-if="userpots" color="#EBF4ED">
         <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot" />
       </v-list>
-      <v-list>
+      <v-list v-if="searchpots">
         <all-pot-list v-for="(potitem, index) in potitems" :key="index" :potitem="potitem" />
       </v-list>
+      <v-list v-else>
+        <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem" />
+      </v-list>
       </section>
+      <v-overlay :value="overlay"></v-overlay>
+      <confirm-snack :snackbar="snack" :text="message"></confirm-snack>
     </v-container>
   </div>
 </template>
@@ -36,6 +41,7 @@ export default {
         "과일채소", "계란","유제품","생선","고기"
       ],
       modalOpen : false,
+      searchpots : [],
     }
   },
   computed:{
@@ -46,10 +52,15 @@ export default {
       this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
       this.$store.dispatch("pot/setPotItems")
       //  this.setUsersPots(userinfo.userid);
+      this.searchpots = []
   },
   method:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
+    searchPots(keyword){
+      keyword
+    }
   },
+
 }
 </script>
 

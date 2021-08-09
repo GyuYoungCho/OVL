@@ -4,7 +4,7 @@
       rounded="pill" class="search_bar">
         <v-row>
         <v-text-field class="pt-0"
-          v-model="search" clearable height="20px" rounded="pill"
+          v-model="search" clearable height="20px" rounded
           hide-details
         ></v-text-field>
         <v-btn icon><v-icon color="white" dark>mdi-magnify</v-icon></v-btn>
@@ -23,7 +23,7 @@ export default {
 
     methods:{
         sendkeyword(){
-            
+            this.$emit('searchPots', this.search)
         }
     }
 }

@@ -3,8 +3,7 @@
     <v-container>
     <section  class="vetparty">
     <h4>채식팟 생성</h4>
-    <!-- 채식팟 제목 -->
-     
+    
       <div>
         <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
           <img src="@/assets/icon/notmeat.png" alt=""></button>
@@ -97,9 +96,9 @@
     <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
       <button :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
-
-      <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
     </section>
+    <v-overlay :value="overlay"></v-overlay>
+    <confirm-snack :snackbar="snack" :text="message"></confirm-snack>
     </v-container>
   </div>
 </template>
@@ -146,7 +145,8 @@ export default {
         btnActive: {0:false,1:false,2:false,3:false,4:true},
 
         message : "팟을 만드셨네요! 다른 팟도 찾아볼까요?",
-        snackbar : false,
+        snack : false,
+        overlay : false,
       }
   },
   methods: {
@@ -197,20 +197,22 @@ export default {
       
       this.pot.time = date
       
-      axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
-        .then((response) => {
-          alert("보냈슴!");
-          response
-          this.snackbar = true;
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+      // axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
+      //   .then((response) => {
+      //     alert("보냈슴!");
+      //     response
+      //     this.snackbar = true;
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   })
 
-      
-        setTimeout(function() {
+        this.snack = true
+        this.overlay = true
+
+        setTimeout(() => {
           this.$router.push({ name: "VetPartyList" })
-        }, 1000);
+        }, 1000)
     },
 
     changedRest(){
