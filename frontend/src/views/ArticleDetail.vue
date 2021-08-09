@@ -245,13 +245,13 @@ export default {
       else return false;
     },  
     userPath() { // 프로필 사진 이미지 출력
-      return API.url+"/profile"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
+      return API.url+"/profile/"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
     },
     commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
-      return API.url+"/profile"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
+      return API.url+"/profile/"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
     },
     replyUserPath(info) { // 답글 프로필 사진 이미지 출력
-      return API.url+"/profile"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
+      return API.url+"/profile/"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
     },
     photoPath(idx){ // 대표 이미지 출력
       return API.url+"/post/"+this.post.postId+"/"+this.postPhotoList[idx].filepath.split('/').reverse()[0];
