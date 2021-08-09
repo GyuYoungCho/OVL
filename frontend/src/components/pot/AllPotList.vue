@@ -46,20 +46,52 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col cols="2" class="pa-0">
-                <button class="py-0 px-3 BtnComp mt-0" style="font-size:14px"
-                    @click="AttendModal">참여</button>
+                <button class="py-0 px-3 BtnComp mt-0" style="font-size:12px"
+                    @click="openAttendModal(true)">참여</button>
             </v-col>
         </v-container>
     </v-row>
     <vet-party-detail :potitem="potitem" :pot_detail_modal="modalOpen"
         @openDetailModal="openDetailModal"></vet-party-detail>
+
+    <v-dialog
+        v-model="AttendModal"
+        persistent
+        max-width="300"
+        >
+        <v-card>
+          <v-card-title class="text-h5">
+            팟에 참여하시겠습니까?
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="AttendModal = false"
+            >
+              아니오
+            </v-btn>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="dialog = false"
+            >
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </div>  
 </template>
 
 <script>
 import moment from 'moment';
 import { mapGetters, mapActions} from 'vuex';
-import API from "@/api/index.js";
+import axios from "axios";
+import API from '@/api/index.js'
+import potAPI from '@/api/pot.js'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 import ProfileName from '@/components/basic/ProfileName.vue';
 
@@ -86,14 +118,12 @@ export default {
 
     computed: {
         ...mapGetters("pot", ["potattendusers"]),
-        // profile(){
-        //     return API.url + "profile" + this.potitem.userid.userid + "/" + this.potitem.userid.stored_file_path.split('/').reverse()[0]
-        // },
+        
         meet_date(){
             return moment(this.potitem.time).format("ddd MM/DD")
         },
         meet_time(){
-            return moment(this.potitem.time).format("hh:mm")
+            return moment(this.potitem.time).format("HH:mm")
         },
         rows() {
             return this.potattendusers.length
@@ -117,13 +147,25 @@ export default {
                 }
             }
         },
-        colorChange(flag) {
-            this.isColor = flag;
+
+        potattend() {
+            axios.get(API.url + potAPI.attend(this.potitem.potid,1))
+            .then((res) => {
+                if (res.data === "success") {
+                    alert("참여 성공");
+                    this.redirect()
+                }
+            })
+            .catch((error) => {
+                alert("참여 ㄴ");
+                console.log(error);
+            })
         },
     },
     mounted(){
         this.setPotAttendUsers(this.potitem.potid)
         this.stepToIcon(this.potitem.step)
+        console.log(this.potitem.userid.challengeId.start_date)
     },
 }
 </script>

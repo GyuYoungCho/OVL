@@ -215,9 +215,58 @@ public class UserController {
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
+				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
+		userDao.save(saveUser);
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+
+	}
+	
+	@PostMapping("/join/profile")
+	@ApiOperation(value = "가입 시 프로필 사진 등록")
+	public ResponseEntity<String> joinprofile(@RequestPart MultipartFile picture,
+								@RequestPart String user_id) throws IOException{
+		User saveUser = userDao.getUserByUserid(Integer.parseInt(user_id));
+		String originalFileExtension;
+		if(picture!=null) {
+    		
+            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+            String path = "src/main/resources/static/profile/" + user_id;
+            File file = new File(path);
+            
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            String contentType = picture.getContentType();
+
+            if(!ObjectUtils.isEmpty(contentType)) {
+
+                if(contentType.contains("image/jpeg"))
+                    originalFileExtension = ".jpg";
+                else if(contentType.contains("image/png"))
+                    originalFileExtension = ".png";
+              
+                else {
+                	userDao.save(saveUser);
+            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+                }
+                String new_file_name = System.nanoTime() + originalFileExtension;
+                saveUser.setStored_file_path(path + "/" + new_file_name);
+                saveUser.setOriginal_file_name(picture.getOriginalFilename());
+                
+                userDao.save(saveUser);
+                
+                file = new File(absolutePath + path + File.separator + new_file_name);
+                picture.transferTo(file);
+                
+                file.setWritable(true);
+                file.setReadable(true);
+            }
+            
+    	}
+		
 		System.out.println("saveUser : "+saveUser);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -367,7 +416,7 @@ public class UserController {
     			file.delete();
     		}
             String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile" + useropt.getUserid();
+            String path = "src/main/resources/static/profile/" + useropt.getUserid();
             file = new File(path);
             
             if(!file.exists()){
@@ -384,7 +433,7 @@ public class UserController {
               
                 else {
                 	userDao.save(useropt);
-            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+            		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
                 }
                 String new_file_name = System.nanoTime() + originalFileExtension;
                 useropt.setStored_file_path(path + "/" + new_file_name);

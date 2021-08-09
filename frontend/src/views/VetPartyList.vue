@@ -47,7 +47,6 @@ export default {
   },
   method:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
-    
   },
 }
 </script>
