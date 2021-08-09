@@ -75,14 +75,14 @@
             <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="potattend"
             >
-              Agree
+              예
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-
+      <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
     </div>  
 </template>
 
@@ -94,11 +94,13 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 import ProfileName from '@/components/basic/ProfileName.vue';
+import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 
 export default {
     components:{
         VetPartyDetail,
         ProfileName,
+        ConfirmSnack,
     },
     data() {
         return {
@@ -107,9 +109,10 @@ export default {
             ],
             
             btnActive: {0:false,1:false,2:false,3:false,4:false},
-            profile : API.url + "/post/1/32894420239799.png",
             modalOpen : false,
             AttendModal : false,
+            message : "참여되었습니다.",
+            snackbar : false,
         };
     },
     props: {
@@ -118,6 +121,7 @@ export default {
 
     computed: {
         ...mapGetters("pot", ["potattendusers"]),
+        ...mapGetters("user", ["userinfo"]),
         
         meet_date(){
             return moment(this.potitem.time).format("ddd MM/DD")
@@ -149,17 +153,19 @@ export default {
         },
 
         potattend() {
-            axios.get(API.url + potAPI.attend(this.potitem.potid,1))
+            axios.get(API.url + potAPI.attend(this.potitem.potid,this.userinfo.userid))
             .then((res) => {
                 if (res.data === "success") {
-                    alert("참여 성공");
-                    this.redirect()
+                    this.confirmModal()
                 }
             })
             .catch((error) => {
                 alert("참여 ㄴ");
                 console.log(error);
             })
+
+            this.snackbar = true;
+            this.AttendModal = false;
         },
     },
     mounted(){
