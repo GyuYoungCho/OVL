@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,7 +35,7 @@ public class ReportController {
 	
 	@GetMapping("/regist/{user_id}/{report_id}")
 	@ApiOperation(value = "신고 등록")
-	public ResponseEntity<String> regist(@PathVariable int user_id, @PathVariable int report_id) {
+	public ResponseEntity<String> regist(@RequestBody String reason, @PathVariable int user_id, @PathVariable int report_id) {
 		User toUser = userDao.getUserByUserid(report_id);
 		User fromUser = userDao.getUserByUserid(user_id);
 		
@@ -42,7 +43,7 @@ public class ReportController {
 		toUser.setWarning(toUser.getWarning()+1);
 		
 		// Report 테이블에 추가
-		Report newReport = new Report(0, fromUser, toUser);
+		Report newReport = new Report(0, reason, fromUser, toUser);
 		reportDao.save(newReport);		
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
