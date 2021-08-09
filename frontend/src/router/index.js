@@ -17,6 +17,8 @@ import RecipeSearch from "../views/RecipeSearch.vue";
 import VetPartyCreate from "../views/VetPartyCreate.vue";
 import VetPartyList from "../views/VetPartyList.vue";
 import ModifyUser from "../views/ModifyUser.vue";
+import ModifyProfile from "../views/ModifyProfile.vue";
+
 
 Vue.use(VueRouter);
 
@@ -72,9 +74,14 @@ const routes = [
     component: FindPassword,
   },
   {
-    path: "/profile",
+    path: "/profile/:userid",
     name: "Profile",
     component: Profile,
+  },
+  {
+    path: "/modify_profile/:userid",
+    name: "ModifyProfile",
+    component: ModifyProfile,
   },
   {
     path: "/recipe_create",

@@ -34,8 +34,11 @@ export default {
     return `/user/modify_pw/${email}/${password}`;
   },
   // PathVariable, RequestPart, RequestParam
-  modify_user(nickname, phone) {
-    return `/user/modify_user/${nickname}/${phone}`;
+  modify_user() {
+    return `/user/modify_user`;
+  },
+  modify_pic (user_id){
+    return `/user//modify_pic/${user_id}`;
   },
   select(user_id) {
     return `/user/select/${user_id}`;

@@ -18,6 +18,7 @@ state: {
 			start_date: null,
     },
     },
+    rank:null,
     isLogin: false,
 },
 mutations: {
@@ -38,6 +39,10 @@ mutations: {
     };
     localStorage.removeItem("access-token");
     },
+    setUserRank(state, payload) {
+        state.rank = payload;
+    },
+
 },
 getters: {
     userinfo(state) {
@@ -99,37 +104,6 @@ actions: {
     store.commit("setLogout");
     },
 
-    modifyUserInfo(store) {
-    let token = localStorage.getItem("access-token");
-    console.log("저장된 token" + token);
-
-    if (!token) {
-        alert("인증이 만료되었어요!! 다시 로그인해주세요.");
-        return;
-    }
-    axios({
-        method: "post",
-        url: API.url + userAPI.info(),
-        headers: { "access-token": token },
-    })
-        .then((res) => {
-        console.log(res.resultMap);
-        store.commit("setUserInfo", res.resultMap.claims.UserDto);
-          // if (res.data) {
-          // 	console.log(res.data.UserDto);
-          // 	console.log("성공!!!!!!!!!!!!");
-          // 	store.commit("setUserInfo", res.data.UserDto);
-          // 	this.state.isLogin = true;
-          // 	console.log(this.state)
-          // }
-          // else
-          // 	console.log("실패.");
-        })
-        .catch((err) => {
-        console.log();
-        console.log(err);
-        });
-    },
     getTokenUserInfo(store) {
     let token = localStorage.getItem("access-token");
     if (!token) {
@@ -151,5 +125,35 @@ actions: {
         console.log(err);
         });
     },
+    deleteUser(store) {
+        let token = localStorage.getItem("access-token");
+        axios({
+            method: "delete",
+            url: API.url + userAPI.delete(store.state.userinfo.userid),
+            headers: {"access-token" : token}
+        }).then(() => {
+            alert("탈퇴가 정상적으로 처리 되었습니다.");
+            store.commit("setLogout");
+        }).catch((err) => {
+            console.log(err);
+        })
+    },
+    getUserRank(store, payload) {
+        axios({
+            method: "get",
+            url: API.url + userAPI.rank(payload),
+        }).then((res) => {
+            if (res) {
+                console.log(res.data.rank);
+                store.commit("setUserRank", res.data.rank);
+                this.state.rank = res.rank;
+            }
+            else
+                console.log("랭크 가져오기 실패.");
+        }).catch((err) => {
+            console.log(err);
+        })
+    },    
+
 },
 };

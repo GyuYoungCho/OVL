@@ -94,7 +94,6 @@ import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment';
-
 export default {
 components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
@@ -123,9 +122,6 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
     },
     created() {
-        //url userid 체크
-        console.log(this.$route.params.userid)
-
         this.$store.dispatch("user/getTokenUserInfo"),
         this.nickname = this.userinfo.nickname;
         this.userid = this.userinfo.userid;
@@ -136,8 +132,10 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         //console.log(this.followerList)
         this.follower = this.followerList.length;
         this.following = this.followingList.length;
-        //00일째 챌린지 계산
+        
         this.start_date = this.userinfo.challengeId.start_date;
+        
+        
     },
     methods: {
         onClickEditUser(){

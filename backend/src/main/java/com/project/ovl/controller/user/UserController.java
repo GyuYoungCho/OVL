@@ -461,13 +461,13 @@ public class UserController {
 	
 	@ApiOperation(value = "회원 정보 수정", response = String.class)
     @PutMapping(value = "/modify_user")
-	public ResponseEntity<String> modify_user(@RequestParam("userId") int user_id, @RequestParam("nickname") String nickname, @RequestParam("phone") String phone,
-			@RequestParam("password") String password) throws IOException {
-    	User user = userDao.getUserByUserid(user_id);
+	public ResponseEntity<String> modify_user(@RequestBody User request) throws IOException {
+
+    	User user = userDao.getUserByUserid(request.getUserid());
     	
-    	user.setNickname(nickname);
-    	user.setPhone(phone);
-    	if(password.length()>0) user.setPassword(passwordEncoder.encode(password));
+    	user.setNickname(request.getNickname());
+    	user.setPhone(request.getPhone());
+    	if(request.getPassword().length()>0) user.setPassword(passwordEncoder.encode(request.getPassword()));
     	userDao.save(user);
     	
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
