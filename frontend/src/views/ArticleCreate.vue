@@ -73,7 +73,7 @@
         // preview 위한 item 들
         previewItems : [],
         // 백에 보내기 위한 데이터들
-        categori: "",
+        category: "",
         content: "",
         // userId 는 vuex로 관리될거니까 작성.vue 에선 보일 필요 없음
         sendList: [],
@@ -111,23 +111,23 @@
         this.clothSelected = false
         this.cosmeticSelected = false
         // 백 데이터 설정용
-        this.categori = '1'
-        // 로그를 찍어보면 this.categori 가 변함을 알 수 있어요.
-        // console.log(this.categori) 
+        this.category = '1'
+        // 로그를 찍어보면 this.category 가 변함을 알 수 있어요.
+        // console.log(this.category) 
       },
       clothClick () {
         this.foodSelected = false
         this.clothSelected = true
         this.cosmeticSelected = false
-        this.categori = '2'
-        // console.log(this.categori)
+        this.category = '2'
+        // console.log(this.category)
       },
       cosmeticClick () {
         this.foodSelected = false
         this.clothSelected = false
         this.cosmeticSelected = true
-        this.categori = '3'
-        // console.log(this.categori)
+        this.category = '3'
+        // console.log(this.category)
       },
       fileUpload () {
         for (let i = 0; i < this.$refs.files.files.length; i++) {
@@ -150,7 +150,7 @@
           formData.append('files', this.sendList[index]);
         }
         this.sendList=[]; // formData에 append 후 이미지 리스트 비워주기
-        formData.append('categori', this.categori); // 카테고리 
+        formData.append('category', this.category); // 카테고리 
         formData.append('content', this.content); // 내용
         formData.append('userId', this.userinfo.userid); // 유저 아이디
 
@@ -186,7 +186,7 @@
           formData.append('plusPhotoList', this.plusPhotoList[i]);
         }
         
-        formData.append('category', this.categori); // 카테고리 
+        formData.append('category', this.category); // 카테고리 
         formData.append('content', this.content); // 내용
         formData.append('postId', this.post.postId); // 게시글 아이디
         
@@ -265,8 +265,8 @@
       if (this.$route.params.type!=0) {
         this.$store.dispatch("post/getPost", this.$route.params.type);
         // 카테고리 선택
-        if (this.post.categori==1) this.foodClick();
-        else if (this.post.categori==2) this.clothClick();
+        if (this.post.category==1) this.foodClick();
+        else if (this.post.category==2) this.clothClick();
         else this.cosmeticClick();
 
         // 사진 리스트

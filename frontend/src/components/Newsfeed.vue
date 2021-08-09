@@ -67,7 +67,7 @@ export default {
       return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      var category = this.postList[idx].postId.categori;
+      var category = this.postList[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
