@@ -89,18 +89,57 @@
       .commentRegisterForm {
         display: flex;
         // justify-content: space-between;
-
-        .commentInputForm {
-          display: flex;
-          .commentInput {
-            width: 100%;
-            border-bottom: 1px solid $hy-grey;
-            flex: 1;
+        .lineContainer {
+          width: 100%;
+          .commentInputForm {
+            display: flex;
+            .commentInput {
+              width: 100%;
+            }
+            .commentCreateBtn {
+              width: 10vw;
+              padding-right: 1vw;
+              font-size: small;
+              color: $freditgreen;
+            }
           }
         }
         
       }
+      .oneComment {
+        display: flex;
+        flex-direction: column;
 
+        .commentUserAndContent {
+          display: flex;
+          align-items: center;
+          .commentContent {
+            margin-bottom: 0;
+            margin-left: 2vw;
+            width: 100%;
+          }
+        }
+
+        .infoBelowOneComment {
+          color: $hy-grey;
+          font-size: small;
+          .oneInfo {
+            margin-right: 3vw;
+          }
+        }
+
+        .oneReply {
+          margin-left: 5vw;
+          font-size: small;
+          display: flex;
+          align-items: center;
+
+          .replyContent {
+            margin-left: 4vw;
+            margin-bottom: 0;
+          }
+        }
+      }
     }
 
   }

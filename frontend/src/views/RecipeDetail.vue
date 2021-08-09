@@ -28,7 +28,10 @@
     <div class="recipeTabContent">
       <!-- 재료 탭 -->
       <div class="recipeIngredient" v-if="tab==='ingredient'">
-        {{ recipe.ingredient }}
+        <div
+          v-html="changeLine(recipe.ingredient)"
+        >
+        </div>
       </div>
 
       <!-- 과정 탭 -->
@@ -37,7 +40,7 @@
           <hr v-if="idx!==0">  
           <div class="oneProcess">
             <img :src="processSrcPath(recipe, process)" alt="" class="processPic">
-            <p class="processContent">{{ process.content }}</p>
+            <p class="processContent" v-html="changeLine(process.content)"></p>
           </div>
         </div>
       </div>
@@ -45,23 +48,52 @@
       <!-- 댓글 탭 -->
       <div class="recipeComment" v-if="tab==='comment'">
         <div class="commentRegisterForm">
-          <v-icon size="10vw" color="black">mdi-subdirectory-arrow-right</v-icon>
-          <div class="commentInputForm">
-            <input type="text" class="commentInput" placeholder="댓글 입력">
-            <button>ad</button>
+          <v-icon color="black">mdi-subdirectory-arrow-right</v-icon>
+          <div class="lineContainer">
+            <div class="commentInputForm" v-if="commentMode">
+              <input type="text" class="commentInput" placeholder="댓글 입력" v-model="content">
+              <button class="commentCreateBtn" @click="onRegistCommentBtnClick">게시</button>
+            </div>
+            <div class="commentInputForm" v-else>
+              <input type="text" class="commentInput" placeholder="답글 입력" v-model="content">
+              <button class="commentCreateBtn" @click="onRegistReplyBtnClick">답글 게시</button>
+            </div>
+            <hr> 
           </div>
         </div>
-        {{ recipeComments }}
+        <div v-for="(recipeComment, idx) in recipeComments" :key="idx" class="oneComment">
+          <div class="commentUserAndContent">
+            <ProfileName :user="recipeComment.userId"></ProfileName>
+            <p class="commentContent">{{ recipeComment.content }}</p>
+            <v-icon class="likedHeart" v-if="recipeCommentLikeList.includes(recipeComment.recipeCommentId)" @click="onCommentLikeBtnClick(recipeComment)">mdi-heart</v-icon>
+            <v-icon class="unlikedHeart" v-else @click="onCommentLikeBtnClick(recipeComment)">mdi-heart-outline</v-icon>
+          </div>
+          <div class="infoBelowOneComment">
+            <div>
+              <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
+              <span class="oneInfo" @click="onReplyClick(recipeComment)">답글달기</span>
+              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid">수정</span>
+              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid" @click="onDeleteCommentClick(recipeComment.recipeCommentId)">삭제</span>
+            </div>
+            <!-- 답글 -->
+            <div>
+              <button @click="onShowReplyBtnClick(idx)">
+                --답글 {{ recipeComment.reply_count }}개 보기
+              </button>
+            </div>
+          </div>
+          <div v-show="replyShowIdx[idx]">
+            <div v-for="(reply, index) in recipeCommentReply[recipeComment.recipeCommentId]" :key="index" class="oneReply">
+              <ProfileName :user="reply.userId"></ProfileName>
+              <p class="replyContent">{{ reply.content }}</p>
+            </div>
+          </div>
+          
+        </div>
         
       </div>
 
     </div>
-
-
-    <h2>댓글</h2>
-    <p>{{ recipeComments }}</p>
-    <input v-model="content" type="text" placeholder="댓글달기">
-    <button @click="onRegistCommentBtnClick">댓글 등록</button>
 
   </section>
 
@@ -79,9 +111,16 @@ export default {
   data: () => ({
     content: "",
     tab: "ingredient",
+    commentInputBtn: "",
+    commentMode: true,
+    replyCommentId: "",
+    replyShowIdx: {},
   }),
   methods: {
-    ...mapActions(['registComment', 'likeRecipe',]),
+    ...mapActions(['registComment', 'likeRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'deleteRecipeComment', 'registCommentReply',]),
+    changeLine (c) {
+      return c.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    },
     onRecipeLikeBtnClick () {
       const data = {
         userId: this.userinfo.userid,
@@ -89,9 +128,27 @@ export default {
       }
       this.likeRecipe(data)
     },
-
     onRecipeTagBtnClick (option) {
       this.tab = option
+    },
+    onCommentLikeBtnClick (recipeComment) {
+      const data = {
+        userId: this.userinfo.userid,
+        recipeId: this.recipe.recipeId,
+        recipeCommentId: recipeComment.recipeCommentId
+      }
+      this.likeRecipeComment(data)
+    },
+    onReplyClick (recipeComment) {
+      this.commentMode = !this.commentMode
+      this.replyCommentId = recipeComment.recipeCommentId
+    },
+    onDeleteCommentClick (recipeCommentId) {
+      const data = {
+        recipeId: this.recipe.recipeId,
+        recipeCommentId,
+      }
+      this.deleteRecipeComment(data)
     },
 
     srcPath(recipe) {
@@ -103,20 +160,48 @@ export default {
     onRegistCommentBtnClick () {
       this.registComment(this.comment)
       this.content = ""
+    },
+    onRegistReplyBtnClick () {
+      console.log(this.replyCommentId)
+      const data = {
+        params:{
+          "content": this.content,
+          "commentId": this.replyCommentId,
+          "userId": this.userinfo.userid,
+        }
+      }
+      const payload = {
+        data,
+        recipeId: this.recipe.recipeId
+      }
+      this.registCommentReply(payload)
+      this.content = ""
+    },
+    onShowReplyBtnClick(idx) {
+      this.replyShowIdx[idx] = !this.replyShowIdx[idx]
+      this.replyShowIdx[idx] = !!this.replyShowIdx[idx]
+    },
+    isShowingReply (idx) {
+      return this.replyShowIdx[idx]
     }
     
   },
   computed: {
-    ...mapGetters(['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', ]),
+    ...mapGetters(['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', 'recipeCommentLikeList', 'recipeCommentReply',]),
     ...mapGetters("user", ["userinfo",]),
     comment () {
       const data = {
-        content: this.content,
-        recipeId: this.recipe.recipeId,
-        userId: this.userinfo.userid,
+        params: {
+          "content": this.content,
+          "recipeId": this.recipe.recipeId,
+          "userId": this.userinfo.userid,
+        }
       }
       return data
     }
+  },
+  created () {
+    this.fetchRecipeCommentLikeList(this.userinfo.userid)
   }
 }
 </script>
