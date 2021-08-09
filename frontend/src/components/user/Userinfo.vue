@@ -21,7 +21,7 @@
     </div>
     <!-- 비밀번호 -->
     <div>
-        <input type="password" v-model="password">
+        <input type="password" v-model="password" placeholder="비밀번호 확인">
     </div>
     <p class="invalidTxt" v-if="!passwordFormValid">
         숫자와 특수문자를 포함하여 8자 이상으로 적어주세요.
@@ -50,10 +50,17 @@ import userAPI from '@/api/user.js'
 export default {
     data() {
         return {
-            userid:"",
-            name:"",
-			nickname: "",
-			phone: "",
+            nicknameValid: false,
+            emailValid: false,
+            emailAuthNumberSent: false,
+            emailAuthNumber: null,
+
+            name: '',
+            nickname: '',
+            email: '',
+            phone: '',
+            password: '',
+            passwordCheck: '',
         }
     },
     created() {
@@ -86,18 +93,21 @@ export default {
         onClickModify(){
             this.$router.push({ name : "ModifyUser"})
         },
-        onSignupBtnClick () {
-        const URL = API.url + userAPI.join()
-        const { email, name, nickname, password, phone } = this
-        const data = { email, name, nickname, password, phone }
-        console.log(data)
-        axios.post(URL, data)
-            .then(res => {
-            console.log(res)
-            this.$router.push({ name: 'Login' })
-            })
-            .catch(err => console.error(err))
-        },
+    onClickNicknameValidate () {
+    const URL = API.url + userAPI.nickname_check(this.nickname)
+        axios.get(URL)
+        .then(res => {
+            if (res.data === "success") {
+            this.nicknameValid = true
+            alert('사용 가능한 닉네임입니다.')
+            } else {
+            alert(`${this.nickname}은(는) 이미 사용중인 닉네임입니다.`)
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    },
     },
 }
 </script>

@@ -46,8 +46,5 @@ export default {
   rank (user_id) {
     return `/user/rank/${user_id}`
   },
-  delete (user_id) {
-    return `/user/delete/${user_id}`
-  }
 
 };
