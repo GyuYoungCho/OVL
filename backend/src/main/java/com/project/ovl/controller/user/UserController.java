@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -162,6 +164,9 @@ public class UserController {
 	@Autowired
 	PostReplyController postReplyController;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/nickname_check/{nickname}")
 	@ApiOperation(value = "닉네임 중복 체크")
 	public ResponseEntity<String> nickname_check(@PathVariable String nickname) {
@@ -204,7 +209,7 @@ public class UserController {
 	public ResponseEntity<String> modify_pw(@PathVariable String email, @PathVariable String password){
 		try {
 			User isEmail = userDao.getUserByEmail(email);
-			isEmail.setPassword(password);
+			isEmail.setPassword(passwordEncoder.encode(password));
 			userDao.save(isEmail);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		} catch (Exception e) {
@@ -214,10 +219,60 @@ public class UserController {
 	
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
-	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+	public ResponseEntity<Integer> join(@Valid @RequestBody SignupRequest request){
+		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
+				passwordEncoder.encode(request.getPassword()), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
+		
+		userDao.save(saveUser);
+		return new ResponseEntity<>(saveUser.getUserid(), HttpStatus.OK);
+
+	}
+	
+	@PostMapping("/join/profile")
+	@ApiOperation(value = "가입 시 프로필 사진 등록")
+	public ResponseEntity<String> joinprofile(@RequestPart MultipartFile picture,
+								@RequestPart String user_id) throws IOException{
+		User saveUser = userDao.getUserByUserid(Integer.parseInt(user_id));
+		String originalFileExtension;
+		if(picture!=null) {
+    		
+            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+            String path = "src/main/resources/static/profile/" + user_id;
+            File file = new File(path);
+            
+            if(!file.exists()){
+                file.mkdirs();
+            }
+            String contentType = picture.getContentType();
+
+            if(!ObjectUtils.isEmpty(contentType)) {
+
+                if(contentType.contains("image/jpeg"))
+                    originalFileExtension = ".jpg";
+                else if(contentType.contains("image/png"))
+                    originalFileExtension = ".png";
+              
+                else {
+                	userDao.save(saveUser);
+            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+                }
+                String new_file_name = System.nanoTime() + originalFileExtension;
+                saveUser.setStored_file_path(path + "/" + new_file_name);
+                saveUser.setOriginal_file_name(picture.getOriginalFilename());
+                
+                userDao.save(saveUser);
+                
+                file = new File(absolutePath + path + File.separator + new_file_name);
+                picture.transferTo(file);
+                
+                file.setWritable(true);
+                file.setReadable(true);
+            }
+            
+    	}
+		
 		System.out.println("saveUser : "+saveUser);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -234,18 +289,22 @@ public class UserController {
 		String token = "";
 		
 		try {
-			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
-			System.out.println(userlogin.getNickname());
-			token = jwtService.create(userlogin);
-			
-			resultMap.putAll(jwtService.get(token));
-			
-			resultMap.put("status", true);
-			resultMap.put("data", userlogin);
-			resultMap.put("token", token);
-			
-			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
-			
+			User userlogin = userDao.getUserByEmail(loginDto.getEmail());
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			if (encoder.matches(loginDto.getPassword(), userlogin.getPassword())) {
+				token = jwtService.create(userlogin);
+				
+				resultMap.putAll(jwtService.get(token));
+				
+				resultMap.put("status", true);
+				resultMap.put("data", userlogin);
+				resultMap.put("token", token);
+				
+				entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+			} else {
+				resultMap.put("message", "로그인 실패");
+				entity = ResponseEntity.badRequest().body(resultMap);
+			}
 		}catch(RuntimeException e){
 			//Logger.info("로그인 실패",e);
 			resultMap.put("message", e.getMessage());
@@ -321,6 +380,7 @@ public class UserController {
 	@GetMapping("/select/{user_id}")
 	public ResponseEntity<User> select(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
+		
 		if (user!=null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
@@ -350,14 +410,10 @@ public class UserController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "회원 수정", response = String.class)
-    @PutMapping(value = "/modify_user/{user_id}")
-	public ResponseEntity<String> modify(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic,
-			@RequestParam("nickname") String nickname,
-			@RequestParam("phone") String phone) throws IOException {
+	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
+    @PutMapping(value = "/modify_pic/{user_id}")
+	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic) throws IOException {
     	User useropt = userDao.getUserByUserid(user_id);
-    	useropt.setNickname(nickname);
-    	useropt.setPhone(phone);
     	String originalFileExtension;
     	
     	if(pic!=null) {
@@ -384,7 +440,7 @@ public class UserController {
               
                 else {
                 	userDao.save(useropt);
-            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+            		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
                 }
                 String new_file_name = System.nanoTime() + originalFileExtension;
                 useropt.setStored_file_path(path + "/" + new_file_name);
@@ -402,8 +458,21 @@ public class UserController {
     	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "회원 정보 수정", response = String.class)
+    @PutMapping(value = "/modify_user")
+	public ResponseEntity<String> modify_user(@RequestParam("userId") int user_id, @RequestParam("nickname") String nickname, @RequestParam("phone") String phone,
+			@RequestParam("password") String password) throws IOException {
+    	User user = userDao.getUserByUserid(user_id);
+    	
+    	user.setNickname(nickname);
+    	user.setPhone(phone);
+    	if(password.length()>0) user.setPassword(passwordEncoder.encode(password));
+    	userDao.save(user);
+    	
+		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
 
-    //
     @ApiOperation(value = "회원 탈퇴", response = String.class)
 	@DeleteMapping("/delete/{user_id}")
 	public ResponseEntity<String> delete(@PathVariable int user_id) {

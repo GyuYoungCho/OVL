@@ -24,7 +24,11 @@ export default {
   },
   created(){
     this.$store.dispatch("user/getTokenUserInfo");
+
   },
+  mounted(){
+    console.log(new Date(this.userinfo.challengeId.start_date))
+  }
 
   
 }

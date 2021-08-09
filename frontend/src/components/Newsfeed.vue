@@ -67,17 +67,13 @@ export default {
       return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      var category = this.postList[idx].postId.categori;
+      var category = this.postList[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
     },
     userPath(idx) { // 프로필 사진 이미지 출력
-      if (this.postList[idx].postId.userId.stored_file_path==null || this.postList[idx].postId.userId.stored_file_path=="") {
-        return require("@/assets/image/defaultImg.jpg");
-      } else {
-        return "http://localhost:8080/profile"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
-      }
+      return "http://localhost:8080/profile"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
     },
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});

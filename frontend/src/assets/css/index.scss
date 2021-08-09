@@ -1,16 +1,5 @@
 // 여기에 프로젝트 전체의 scss 가 import 됩니다.
 
-@font-face {
-    font-family: 'SDSamliphopangche_Basic';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Basic.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-* {
-    font-family: 'SDSamliphopangche_Basic';
-}
-
 // 기초 세팅 관련 scss import 구문도 cascading 되므로 주의
 @import "./reset.scss";
 @import "./color.scss";
@@ -39,5 +28,9 @@
 
 // recipe 관련 scss
 @import "./recipeCreate.scss";
+
 @import "./recipeSearch.scss";
 @import "./recipeDetail.scss";
+
+// 챌린지 관련 scss
+@import "./challengeList.scss";

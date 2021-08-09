@@ -2,18 +2,18 @@
   <div>
     <v-dialog
           v-model="pot_detail_modal"
-          hide-overlay
-          fullscreen
+          
+          
           transition="dialog-bottom-transition"
-          max-width="500px"
-          scrollable>
+          max-width="1000px">
         <v-card tile>
           <v-toolbar color="#004627" dark>
-            <v-btn icon dark @click="cancelDetail">
+          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
+            <profile-name :user="potitem.userid"></profile-name>
+            <v-spacer></v-spacer>
+            <v-btn icon dark @click="cancelDetail" justify="end">
               <v-icon>mdi-close</v-icon>
             </v-btn>
-          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
-            <v-spacer></v-spacer>
           </v-toolbar>
             <v-row>
               <v-col>
@@ -27,6 +27,9 @@
               <v-col>
                   <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
               </v-col>
+            </v-row>
+            <v-row>
+              <span>{{this.potitem.content}}</span>
             </v-row>
           </v-card>
     </v-dialog>
@@ -80,12 +83,12 @@ export default {
       axios.put(API.url + potAPI.modify(1))
         .then((res) => {
           if (res.data === "success") {
-            alert("삭제 성공");
+            alert("수정 성공");
             this.$router.push({ name: "VetPartyList" })
           }
         })
         .catch((error) => {
-          alert("삭제 ㄴ");
+          alert("수정 ㄴ");
           console.log(error);
         })
     },
