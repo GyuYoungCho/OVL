@@ -8,7 +8,7 @@
       </div>
       
       <div>
-        <input type="text" placeholder="비밀번호" v-model="userinfo.password">
+        <input type="password" placeholder="비밀번호" v-model="userinfo.password">
       </div>
       
       <div>
@@ -20,6 +20,7 @@
       <div class="infoBelow">
         <p>
           <RouterLink :to="{ name: 'Signup' }" class="grey-link">회원가입 | </RouterLink>  
+          <RouterLink :to="{ name: 'FindEmail' }" class="grey-link">아이디 찾기 | </RouterLink>  
           <RouterLink :to="{ name: 'FindPassword' }" class="grey-link">비밀번호 찾기</RouterLink>
         </p>
       </div>

@@ -68,6 +68,7 @@
 import axios from 'axios'
 import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
+import { mapGetters } from 'vuex'
 
 export default {
   data: () => ({
@@ -117,7 +118,7 @@ export default {
       formData.append('picture', this.picture)
       formData.append('content', this.content)
       formData.append('ingredient', this.ingredient)
-      formData.append('userId', 1) // 임의로 넣은 값
+      formData.append('userId', this.userinfo.userid) // 임의로 넣은 값
       for(let i=0; i < this.processImgFiles.length; i++ ) {
         contentList.push(this.processImgFiles[i].text)
         formData.append('files', this.processImgFiles[i])
@@ -172,6 +173,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('user', ['userinfo',]),
     valid () {
       return !!this.title & !!this.picture & !!this.content & !!this.ingredient & !!this.processImgFiles.length
     }

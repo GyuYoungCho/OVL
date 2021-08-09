@@ -1,0 +1,67 @@
+.recipeSearch {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+
+  &Header {
+    display: flex;
+    justify-content: space-between;
+
+    .sortSelect {
+      background: url("../../assets/icon/flipped_triangle.png") no-repeat 90% 50%;
+      background-size: 15px;
+      width: 30vw;
+      border: 1px solid $hy-grey;
+      border-radius: 10px;
+      padding: 2px;
+      box-shadow: 0 2px 2px $hy-grey;
+    }
+
+    option {
+      // background-color: $lighter-green;
+      border: none;
+    }
+
+    .searchBar {
+      border: 1px solid $hy-grey;
+      border-radius: 10px;
+      padding: 2px;
+      box-shadow: 0 2px 2px $hy-grey;
+      width: 100%;
+      margin-left: 3vw;
+    }
+  }
+
+  .oneRecipe {
+    margin-top: 10px;
+
+    .oneRecipeContent {
+      display: flex;
+      justify-content: space-between;
+
+      .oneRecipeTime {
+        font-size: small;
+      }
+
+    }
+
+    .likedHeart {
+      color: $heart-green;
+    }
+
+    .unlikedHeart {
+      color: $hy-grey;
+    }
+
+    .chatIcon {
+      color: $hy-grey;
+    }
+
+  }
+
+  .recipePic {
+    width: 100%;
+    border-radius: 8px;
+  }
+}

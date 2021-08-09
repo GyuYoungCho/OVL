@@ -38,6 +38,15 @@
   .inputBtnDiv {
     flex-direction: row;
     justify-content: space-between;
+
+    input {
+      width: 70vw;
+    }
+
+    button {
+      width: 17vw;
+    }
+
   }
 
   .finalBtn {
