@@ -8,6 +8,7 @@ import postReply from "./modules/postReply.js";
 import recipe from "./modules/recipe.js";
 import pot from "./modules/pot.js";
 import follow from "./modules/follow.js";
+import challenge from './modules/challenge.js'
 import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
@@ -23,5 +24,6 @@ export default new Vuex.Store({
     recipe,
     pot,
     follow,
+    challenge,
   }
 })
