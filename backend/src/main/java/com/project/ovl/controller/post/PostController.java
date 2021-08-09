@@ -93,7 +93,7 @@ public class PostController {
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String category,
+	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("category") String category,
 											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
