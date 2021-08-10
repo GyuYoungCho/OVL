@@ -11,6 +11,9 @@ export default {
   modify () {
     return '/recipe/modify'
   },
+  modifyList () {
+    return '/recipe/modifyList'
+  },
   delete (recipe_id) {
     return `/recipe/delete/${recipe_id}`
   } ,
