@@ -1,10 +1,8 @@
 <template>
   <div>
-        <v-container>
           <!-- Mypage Profile 페이지로 이동 -->
         <ProfilePage v-if="this.isUser"/>
         <Welcome v-else/>
-        </v-container>
   </div>
 </template>
 

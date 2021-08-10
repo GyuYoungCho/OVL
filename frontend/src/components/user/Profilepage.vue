@@ -140,7 +140,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     },
     methods: {
         onClickEditUser(){
-            this.$router.push({ name: "ModifyUser" });
+            this.$router.push({ name: "ModifyPic" });
         },
     openDialog(num) { //Dialog 열리는 동작
     if(num == 0){

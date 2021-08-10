@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    <section  class="profilepage">
+    <section class="profilepage">
             <div centered class="container mt-5 d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
@@ -25,9 +25,16 @@
                                     </div>
                                 </div></div>
                             </div>
-
-                            <div> 
-                                <button class="followBtn" @click="onClickEditUser()">Follow</button>
+                            <div class="d-flex justify-content-center">
+                            <div v-if="this.isFollowing"> 
+                                <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
+                            </div>
+                            <div v-else> 
+                                <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
+                            </div>
+                            <div>
+                                <button class="reportBtn" @click="onClickReport()">신고</button>
+                            </div>
                             </div>
                             
                         </div>
@@ -71,15 +78,18 @@
             <!-- 탭 내용 -->
             <!-- 게시글  -->
                 <v-tab-item>
-                    <UserPosts/>
+                    <LockImg v-if="this.isLocked"/>
+                    <UserPosts v-else/>
                 </v-tab-item>
             <!-- 레시피  -->
                 <v-tab-item>
-                    <UserRecipes/>
+                    <LockImg v-if="this.isLocked"/>
+                    <UserRecipes v-else/>
                 </v-tab-item>
             <!-- 챌린지  -->
                 <v-tab-item>
-                <UserChallenges/>
+                <LockImg v-if="this.isLocked"/>
+                <UserChallenges v-else/>
                 </v-tab-item>
         </v-tabs>
     </div> 
@@ -90,6 +100,7 @@
 <script>
 import {mapGetters} from "vuex"
 import UserPosts from '@/components/profile/userPost.vue'
+import LockImg from '@/components/profile/Lockuser.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
@@ -99,7 +110,7 @@ import API from '@/api/index.js'
 import followAPI from '@/api/follow.js'
 import userAPI from '@/api/user.js'
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
+components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
 
     data () {
         
@@ -125,11 +136,13 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         },
         followingList:[],
         followerList: [],
+        UserfollowingList: [],
         detailFollowUser: [],
         follower: '',
         following: '',
         Rank : null,
-
+        isLocked: false,
+        isFollowing: false,
         }
     },
     computed :{
@@ -144,48 +157,77 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     },
     created() {
 
-
     },
     methods: {
         onClickEditUser(){
             this.$router.push({ name: "ModifyUser" });
         },
-    openDialog(num) { //Dialog 열리는 동작
-    if(num == 0){
+        onClickUnFollowBtn(){
+            axios({
+                method: "delete",
+                url: API.url + followAPI.unfollow(this.userinfo.userid, this.$route.params.userid),
+            }).then((res)=>{
+                if(res.data == "success"){
+                    console.log("Unfollow")
+                    this.isFollowing = false;
+                    this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
+                }
+            }).catch((err)=>{
+                console.log(err)
+            })
+        },
+        onClickFollowBtn(){
             axios({
                 method: "post",
-                url: API.url + followAPI.select_detail(),
-                data: this.followingList,
-            }).then((res) => {
-                console.log("Detail: " + res.data);
-                this.detailFollowUser = res.data;
-            }).catch((err) => {
-                console.log("실패");
-                console.log(err);
+                url: API.url + followAPI.follow(this.userinfo.userid, this.$route.params.userid),
+            }).then((res)=>{
+                if(res.data == "success"){
+                    console.log("follow")
+                    this.isFollowing = true;
+                    this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
+                    
+                }
+            }).catch((err)=>{
+                console.log(err)
             })
-    }else{
-            axios({
-                method: "post",
-                url: API.url + followAPI.select_detail(),
-                data: this.followerList,
-            }).then((res) => {
-                console.log("Detail: " + res.data);
-                this.detailFollowUser = res.data;
-            }).catch((err) => {
-                console.log("실패");
-                console.log(err);
-            })
-    }
-    this.dialog = true;
+        },
+        openDialog(num) { //Dialog 열리는 동작
+        if(num == 0){
+                axios({
+                    method: "post",
+                    url: API.url + followAPI.select_detail(),
+                    data: this.followingList,
+                }).then((res) => {
+                    console.log("Detail: " + res.data);
+                    this.detailFollowUser = res.data;
+                }).catch((err) => {
+                    console.log("실패");
+                    console.log(err);
+                })
+        }else{
+                axios({
+                    method: "post",
+                    url: API.url + followAPI.select_detail(),
+                    data: this.followerList,
+                }).then((res) => {
+                    console.log("Detail: " + res.data);
+                    this.detailFollowUser = res.data;
+                }).catch((err) => {
+                    console.log("실패");
+                    console.log(err);
+                })
+        }
+        this.dialog = true;
 
-    },
-    closeDialog() { //Dialog 닫히는 동작
-    this.dialog = false;
-    },
+        },
+        closeDialog() { //Dialog 닫히는 동작
+            this.dialog = false;
+        },
     },
 mounted(){
             //url userid 체크
         let userid = this.$route.params.userid;
+        let isOpened = 0;
         //다른 유저 정보 가져오기
         axios({
             method: "get",
@@ -194,6 +236,47 @@ mounted(){
                 console.log(" 다른 유저 정보 : ", res.data);
                 this.otheruserinfo = res.data;
                 this.start_date = this.otheruserinfo.challengeId.start_date;
+                this.isOpened = this.otheruserinfo.account_open;
+                axios({
+                        method: "get",
+                        url: API.url + followAPI.select_following(this.userinfo.userid),
+                    }).then((res) => {
+                        //팔로잉 중 - unfollow 버튼 활성화, 무조건 띄움
+                        if(res.data != null){
+                        this.UserfollowingList = res.data;
+                        let mount = this.UserfollowingList.length;
+                            for(var i = 0; i< mount; i++){
+                                
+                                if(this.UserfollowingList[i] == this.$route.params.userid){
+                                    this.isFollowing = true;
+
+                                    console.log("팔로잉중 볼 수 있어", this.UserfollowingList)
+                                    break;
+                                }
+                            }
+                            if(!this.isFollowing){
+                                this.isFollowing = false;
+                                    if(this.isOpened == 0){
+                                        this.isLocked = false;
+                                    }
+                                    else{
+                                        this.isLocked = true;
+                                    }
+                            }
+                        }
+                        else{
+                            console.log("팔로우 해야 합니다.")
+                            if(isOpened == 0){
+                                this.isLocked = false;
+                            }
+                            else{
+                                this.isLocked = true;
+                            }
+                        }
+                    }).catch((err) => {
+                        console.log("실패");
+                        console.log(err);
+                    })
                // console.log("otherprofilepage : ", this.otheruserinfo)
             })
             .catch((err) => {
@@ -239,22 +322,6 @@ mounted(){
         })
 
             //console.log(new Date(this.userinfo.challengeId.start_date))
-    let amount = this.following.length;
-    //팔로우한 사람이면 그냥 보여준다
-    //console.log("보는 사람", this.userinfo.userid);
-    for(var i = 0; i < amount; i++){
-        console.log(amount);
-        if(this.$route.params.userid == this.follower[i]){
-            console.log("testfollowingdetailOther: ",this.follower[i])
-            this.isFollowing = true;
-            break;
-        }
-        else {
-            this.isFollowing = false;
-        }
-    }
-
-
 }
 }
 </script>

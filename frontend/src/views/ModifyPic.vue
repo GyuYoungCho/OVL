@@ -4,7 +4,10 @@
             <div centered class="container mt-5 d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <div class="image text-center"> <img src="@/assets/image/gyu.png" class="profile-img" width="100" style="border-radius: 50%;">
+                        <div class="image text-center"><button class="imgChange" @click="onClickEditPic()">
+                            <img :src="userPath()" class="profile-img" 
+                            type="file" ref="files" multiple @input="fileUpload" width="100" height="100">
+                            </button>
                     <div class="mb-0 mt-0">{{nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
@@ -37,8 +40,8 @@
                     <v-card>
                         <v-card-title>
                         <template>
-                            <v-icon style="margin-right:10px;" large color="#41B883" >List</v-icon> 
-                            <span class="headline" large>팔로잉 목록</span>
+                            <v-icon style="margin-right:10px;" large color="#004627" >List</v-icon>  <!--"#41B883" -->
+                            <!--<span class="headline" large>팔로우 목록</span>-->
                         </template>
                         <v-spacer></v-spacer>
                         <v-btn icon @click="closeDialog('modal1')"> <!-- closeDialog 클릭 이벤트 -->
@@ -47,7 +50,7 @@
                         </v-card-title>
                         <v-card-text>
                         <v-row>
-                            <v-col cols="12" sm="12" md="12" style="position: relative; border:1px solid #41B883; border-style:dashed; ">
+                            <v-col cols="12" sm="12" md="12" style="position: relative; border:1px solid #004627; border-style:dashed; ">
                             <!-- 업로드 컴포넌트 -->
                             <ProfileName
                                 v-for="(auser, index) in detailFollowUser" :key="index" :user="auser">
@@ -94,6 +97,8 @@ import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment';
+import API from '@/api/index.js'
+
 export default {
 components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
@@ -107,6 +112,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         isModalFollowing: false,
         start_date: 0,
         dialog: false,
+        profileImg : '',
         }
     },
     computed:{
@@ -122,7 +128,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
     },
     created() {
-        this.$store.dispatch("user/getTokenUserInfo"),
+        //this.$store.dispatch("user/getTokenUserInfo"),
         this.nickname = this.userinfo.nickname;
         this.userid = this.userinfo.userid;
         this.$store.dispatch("user/getUserRank", this.userinfo.userid);
@@ -138,22 +144,31 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         
     },
     methods: {
+        userPath() { // 프로필 사진 이미지 출력
+            return API.url+"/profile/"+this.userinfo.userid+"/"+this.userinfo.userid.stored_file_path.split('/').reverse()[0];
+        },
         onClickEditUser(){
             this.$router.push({ name: "ModifyUser" });
         },
-    openDialog(num) { //Dialog 열리는 동작
-    if(num == 0){
-        this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
-    }else{
-        this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
-    }
-    this.dialog = true;
+        onClickEditPic(){
+        console.log("files : ", this.$refs.files.files);
+            // 파일 업로드를 클릭 했을 시, 백에 보낼 사진
+            this.profileImg.push(this.$refs.files.files)
+            
+        },
+        openDialog(num) { //Dialog 열리는 동작
+            if(num == 0){
+                this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
+            }else{
+                this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
+            }
+            this.dialog = true;
 
-    },
-    closeDialog() { //Dialog 닫히는 동작
-      this.dialog = false;
-    },
-    },
+        },
+        closeDialog() { //Dialog 닫히는 동작
+            this.dialog = false;
+            },
+        },
 
 }
 </script>
