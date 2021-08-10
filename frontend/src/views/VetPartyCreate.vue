@@ -149,6 +149,11 @@ export default {
         overlay : false,
       }
   },
+  created(){
+    this.search = ''
+    this.snack = false
+    this.overlay = false
+  },
   methods: {
 
     // 주소 넣는 팝업창 생성
@@ -197,18 +202,16 @@ export default {
       
       this.pot.time = date
       
-      // axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
-      //   .then((response) => {
-      //     alert("보냈슴!");
-      //     response
-      //     this.snackbar = true;
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   })
-
-        this.snack = true
-        this.overlay = true
+      axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
+        .then((response) => {
+          
+          response
+          this.snack = true
+          this.overlay = true
+        })
+        .catch((error) => {
+          console.log(error);
+        })
 
         setTimeout(() => {
           this.$router.push({ name: "VetPartyList" })
