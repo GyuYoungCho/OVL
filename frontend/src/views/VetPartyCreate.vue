@@ -2,8 +2,15 @@
   <div>
     <v-container>
     <section  class="vetparty">
-    <h4>채식팟 생성</h4>
-    
+      <v-row justify="end">
+        <v-spacer></v-spacer>
+          <v-btn icon @click="goList()" justify="end">
+      <v-icon>mdi-chevron-double-right</v-icon>
+    </v-btn>
+    </v-row>
+    <h4 v-if="type==0">채식팟 생성</h4>
+    <h4 v-else>채식팟 수정</h4>
+      
       <div>
         <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
           <img src="@/assets/icon/notmeat.png" alt=""></button>
@@ -95,7 +102,8 @@
     
     <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
-      <button :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
+      <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
+      <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정하기</button>
     </section>
     <v-overlay :value="overlay"></v-overlay>
     <confirm-snack :snackbar="snack" :text="message"></confirm-snack>
@@ -107,13 +115,13 @@
 <!-- 주소 찾기 관련 api -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
-import _ from 'lodash';
+
 import axios from "axios";
 import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import RestaurantList from '@/components/pot/RestaurantList.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 
 export default {
@@ -144,18 +152,72 @@ export default {
         
         btnActive: {0:false,1:false,2:false,3:false,4:true},
 
-        message : "팟을 만드셨네요! 다른 팟도 찾아볼까요?",
+        message : "",
         snack : false,
         overlay : false,
+
+        type : 0,
       }
   },
+  computed: {
+    ...mapGetters("pot", ["rest", "selectpot"]),
+    ...mapGetters("user", ['userinfo']),
+    
+    isValid () {
+      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.pot.total_people && 
+      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step
+    },
+  },
   created(){
+    
+    if (this.$route.params.type !=0) {
+      this.type = 1
+      this.roadAddress = this.selectpot.place
+      this.detailAddress = this.selectpot.restaurant_name
+      this.pot.title = this.selectpot.title
+      this.pot.content = this.selectpot.content
+      this.pot.total_people = this.selectpot.total_people
+      this.pot.potid = this.selectpot.potid
+      this.pot.type = this.selectpot.type
+      this.pot.time = this.selectpot.time
+      this.date = new Date(this.selectpot.time).toISOString().substr(0, 10)
+      this.times = new Date(this.selectpot.time).toISOString().slice(11, 16)
+      if(this.pot.type="식당"){
+        this.isRestaurant = true
+        this.isAddress = false
+      }else{
+        this.isRestaurant = false
+        this.isAddress = true
+      }
+
+      for(let i=0;i<5;i++){
+        if(this.allSteps[i]==this.pot.type){
+          selectTypeIcon(i)
+          break
+        }
+      }
+
+
+      console.log(this.pot.time)
+
+      this.message = "내 팟이 수정되었어요!"
+    }else{
+      this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"
+    }
+
     this.search = ''
     this.snack = false
     this.overlay = false
+    this.rest_list_modal = false
   },
   methods: {
-
+    
+    ...mapActions("pot", ["setPotItems","setUsersPots"]),
+    
+    goList(){
+      this.$router.push({ name: "VetPartyList" })
+    },
+    
     // 주소 넣는 팝업창 생성
     onAddressBtnClick () {
       if(this.isAddress){
@@ -202,20 +264,37 @@ export default {
       
       this.pot.time = date
       
-      axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
-        .then((response) => {
-          
-          response
-          this.snack = true
-          this.overlay = true
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+      if(this.type ==0){
+        axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
+          .then((res) => {
+            res
+            this.snack = true
+            this.overlay = true
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+        }else{
+        
+        axios.put(API.url + potAPI.modify(),this.pot)
+          .then((res) => {
+            if (res.data === "success") {
+               this.snack = true
+                this.overlay = true
+            }
+          })
+          .catch((error) => {
+            alert("수정 ㄴ");
+            console.log(error);
+          })
+    
+      }
+      this.setUsersPots(this.userinfo.userid)
+      this.setPotItems()
 
-        setTimeout(() => {
-          this.$router.push({ name: "VetPartyList" })
-        }, 1000)
+      setTimeout(() => {
+        this.$router.push({ name: "VetPartyList" })
+      }, 1000)
     },
 
     changedRest(){
@@ -253,17 +332,7 @@ export default {
     }
 
   },
-  computed: {
-    ...mapGetters("pot", ["rest"]),
-    ...mapGetters("user", ['userinfo']),
-    address () {
-      return this.roadAddress + this.extraAddress
-    },
-    isValid () {
-      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.pot.total_people && 
-      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step
-    },
-  },
+  
   watch:{
       rest : function(newVal, oldVal){
           this.roadAddress = newVal.place

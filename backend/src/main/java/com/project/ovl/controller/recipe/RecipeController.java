@@ -104,7 +104,6 @@ public class RecipeController {
 		
 		photoHandler.saveProfile(pic, recipe.getRecipeId());
 		
-		
 		// 레시피 과정 등록
 		photoHandler.saveProcess(files, processContent, null, recipe.getRecipeId(), 0);
 		
@@ -188,13 +187,12 @@ public class RecipeController {
 		photoHandler.saveProcess(modifyPhotoList, null, modifyPhotoId, Integer.parseInt(recipeId), 1);
 		// 과정 내용 수정
 		for (int i=1;i<modifyContentId.size();i++) {
-			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeId(modifyContentId.get(i));
+			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyContentId.get(i));
 			process.setContent(modifyContent.get(i));
+			recipeProcessDao.save(process);
 		}
-		
 		// 과정 사진, 내용 추가
 		photoHandler.saveProcess(plusPhotoList, plusContent, null, Integer.parseInt(recipeId), 0);
-		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	

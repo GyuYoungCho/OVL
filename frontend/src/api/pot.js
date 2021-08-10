@@ -15,7 +15,7 @@ export default {
     return `/pot/attend/${pot_id}/${user_id}`;
   },
   attend_cancel(pot_id, user_id) {
-    return `/pot/attend/${pot_id}/${user_id}`;
+    return `/pot/attend_cancel/${pot_id}/${user_id}`;
   },
   select_all() {
     return "/pot/select_all";

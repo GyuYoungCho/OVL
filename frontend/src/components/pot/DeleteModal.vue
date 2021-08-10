@@ -8,14 +8,14 @@
         <v-card>
           <v-spacer></v-spacer>
           <v-card-title class="text-h6">
-            팟에 참여하시겠습니까?
+            팟을 삭제하시겠습니까?
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="cancelAttendModal()">
+            <v-btn color="green darken-1" text @click="cancelDeleteModal()">
               아니오
             </v-btn>
-            <v-btn color="green darken-1" text @click="potattend(rows)">
+            <v-btn color="green darken-1" text @click="potdel()">
               예
             </v-btn>
           </v-card-actions>
@@ -34,34 +34,27 @@ export default {
     props:{
         potitem : Object,
         modalopen : Boolean,
-        rows : Number,
     },
     computed:{
         ...mapGetters("user", ["userinfo"]),
     },
     methods:{
         
-        cancelAttendModal(){
-            this.$emit('openAttendModal', false)
+        cancelDeleteModal(){
+            this.$emit('openDeleteModal', false)
         },
-        potattend(num) {
-          console.log(num)
-          if(num < this.potitem.total_people){
-            axios.post(API.url + potAPI.attend(this.potitem.potid,this.userinfo.userid))
+        potdel() {
+          axios.delete(API.url + potAPI.delete(this.potitem.potid))
             .then((res) => {
-                if (res.data === "success") {
-                    
-                    this.$emit('openSnackBar', true , "attend")
-                }
+              if (res.data === "success") {
+                
+                this.$emit('openSnackBar', true , "delete")
+              }
             })
             .catch((error) => {
-                alert("참여x");
-                console.log(error);
+              alert("삭제 ㄴ");
+              console.log(error);
             })
-          }
-          else{
-            this.$emit('openSnackBar', true , "not_attend")
-          }
         },
     }
 }

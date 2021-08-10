@@ -19,7 +19,7 @@
           </template>
           <v-list>
             <!-- 레시피 수정 -->
-            <v-list-item>
+            <v-list-item @click="onRecipeUpdateClick">
               <v-list-item-title>수정</v-list-item-title>
             </v-list-item>
             <!-- 레시피 삭제 -->
@@ -73,13 +73,13 @@
           <div class="lineContainer">
             <!-- 댓글 작성 폼 -->
             <div class="commentInputForm" v-if="contentMode==='comment'">
-              <input type="text" class="commentInput" placeholder="댓글 입력" v-model="content">
+              <input type="text" class="commentInput" placeholder="댓글 달기.." v-model="content">
               <button class="commentCreateBtn" @click="onRegistCommentBtnClick">게시</button>
             </div>
             <!-- 답글 작성 폼 -->
             <div class="commentInputForm" v-if="contentMode==='reply'">
-              <input type="text" class="commentInput" placeholder="답글 입력" v-model="content">
-              <button class="commentCreateBtn" @click="onRegistReplyBtnClick">답글 게시</button>
+              <input type="text" class="commentInput" :placeholder="replyCommentUser + '님에게 답글 달기..'" v-model="content">
+              <button class="commentCreateBtn" @click="onRegistReplyBtnClick">게시</button>
             </div>
             <!-- 댓글 수정 폼 -->
             <div class="commentInputForm" v-if="contentMode==='commentModify'">
@@ -103,17 +103,19 @@
             <v-icon class="unlikedHeart" v-else @click="onCommentLikeBtnClick(recipeComment)">mdi-heart-outline</v-icon>
           </div>
           <div class="infoBelowOneComment">
-            <div>
+            <div class="infoFirstLine">
               <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
-              <span class="oneInfo" @click="onReplyClick(recipeComment)">답글달기</span>
-              <!-- 댓글 수정 -->
-              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid" @click="onModifyCommentClick(recipeComment)">수정</span>
-              <!-- 댓글 삭제 -->
-              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid" @click="onDeleteCommentClick(recipeComment.recipeCommentId)">삭제</span>
+              <span class="oneInfo" @click="onReplyClick(recipeComment)">{{ contentMode!=='reply' ? '답글달기' : '답글취소' }}</span>
+              <div class="oneInfo">
+                <!-- 댓글 수정 -->
+                <span v-if="recipeComment.userId.userid===userinfo.userid" @click="onModifyCommentClick(recipeComment)">수정</span> |
+                <!-- 댓글 삭제 -->
+                <span v-if="recipeComment.userId.userid===userinfo.userid" @click="onDeleteCommentClick(recipeComment.recipeCommentId)">삭제</span>
+              </div>
             </div>
             <!-- 답글 -->
-            <div>
-              <button @click="onShowReplyBtnClick(idx)">
+            <div class="infoSecondLine">
+              <button @click="onShowReplyBtnClick(idx)" v-if="!!recipeComment.reply_count">
                 <!-- 답글 펼치고 접는 버튼 -->
                 <div v-if="!replyShowIdx.includes(idx)">
                   --답글 {{ recipeComment.reply_count }}개 보기
@@ -135,10 +137,13 @@
               </div>
               <div class="infoBelowOneReply">
                 <span class="oneInfo">좋아요{{ reply.like_count }}개</span>
-                <!-- 답글 수정 -->
-                <span class="oneInfo" v-if="reply.userId.userid===userinfo.userid" @click="onModifyReplyClick(reply)">수정</span>
-                <!-- 답글 삭제 -->
-                <span class="oneInfo" v-if="reply.userId.userid===userinfo.userid" @click="onDeleteReplyClick(reply)">삭제</span>
+                <div class="oneInfo">
+                  <!-- 답글 수정 -->
+                  <span v-if="reply.userId.userid===userinfo.userid" @click="onModifyReplyClick(reply)">수정</span> |
+                  <!-- 답글 삭제 -->
+                  <span v-if="reply.userId.userid===userinfo.userid" @click="onDeleteReplyClick(reply)">삭제</span>
+
+                </div>
               </div>
             </div>
           </div>
@@ -168,6 +173,7 @@ export default {
     content: "",
     contentMode: "comment",
     replyCommentId: "",
+    replyCommentUser: "",
     replyShowIdx: [],
 
     modifyCommentId: -1,
@@ -185,6 +191,11 @@ export default {
         recipeId: this.recipe.recipeId,
       }
       this.likeRecipe(data)
+    },
+    onRecipeUpdateClick () {
+      if (confirm('레시피를 수정하시겠습니까?')) {
+        this.$router.push({ name: 'RecipeUpdate' })
+      }
     },
     onRecipeDeleteClick () {
       if (confirm('레시피를 정말 삭제하시겠습니까?')) {
@@ -210,6 +221,7 @@ export default {
         this.contentMode = "comment"
       }
       this.content = ""
+      this.replyCommentUser = recipeComment.userId.nickname
       this.replyCommentId = recipeComment.recipeCommentId
     },
     onModifyCommentClick (recipeComment) {
@@ -298,7 +310,6 @@ export default {
       this.content = ""
     },
     onRegistReplyBtnClick () {
-      console.log(this.replyCommentId)
       const data = {
         params:{
           "content": this.content,

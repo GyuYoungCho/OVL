@@ -408,8 +408,10 @@ public class PostController {
 		Collections.sort(returnList, (o1, o2)-> {
 			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
 		});
+		System.out.println("return list ; " + returnList);
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
+	
 
 	@GetMapping("/select_user/{user_id}")
 	@ApiOperation(value = "자기 자신 게시글 조회")

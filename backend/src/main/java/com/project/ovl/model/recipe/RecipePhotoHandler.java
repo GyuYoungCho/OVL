@@ -67,24 +67,21 @@ public class RecipePhotoHandler {
 	}
 	
 	public void saveProfile(List<MultipartFile> pic, int recipeId) throws IllegalStateException, IOException {
-		if (CollectionUtils.isEmpty(pic)) {
+		if (!CollectionUtils.isEmpty(pic)) {
 			String path = "src/main/resources/static/recipe/" + recipeId;
 			File file = dirSetting(path);
-			
 			for (int i=1;i<pic.size();i++) {
 				String new_file_name = pathSetting(pic.get(i));
-				
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				recipe.setOriginal_file_name(pic.get(i).getOriginalFilename());
 				recipe.setStored_file_path(path + "/" + new_file_name);
 				recipeDao.save(recipe);
-				
 				photoSave(file, new_file_name, path, pic.get(i));
 			}
 		}
 	}
 
-	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 1 : 등록, 2 : 수정
+	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 0 : 등록, 1 : 수정
 		if (!CollectionUtils.isEmpty(photoList)) {
 			String path = "src/main/resources/static/recipe/" + recipeId;
 			File file = dirSetting(path);
@@ -95,11 +92,11 @@ public class RecipePhotoHandler {
 				
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				
-				if (type==1) { // 등록 일 때 
+				if (type==0) { // 등록 일 때 
 					RecipeProcess process = new RecipeProcess(0, contentList.get(i), photoList.get(i).getOriginalFilename(), path + "/" + new_file_name, photoList.get(i).getSize()+"", recipe);
 					processDao.save(process);
 				} else { // 사진 수정 일 때
-					RecipeProcess process = processDao.findRecipeProcessByRecipeId(idList.get(i));
+					RecipeProcess process = processDao.findRecipeProcessByRecipeProcessId(idList.get(i));
 					process.setFilename(photoList.get(i).getOriginalFilename());
 					process.setFilepath(path + "/" + new_file_name);
 					process.setFilesize(photoList.get(i).getSize()+"");
