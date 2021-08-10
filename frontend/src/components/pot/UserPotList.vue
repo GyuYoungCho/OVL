@@ -31,23 +31,28 @@
             </v-col>
             <v-col  class="pa-0">
                 <v-btn icon @click="openDetailModal(true)">
-                  <v-icon>mdi-menu-left-outline</v-icon>
+                  <v-icon>mdi-message-processing-outline</v-icon>
                 </v-btn>
             </v-col>
         </v-container>
-        <!-- <vet-party-detail :potitem="userpot" :pot_detail_modal="modalOpen"></vet-party-detail> -->
+        <vet-party-detail :potitem="userpot" :pot_detail_modal="modalOpen" 
+            @openDetailModal="openDetailModal" @openSnackBar="openSnackBar"></vet-party-detail>
 
     </div>  
 </template>
 
 <script>
+import axios from "axios";
+import API from '@/api/index.js'
+import potAPI from '@/api/pot.js'
+
 import moment from 'moment';
-import { mapGetters, mapActions} from 'vuex';
-// import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
+import { mapGetters} from 'vuex';
+import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 
 export default {
     components:{
-        // VetPartyDetail,
+        VetPartyDetail,
     },
     data() {
         return {
@@ -57,6 +62,8 @@ export default {
             
             btnActive: {0:false,1:false,2:false,3:false,4:false},
             modalOpen : false,
+
+            potattendusers:[],
         };
     },
     props: {
@@ -64,7 +71,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters("pot", ["potattendusers"]),
+        ...mapGetters("user", ["userinfo"]),
         meet_date(){
             return moment(this.userpot.time).format("ddd MM/DD")
         },
@@ -77,7 +84,15 @@ export default {
     },
 
     methods: {
-        ...mapActions("pot",["setPotAttendUsers"]),
+        potAttendUsers(pot_id) {
+            axios.get(API.url + potAPI.attendcount(pot_id))
+                .then((res) => {
+                this.potattendusers = res.data
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        },
         openDetailModal(val){
             this.modalOpen = val;
         },
@@ -92,13 +107,15 @@ export default {
         colorChange(flag) {
             this.isColor = flag;
         },
-    },
 
-    created(){
-        this.$store.dispatch("pot/setPotAttendUsers",this.userpot.potid)
+        openSnackBar(val, sign){
+            
+            this.$emit('openSnackBarTop', val, sign)
+        }
     },
 
     mounted(){
+        this.potAttendUsers(this.userpot.potid)
         this.stepToIcon(this.userpot.step)
     },
     

@@ -52,30 +52,29 @@
         </v-container>
     </v-row>
     <vet-party-detail :potitem="potitem" :pot_detail_modal="modalDetail"
-        @openDetailModal="openDetailModal"></vet-party-detail>
-    <attend-modal :potitem="potitem" :modalopen="AttendModalT"
+        @openDetailModal="openDetailModal" @openSnackBar="openSnackBar"></vet-party-detail>
+    <attend-modal :potitem="potitem" :modalopen="AttendModalT" :rows="rows"
               @openAttendModal="openAttendModal" @openSnackBar="openSnackBar"></attend-modal>
-   <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+   
     </div>  
 </template>
 
 <script>
 import moment from 'moment';
-import { mapGetters, mapActions} from 'vuex';
-// import axios from "axios";
-// import API from '@/api/index.js'
-// import potAPI from '@/api/pot.js'
+import { mapGetters} from 'vuex';
+import axios from "axios";
+import API from '@/api/index.js'
+import potAPI from '@/api/pot.js'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 import ProfileName from '@/components/basic/ProfileName.vue';
 import AttendModal from '@/components/pot/AttendModal.vue'
-// import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 
 export default {
     components:{
         VetPartyDetail,
         ProfileName,
         AttendModal,
-        // ConfirmSnack,
+        
     },
     data() {
         return {
@@ -86,20 +85,20 @@ export default {
             btnActive: {0:false,1:false,2:false,3:false,4:false},
             modalDetail : false,
             AttendModalT : false,
-
+            potattendusers : 0,
             snackbar : false,
-            message : "참여되었습니다" ,
         };
     },
     props: {
         potitem: Object,
+        
     },
     created(){
         this.modalDetail=false
         this.AttendModalT=false
     },
     computed: {
-        ...mapGetters("pot", ["potattendusers"]),
+        
         ...mapGetters("user", ["userinfo"]),
         
         meet_date(){
@@ -114,7 +113,16 @@ export default {
         
     },
     methods: {
-        ...mapActions("pot",["setPotAttendUsers"]),
+
+        potAttendUsers(pot_id) {
+            axios.get(API.url + potAPI.attendcount(pot_id))
+                .then((res) => {
+                this.potattendusers = res.data
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        },
         openDetailModal(val){
             this.modalDetail = val;
         },
@@ -131,21 +139,13 @@ export default {
             }
         },
 
-        openSnackBar(val){
-            console.log(val)
+        openSnackBar(val, sign){
             this.snackbar = val
-
-            setTimeout(() => {
-                this.AttendModalT = false
-                // this.overlay = false
-                this.snackbar = false
-                
-                }, 1000)
-            this.$router.go();
+            this.$emit('openSnackBarTop', this.snackbar, sign)
         }
     },
     mounted(){
-        this.setPotAttendUsers(this.potitem.potid)
+        this.potAttendUsers(this.potitem.potid)
         this.stepToIcon(this.potitem.step)
     },
     

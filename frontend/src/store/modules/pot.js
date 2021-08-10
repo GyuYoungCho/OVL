@@ -8,9 +8,9 @@ export default {
   state: {
     restitems: [],
     potitems: [],
-    potattendusers: [],
     userpots: [],
     rest: Object,
+    selectpot: Object,
   },
   getters: {
     restitems(state) {
@@ -19,14 +19,14 @@ export default {
     potitems(state) {
       return state.potitems;
     },
-    potattendusers(state) {
-      return state.potattendusers;
-    },
     userpots(state) {
       return state.userpots;
     },
     rest(state) {
       return state.rest;
+    },
+    selectpot(state) {
+      return state.selectpot;
     },
   },
   mutations: {
@@ -36,25 +36,52 @@ export default {
     set_Pot_Items(state, payload) {
       let datas = [];
       let user = [];
-      state.userpots.forEach((item) => {
-        user.push(item.potid);
-      });
-
-      payload.forEach((item) => {
-        if (!user.includes(item.potid)) {
-          datas.push(item);
-        }
-      });
-      state.potitems = datas;
-    },
-    set_Pot_Attend_Users(state, payload) {
-      state.potattendusers = payload;
+      if (state.consoleuserpots) {
+        state.userpots.forEach((item) => {
+          user.push(item.potid);
+        });
+      }
+      if (payload) {
+        payload.forEach((item) => {
+          if (!user.includes(item.potid)) {
+            datas.push(item);
+          }
+        });
+      }
+      if (datas) {
+        state.potitems = datas.sort(function(pot1, pot2) {
+          let x = pot1.time;
+          let y = pot2.time;
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+      }
     },
     set_User_Pots(state, payload) {
-      state.userpots = payload;
+      if (payload) {
+        state.userpots = payload.sort(function(pot1, pot2) {
+          let x = pot1.time;
+          let y = pot2.time;
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+      }
     },
     SELECT_REST(state, payload) {
       state.rest = payload;
+    },
+    SELECT_POT(state, payload) {
+      state.selectpot = payload;
     },
   },
   actions: {
@@ -78,17 +105,6 @@ export default {
           console.log(error);
         });
     },
-
-    setPotAttendUsers({ commit }, pot_id) {
-      axios
-        .get(API.url + potAPI.attendcount(pot_id))
-        .then((res) => {
-          commit("set_Pot_Attend_Users", res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
     setUsersPots({ commit }, user_id) {
       axios
         .get(API.url + potAPI.select(user_id))
@@ -102,6 +118,10 @@ export default {
 
     selectRestaurant({ commit }, rest) {
       commit("SELECT_REST", rest);
+    },
+
+    selectPot({ commit }, pot) {
+      commit("SELECT_POT", pot);
     },
   },
 };
