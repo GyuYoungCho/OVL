@@ -50,18 +50,31 @@
         <div class="commentRegisterForm">
           <v-icon color="black">mdi-subdirectory-arrow-right</v-icon>
           <div class="lineContainer">
-            <div class="commentInputForm" v-if="commentMode">
+            <!-- 댓글 작성 폼 -->
+            <div class="commentInputForm" v-if="contentMode==='comment'">
               <input type="text" class="commentInput" placeholder="댓글 입력" v-model="content">
               <button class="commentCreateBtn" @click="onRegistCommentBtnClick">게시</button>
             </div>
-            <div class="commentInputForm" v-else>
+            <!-- 답글 작성 폼 -->
+            <div class="commentInputForm" v-if="contentMode==='reply'">
               <input type="text" class="commentInput" placeholder="답글 입력" v-model="content">
               <button class="commentCreateBtn" @click="onRegistReplyBtnClick">답글 게시</button>
+            </div>
+            <!-- 댓글 수정 폼 -->
+            <div class="commentInputForm" v-if="contentMode==='commentModify'">
+              <input type="text" class="commentInput" v-model="content">
+              <button class="commentCreateBtn" @click="onModifyCommentBtnClick">수정</button>
+            </div>
+            <!-- 답글 수정 폼 -->
+            <div class="commentInputForm" v-if="contentMode==='replyModify'">
+              <input type="text" class="commentInput" v-model="content">
+              <button class="commentCreateBtn" @click="onModifyReplyBtnClick">수정</button>
             </div>
             <hr> 
           </div>
         </div>
         <div v-for="(recipeComment, idx) in recipeComments" :key="idx" class="oneComment">
+          <!-- 댓글 한 개 -->
           <div class="commentUserAndContent">
             <ProfileName :user="recipeComment.userId"></ProfileName>
             <p class="commentContent">{{ recipeComment.content }}</p>
@@ -72,20 +85,40 @@
             <div>
               <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
               <span class="oneInfo" @click="onReplyClick(recipeComment)">답글달기</span>
-              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid">수정</span>
+              <!-- 댓글 수정 -->
+              <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid" @click="onModifyCommentClick(recipeComment)">수정</span>
+              <!-- 댓글 삭제 -->
               <span class="oneInfo" v-if="recipeComment.userId.userid===userinfo.userid" @click="onDeleteCommentClick(recipeComment.recipeCommentId)">삭제</span>
             </div>
             <!-- 답글 -->
             <div>
               <button @click="onShowReplyBtnClick(idx)">
-                --답글 {{ recipeComment.reply_count }}개 보기
+                <!-- 답글 펼치고 접는 버튼 -->
+                <div v-if="!replyShowIdx.includes(idx)">
+                  --답글 {{ recipeComment.reply_count }}개 보기
+                </div>
+                <div v-else>
+                  --답글 접기
+                </div>
               </button>
             </div>
           </div>
-          <div v-show="replyShowIdx[idx]">
+          <!-- 답글 펼치기 했을 때 보이는 부분 -->
+          <div v-show="replyShowIdx.includes(idx)">
             <div v-for="(reply, index) in recipeCommentReply[recipeComment.recipeCommentId]" :key="index" class="oneReply">
-              <ProfileName :user="reply.userId"></ProfileName>
-              <p class="replyContent">{{ reply.content }}</p>
+              <div class="oneReplyContent">
+                <ProfileName :user="reply.userId"></ProfileName>
+                <p class="replyContent">{{ reply.content }}</p>
+                <v-icon class="likedHeart" @click="onReplyLikeClick(reply)" v-if="recipeReplyLikeList.includes(reply.recipeReplyId)">mdi-heart</v-icon>
+                <v-icon class="unlikedHeart" @click="onReplyLikeClick(reply)" v-else>mdi-heart-outline</v-icon>
+              </div>
+              <div class="infoBelowOneReply">
+                <span class="oneInfo">좋아요{{ reply.like_count }}개</span>
+                <!-- 답글 수정 -->
+                <span class="oneInfo" v-if="reply.userId.userid===userinfo.userid" @click="onModifyReplyClick(reply)">수정</span>
+                <!-- 답글 삭제 -->
+                <span class="oneInfo" v-if="reply.userId.userid===userinfo.userid" @click="onDeleteReplyClick(reply)">삭제</span>
+              </div>
             </div>
           </div>
           
@@ -109,17 +142,21 @@ export default {
     ProfileName,
   },
   data: () => ({
-    content: "",
     tab: "ingredient",
     commentInputBtn: "",
-    commentMode: true,
+    content: "",
+    contentMode: "comment",
     replyCommentId: "",
-    replyShowIdx: {},
+    replyShowIdx: [],
+
+    modifyCommentId: -1,
+    modifyReplyId: -1,
   }),
   methods: {
-    ...mapActions(['registComment', 'likeRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'deleteRecipeComment', 'registCommentReply',]),
-    changeLine (c) {
-      return c.replace(/(?:\r\n|\r|\n)/g, '<br />');
+    ...mapActions(['registComment', 'likeRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
+    'registRecipeCommentReply', 'likeRecipeCommentReply', 'fetchRecipeReplyLikeList', 'modifyRecipeReply', 'deleteRecipeReply',]),
+    changeLine (content) {
+      return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
     onRecipeLikeBtnClick () {
       const data = {
@@ -140,8 +177,37 @@ export default {
       this.likeRecipeComment(data)
     },
     onReplyClick (recipeComment) {
-      this.commentMode = !this.commentMode
+      if (this.contentMode!=="reply") {
+        this.contentMode = "reply"
+      } else {
+        this.contentMode = "comment"
+      }
+      this.content = ""
       this.replyCommentId = recipeComment.recipeCommentId
+    },
+    onModifyCommentClick (recipeComment) {
+      if (this.contentMode!=="commentModify") {
+        this.contentMode = "commentModify"
+        this.content = recipeComment.content
+        this.modifyCommentId = recipeComment.recipeCommentId
+      } else {
+        this.contentMode = "comment"
+        this.content = ""
+        this.modifyCommentId = -1
+      }
+    },
+    onModifyCommentBtnClick () {
+      const data = {
+        params: {
+          comment_id: this.modifyCommentId,
+          content: this.content,
+        }
+      }
+      const recipeId = this.recipe.recipeId
+      this.modifyRecipeComment({ data, recipeId })
+      this.contentMode = "comment"
+      this.content = ""
+      this.modifyCommentId = -1
     },
     onDeleteCommentClick (recipeCommentId) {
       const data = {
@@ -149,6 +215,49 @@ export default {
         recipeCommentId,
       }
       this.deleteRecipeComment(data)
+    },
+    onReplyLikeClick(reply) {
+      const data = {
+        recipeCommentId: reply.recipeCommentId.recipeCommentId,
+        userId: this.userinfo.userid,
+        recipeReplyId: reply.recipeReplyId
+      }
+      this.likeRecipeCommentReply(data)
+    },
+    onModifyReplyClick(reply) {
+      if (this.contentMode!=="replyModify") {
+        this.contentMode = "replyModify"
+        this.content = reply.content
+        this.modifyReplyId = reply.recipeReplyId
+        this.modifyCommentId = reply.recipeCommentId.recipeCommentId
+      } else {
+        this.contentMode = "comment"
+        this.content = ""
+        this.modifyReplyId = -1
+        this.modifyCommentId = -1
+      }
+    },
+    onModifyReplyBtnClick() {
+      const data = {
+        params: {
+          content: this.content,
+          reply_id: this.modifyReplyId
+        }
+      }
+      const recipeCommentId = this.modifyCommentId
+      this.modifyRecipeReply({ data, recipeCommentId })
+      this.contentMode = "comment"
+      this.content = ""
+      this.modifyReplyId = -1
+      this.modifyCommentId = -1
+    },
+    onDeleteReplyClick (reply) {
+      const data ={
+        recipeCommentId: reply.recipeCommentId.recipeCommentId,
+        recipeReplyId: reply.recipeReplyId,
+        recipeId: this.recipe.recipeId,
+      }
+      this.deleteRecipeReply(data)
     },
 
     srcPath(recipe) {
@@ -174,20 +283,22 @@ export default {
         data,
         recipeId: this.recipe.recipeId
       }
-      this.registCommentReply(payload)
+      this.registRecipeCommentReply(payload)
       this.content = ""
     },
     onShowReplyBtnClick(idx) {
-      this.replyShowIdx[idx] = !this.replyShowIdx[idx]
-      this.replyShowIdx[idx] = !!this.replyShowIdx[idx]
+      const replyShowIdx = this.replyShowIdx
+      if (replyShowIdx.includes(idx)) {
+        replyShowIdx.splice(replyShowIdx.indexOf(idx), 1)
+      } else {
+        replyShowIdx.push(idx)
+      }
+      this.replyShowIdx = replyShowIdx
     },
-    isShowingReply (idx) {
-      return this.replyShowIdx[idx]
-    }
-    
   },
   computed: {
-    ...mapGetters(['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', 'recipeCommentLikeList', 'recipeCommentReply',]),
+    ...mapGetters(['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', 
+    'recipeCommentLikeList', 'recipeCommentReply', 'recipeReplyLikeList',]),
     ...mapGetters("user", ["userinfo",]),
     comment () {
       const data = {
@@ -202,6 +313,7 @@ export default {
   },
   created () {
     this.fetchRecipeCommentLikeList(this.userinfo.userid)
+    this.fetchRecipeReplyLikeList(this.userinfo.userid)
   }
 }
 </script>

@@ -16,8 +16,10 @@ export default {
     recipeComments: [],
     // 내가 좋아요 누른 레시피 댓글
     recipeCommentLikeList: [],
-    // 
+    // 댓글이 key, 대댓글이 value인 객체
     recipeCommentReply: {},
+    // 내가 좋아요 누른 대댓글
+    recipeReplyLikeList: [],
   },
   getters: {
     recipe (state) {
@@ -40,6 +42,9 @@ export default {
     },
     recipeCommentReply (state) {
       return state.recipeCommentReply
+    },
+    recipeReplyLikeList (state) {
+      return state.recipeReplyLikeList
     }
   },
   mutations: {
@@ -70,7 +75,8 @@ export default {
     },
     SET_RECIPE_DETAIL (state, recipeDetail) {
       state.recipeDetail = recipeDetail
-      state.recipe = recipeDetail[0].recipeId    },
+      state.recipe = recipeDetail[0].recipeId    
+    },
     SET_RECIPE_COMMENTS (state, recipeComments) {
       state.recipeComments = recipeComments
     },
@@ -80,6 +86,9 @@ export default {
     SET_RECIPE_COMMENT_REPLY(state, { recipeCommentId, recipeCommentReply }) {
       state.recipeCommentReply[recipeCommentId] = recipeCommentReply
     },
+    SET_RECIPE_REPLY_LIKE_LIST(state, recipeReplyLikeList) {
+      state.recipeReplyLikeList = recipeReplyLikeList
+    }
   },
   actions: {
     fetchRecipes ({ commit }) {
@@ -166,6 +175,15 @@ export default {
         })
         .catch(err => console.error(err))
     },
+    modifyRecipeComment ({ dispatch }, { data, recipeId }) {
+      const URL = API.url + recipeCommentAPI.modify()
+      axios.put(URL, null, data)
+        .then(res => {
+          console.log(res)
+          dispatch('fetchRecipeComments', recipeId)
+        })
+        .catch(err => console.error(err))
+    },
     deleteRecipeComment ({ dispatch }, { recipeId, recipeCommentId }) {
       const URL = API.url + recipeCommentAPI.delete(recipeCommentId)
       axios.delete(URL)
@@ -175,7 +193,7 @@ export default {
         })
         .catch(err => console.error(err))
     },
-    registCommentReply ({ commit, dispatch }, { data, recipeId }) {
+    registRecipeCommentReply ({ commit, dispatch }, { data, recipeId }) {
       const URL = API.url + recipeReplyAPI.regist()
       axios.post(URL, null, data)
         .then(res => {
@@ -190,5 +208,54 @@ export default {
             .catch(err => console.error(err))
         })
     },
+    fetchRecipeCommentReply ({ commit }, recipeCommentId) {
+      const URL = API.url + recipeReplyAPI.select_all(recipeCommentId)
+      axios.get(URL)
+        .then(res => {
+          const finalData = {
+            recipeCommentId, 
+            recipeCommentReply: res.data 
+          }
+          commit('SET_RECIPE_COMMENT_REPLY', finalData)
+        })
+        .catch(err => console.error(err))
+    },
+    likeRecipeCommentReply ({ dispatch }, { recipeCommentId, userId, recipeReplyId}) {
+      const URL = API.url + recipeReplyAPI.like(userId, recipeReplyId)
+      axios.get(URL)
+        .then(res => {
+          console.log(res)
+          dispatch('fetchRecipeCommentReply', recipeCommentId)
+          dispatch('fetchRecipeReplyLikeList', userId)
+        })
+        .catch(err => console.error(err))
+    },
+    fetchRecipeReplyLikeList ({ commit }, userId) {
+      const URL = API.url + recipeReplyAPI.like_list(userId)
+      axios.get(URL)
+        .then(res => {
+          commit('SET_RECIPE_REPLY_LIKE_LIST', res.data)
+        })
+        .catch(err => console.error(err))
+    },
+    modifyRecipeReply ({ dispatch }, { data, recipeCommentId }) {
+      const URL = API.url + recipeReplyAPI.modify()
+      axios.put(URL, null, data)
+        .then(res => {
+          console.log(res)
+          dispatch('fetchRecipeCommentReply', recipeCommentId)
+        })
+        .catch(err => console.error(err))
+    },
+    deleteRecipeReply ({ dispatch }, { recipeCommentId, recipeReplyId, recipeId }) {
+      const URL = API.url + recipeReplyAPI.delete(recipeReplyId)
+      axios.delete(URL)
+        .then(res => {
+          console.log(res)
+          dispatch('fetchRecipeCommentReply', recipeCommentId)
+          dispatch('fetchRecipeComments', recipeId)
+        })
+        .catch(err => console.error(err))
+    }
   }
 }
