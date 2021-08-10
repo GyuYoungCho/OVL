@@ -23,8 +23,9 @@ state: {
 },
 mutations: {
     setUserInfo(state, payload) {
-    state.isLogin = true;
-    state.userinfo = payload;
+        state.isLogin = true;
+        state.userinfo = payload;
+        //console.log(state.userinfo.nickname + "유저아이디확인");
     },
     setLogout(state) {
     state.isLogin = false;
@@ -39,6 +40,22 @@ mutations: {
     };
     localStorage.removeItem("access-token");
     },
+    setReset(state) {
+        state.userinfo = {
+            userid: "",
+            email: "",
+            password: "",
+            name: "",
+            nickname: "",
+            phone: "",
+            stored_file_path: "",
+            challengeId: {
+                start_date: null,
+            },
+            rank: null,
+        };
+    },
+        
     setUserRank(state, payload) {
         state.rank = payload;
     },
@@ -55,7 +72,7 @@ getters: {
 actions: {
     getUserInfo(store) {
     let token = localStorage.getItem("access-token");
-    console.log("jwt 정보" + token);
+    //console.log("jwt 정보" + token);
     if (!token) {
         return;
     }
@@ -65,14 +82,14 @@ actions: {
         headers: { "access-token": token },
     })
         .then((res) => {
-        console.log(res);
+        //console.log(res);
 
         if (res.data) {
-            console.log(res.data.UserDto);
-            console.log("성공!!!!!!!!!!!!");
+            //console.log(res.data.UserDto);
+            //console.log("성공!!!!!!!!!!!!");
             store.commit("setUserInfo", res.data.UserDto);
             this.state.isLogin = true;
-            console.log(this.state);
+            //console.log(this.state);
         } else console.log("실패.");
         })
         .catch((err) => {
@@ -81,8 +98,8 @@ actions: {
         });
     },
     login(store, loginObj) {
-    console.log("로그인 확인");
-    return new Promise(function(resolve) {
+        //console.log("로그인 확인");
+        return new Promise(function(resolve) {
         axios({
         method: "post",
         url: API.url + userAPI.login(),
@@ -101,7 +118,7 @@ actions: {
     });
     },
     logout(store) {
-    store.commit("setLogout");
+        store.commit("setLogout");
     },
 
     getTokenUserInfo(store) {
@@ -117,6 +134,7 @@ actions: {
         .then((res) => {
         if (res.data) {
             console.log(res.data.UserDto);
+            store.commit("setReset");
             store.commit("setUserInfo", res.data.UserDto);
             this.state.isLogin = true;
         } else console.log("실패.");
@@ -153,7 +171,27 @@ actions: {
         }).catch((err) => {
             console.log(err);
         })
-    },    
+    },
+    getUpdateUserInfo(store, payload) {
+        let token = localStorage.getItem("access-token");
+        axios({
+            method: "get",
+            url: API.url + userAPI.select(payload),
+            headers: {"access-token" : token}
+        })
+            .then((res) => {
+            if (res.data) {
+                console.log("User Update");
+                //console.log(res.data.userid);
+                store.commit("setReset");
+                store.commit("setUserInfo", res.data);
+                this.state.isLogin = true;
+            } else console.log("업데이트 실패.");
+            })
+            .catch((err) => {
+            console.log(err);
+            });
+        },
 
 },
 };

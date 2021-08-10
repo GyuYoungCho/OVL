@@ -27,7 +27,7 @@
                             </div>
 
                             <div> 
-                                <button class="bg-freditgreen" @click="onClickEditUser()">Edit Profile</button>
+                                <button class="bg-freditgreen" @click="onClickEditUser()">회원 정보 수정</button>
                             </div>
                             
                         </div>

@@ -60,13 +60,14 @@ export default {
         }
     },
     created() {
-        this.$store.dispatch("user/getTokenUserInfo");
-    
+        // //this.$store.dispatch("user/getTokenUserInfo");
+        // //this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
         this.userid = this.userinfo.userid;
         this.name = this.userinfo.name;
         this.nickname = this.userinfo.nickname;
         this.phone = this.userinfo.phone;
         this.email = this.userinfo.email;
+        console.log(this.userinfo)
     },
     computed: {
         ...mapGetters("user", ["userinfo"]),
@@ -130,6 +131,7 @@ export default {
 
             axios.put(URL, payload).then(res => {
                 console.log(res)
+                this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
                 this.$router.push({ name: 'Login' })
                 })
                 .catch(err => 

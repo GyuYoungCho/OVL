@@ -17,7 +17,8 @@ import RecipeSearch from "../views/RecipeSearch.vue";
 import VetPartyCreate from "../views/VetPartyCreate.vue";
 import VetPartyList from "../views/VetPartyList.vue";
 import ModifyUser from "../views/ModifyUser.vue";
-import ModifyProfile from "../views/ModifyProfile.vue";
+import ModifyPic from "../views/ModifyPic.vue";
+import OtherProfile from "../views/OtherProfile.vue";
 
 
 Vue.use(VueRouter);
@@ -79,9 +80,9 @@ const routes = [
     component: Profile,
   },
   {
-    path: "/modify_profile/:userid",
-    name: "ModifyProfile",
-    component: ModifyProfile,
+    path: "/modify_pic/:userid",
+    name: "ModifyPic",
+    component: ModifyPic,
   },
   {
     path: "/recipe_create",
@@ -112,6 +113,11 @@ const routes = [
     path: "/modify_user",
     name: "ModifyUser",
     component: ModifyUser,
+  },
+  {
+    path: "/other_profile/:userid",
+    name: "OtherProfile",
+    component: OtherProfile,
   },
 ];
 
