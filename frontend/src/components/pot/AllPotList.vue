@@ -55,16 +55,16 @@
         @openDetailModal="openDetailModal"></vet-party-detail>
     <attend-modal :potitem="potitem" :modalopen="AttendModalT"
               @openAttendModal="openAttendModal" @openSnackBar="openSnackBar"></attend-modal>
-   
+   <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
     </div>  
 </template>
 
 <script>
 import moment from 'moment';
 import { mapGetters, mapActions} from 'vuex';
-import axios from "axios";
-import API from '@/api/index.js'
-import potAPI from '@/api/pot.js'
+// import axios from "axios";
+// import API from '@/api/index.js'
+// import potAPI from '@/api/pot.js'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 import ProfileName from '@/components/basic/ProfileName.vue';
 import AttendModal from '@/components/pot/AttendModal.vue'
@@ -86,15 +86,17 @@ export default {
             btnActive: {0:false,1:false,2:false,3:false,4:false},
             modalDetail : false,
             AttendModalT : false,
+
+            snackbar : false,
+            message : "참여되었습니다" ,
         };
     },
     props: {
         potitem: Object,
     },
     created(){
-        this.snackbar=false
+        this.modalDetail=false
         this.AttendModalT=false
-        this.modal=false
     },
     computed: {
         ...mapGetters("pot", ["potattendusers"]),
@@ -129,30 +131,22 @@ export default {
             }
         },
 
-        potattend() {
-            axios.get(API.url + potAPI.attend(this.potitem.potid,this.userinfo.userid))
-            .then((res) => {
-                if (res.data === "success") {
-                    this.confirmModal()
-                }
-            })
-            .catch((error) => {
-                alert("참여 ㄴ");
-                console.log(error);
-            })
-
-            this.snackbar = true;
-            this.AttendModalT = false;
-        },
-
         openSnackBar(val){
-            this.$emit('openSnackBar', val)
+            console.log(val)
+            this.snackbar = val
+
+            setTimeout(() => {
+                this.AttendModalT = false
+                // this.overlay = false
+                this.snackbar = false
+                
+                }, 1000)
+            this.$router.go();
         }
     },
     mounted(){
         this.setPotAttendUsers(this.potitem.potid)
         this.stepToIcon(this.potitem.step)
-        console.log(this.potitem.userid.challengeId.start_date)
     },
     
 }

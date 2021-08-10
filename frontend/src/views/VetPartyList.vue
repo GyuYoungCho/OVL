@@ -21,7 +21,6 @@
             
         </all-pot-list>
       </v-list>
-      <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
       </section>
       <v-overlay :value="overlay"></v-overlay>
       
@@ -35,7 +34,7 @@ import AllPotList from '@/components/pot/AllPotList.vue'
 import UserPotList from '@/components/pot/UserPotList.vue'
 import MapView from '@/components/basic/MapView.vue';
 import PotSearch from '@/components/pot/PotSearch.vue';
-import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
+// import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 // import AttendModal from '@/components/pot/AttendModal.vue'
 
 export default {
@@ -44,7 +43,7 @@ export default {
     UserPotList, 
     MapView,
     PotSearch,
-    ConfirmSnack,
+    // ConfirmSnack,
     // AttendModal,
   },
   data(){
@@ -54,8 +53,6 @@ export default {
       allSteps: [
         "과일채소", "계란","유제품","생선","고기"
       ],
-      snackbar : false,
-      message : "참여되었습니다" ,
       searchpots : [],
       overlay : false,
     }
@@ -78,18 +75,18 @@ export default {
     overlayChange(val){
       this.overlay = val
     },
+    openSnackBarTop(val){
+      // this.snackbar = val
 
-    openSnackBar(){
-        this.snackbar = true
-
-        setTimeout(() => {
-          this.AttendModalT = false
-          this.overlay = false
-          this.snackbar = false
-          this.redirect()
-        }, 1000)
+      //   setTimeout(() => {
+      //     this.AttendModalT = false
+      //     this.overlay = false
+      //     this.snackbar = false
+      //     this.redirect()
+      //   }, 1000)
+      val
         this.$router.go();
-    },
+    }
   },
 
 }

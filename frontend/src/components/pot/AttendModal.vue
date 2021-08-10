@@ -12,18 +12,10 @@
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
-              color="green darken-1"
-              text
-              @click="this.cancelAttendModal()"
-            >
+            <v-btn color="green darken-1" text @click="cancelAttendModal()">
               아니오
             </v-btn>
-            <v-btn
-              color="green darken-1"
-              text
-              @click="potattend()"
-            >
+            <v-btn color="green darken-1" text @click="potattend()">
               예
             </v-btn>
           </v-card-actions>
@@ -46,7 +38,7 @@ export default {
     computed:{
         ...mapGetters("user", ["userinfo"]),
     },
-    method:{
+    methods:{
         
         cancelAttendModal(){
             this.$emit('openAttendModal', false)
