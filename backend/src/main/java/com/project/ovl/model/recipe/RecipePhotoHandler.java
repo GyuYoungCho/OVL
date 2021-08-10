@@ -81,7 +81,7 @@ public class RecipePhotoHandler {
 		}
 	}
 
-	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 1 : 등록, 2 : 수정
+	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 0 : 등록, 1 : 수정
 		if (!CollectionUtils.isEmpty(photoList)) {
 			String path = "src/main/resources/static/recipe/" + recipeId;
 			File file = dirSetting(path);
