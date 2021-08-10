@@ -60,14 +60,13 @@ export default {
         }
     },
     created() {
-        // //this.$store.dispatch("user/getTokenUserInfo");
-        // //this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
+        console.log("회원정보 수정한다!! : ",this.userinfo.nickname);
         this.userid = this.userinfo.userid;
         this.name = this.userinfo.name;
         this.nickname = this.userinfo.nickname;
         this.phone = this.userinfo.phone;
         this.email = this.userinfo.email;
-        console.log(this.userinfo)
+        
     },
     computed: {
         ...mapGetters("user", ["userinfo"]),
@@ -105,6 +104,7 @@ export default {
             })
         },
         onModifyUserBtnClick () {
+            console.log("회원정보수정 버튼 클릭!");
             const URL = API.url + userAPI.modify_user()
             // const formData = new FormData()
 
@@ -130,8 +130,9 @@ export default {
             }
 
             axios.put(URL, payload).then(res => {
-                console.log(res)
-                this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
+                console.log("회원정보 수정 결과 : ",res.data);
+                localStorage.setItem("access-token", res.headers["access-token"]);
+                this.$store.dispatch('user/getUserInfo');
                 this.$router.push({ name: 'Login' })
                 })
                 .catch(err => 

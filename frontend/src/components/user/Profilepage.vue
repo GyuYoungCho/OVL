@@ -117,16 +117,14 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     time() {
         const start = moment(this.start_date);
         const now = moment(new Date());
-        console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
+        // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
         return now.diff(start, 'days') + 1;
     }
 
     },
     created() {
         //url userid 체크
-        console.log(this.$route.params.userid)
-
-        this.$store.dispatch("user/getTokenUserInfo"),
+        console.log("profilepage : ", this.userinfo.nickname);
         this.nickname = this.userinfo.nickname;
         this.userid = this.userinfo.userid;
         this.$store.dispatch("user/getUserRank", this.userinfo.userid);
