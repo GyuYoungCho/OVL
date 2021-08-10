@@ -469,7 +469,7 @@ public class UserController {
 	
 	@ApiOperation(value = "회원 정보 수정", response = String.class)
     @PutMapping(value = "/modify_user")
-	public ResponseEntity<String> modify_user(@RequestBody User request) throws IOException {
+	public ResponseEntity<Map<String, Object>> modify_user(@RequestBody User request) throws IOException {
 
     	User user = userDao.getUserByUserid(request.getUserid());
     	
@@ -477,8 +477,26 @@ public class UserController {
     	user.setPhone(request.getPhone());
     	if(request.getPassword().length()>0) user.setPassword(passwordEncoder.encode(request.getPassword()));
     	userDao.save(user);
+    	String token = "";
+    	Map<String, Object> resultMap = new HashMap<>();
+		ResponseEntity<Map<String, Object>> entity = null;
+    	try {
+    		token = jwtService.create(user);
+			
+			resultMap.putAll(jwtService.get(token));
+			
+			resultMap.put("status", true);
+			resultMap.put("data", user);
+			resultMap.put("token", token);
+			
+			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+    	}catch(RuntimeException e){
+			//Logger.info("로그인 실패",e);
+			resultMap.put("message", e.getMessage());
+			entity = ResponseEntity.badRequest().body(resultMap);
+		}
     	
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+		return entity;
 	}
 
     @ApiOperation(value = "회원 탈퇴", response = String.class)
