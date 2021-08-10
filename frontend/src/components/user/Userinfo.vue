@@ -47,6 +47,7 @@ import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 
+
 export default {
     data() {
         return {
@@ -60,7 +61,7 @@ export default {
         }
     },
     created() {
-        // //this.$store.dispatch("user/getTokenUserInfo");
+        this.$store.dispatch("user/getTokenUserInfo");
         // //this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
         this.userid = this.userinfo.userid;
         this.name = this.userinfo.name;

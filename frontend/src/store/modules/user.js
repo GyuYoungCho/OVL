@@ -2,7 +2,8 @@
 import axios from "axios";
 import API from "@/api/index.js";
 import userAPI from "@/api/user.js";
-
+const storage = window.localStorage;
+var vuexdata = '';
 export default {
 namespaced: true,
 state: {
@@ -183,8 +184,11 @@ actions: {
             if (res.data) {
                 console.log("User Update");
                 //console.log(res.data.userid);
+                //storage.vuex.user.userinfo.setItem("userinfo", JSON.stringify(res.data))
+                vuexdata = storage.getItem("vuex")
                 store.commit("setReset");
-                store.commit("setUserInfo", res.data);
+                console.log(JSON.parse(vuexdata.user.userinfo))
+                store.commit("setUserInfo", JSON.stringify(vuexdata.user.userinfo));
                 this.state.isLogin = true;
             } else console.log("업데이트 실패.");
             })
@@ -192,6 +196,6 @@ actions: {
             console.log(err);
             });
         },
-
+        
 },
 };

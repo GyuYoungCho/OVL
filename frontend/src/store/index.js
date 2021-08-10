@@ -15,12 +15,10 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   plugins: [createPersistedState(    examples,
-    post,
     postComment,
     postReply,
     recipe,
     pot,
-    follow,
     )],
   modules: {
     examples,
