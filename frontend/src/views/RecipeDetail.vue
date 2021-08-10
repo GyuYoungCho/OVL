@@ -11,6 +11,23 @@
         {{ recipe.like_count }}
         <v-icon class="chatIcon">mdi-chat-outline</v-icon>
         {{ recipe.comment_count }}
+        <v-menu offset-y class="inline">
+          <template v-slot:activator="{ on, attrs }" v-if="recipe.userid.userid===userinfo.userid">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-horizontal</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <!-- 레시피 수정 -->
+            <v-list-item>
+              <v-list-item-title>수정</v-list-item-title>
+            </v-list-item>
+            <!-- 레시피 삭제 -->
+            <v-list-item @click="onRecipeDeleteClick">
+              <v-list-item-title>삭제</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </div>
     <div>
@@ -18,6 +35,10 @@
     </div>
     <!-- 대표 사진 -->
     <img :src="srcPath(recipe)" alt="" class="recipePic">
+    
+    <div class="recipeContent">
+      {{ recipe.content }}
+    </div>
 
     <!-- 탭 부분 -->
     <div class="recipeTab">
@@ -153,7 +174,7 @@ export default {
     modifyReplyId: -1,
   }),
   methods: {
-    ...mapActions(['registComment', 'likeRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
+    ...mapActions(['registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
     'registRecipeCommentReply', 'likeRecipeCommentReply', 'fetchRecipeReplyLikeList', 'modifyRecipeReply', 'deleteRecipeReply',]),
     changeLine (content) {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -164,6 +185,12 @@ export default {
         recipeId: this.recipe.recipeId,
       }
       this.likeRecipe(data)
+    },
+    onRecipeDeleteClick () {
+      if (confirm('레시피를 정말 삭제하시겠습니까?')) {
+        this.deleteRecipe(this.recipe.recipeId)
+        this.$router.push({ name: 'RecipeSearch' })
+      }
     },
     onRecipeTagBtnClick (option) {
       this.tab = option

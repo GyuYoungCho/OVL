@@ -26,11 +26,15 @@
     border-radius: 8px;
   }
 
+  .recipeContent {
+    margin-top: 2vw;
+  }
+
   .recipeTab {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 2vh;
+    margin-top: 2vw;
     
     &Btn {
       background-color: $hy-green;

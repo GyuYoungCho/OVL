@@ -137,6 +137,15 @@ export default {
         })
         .catch(err => console.error(err))
     },
+    deleteRecipe({ dispatch }, recipeId) {
+      const URL = API.url + recipeAPI.delete(recipeId)
+      axios.delete(URL)
+        .then(res => {
+          console.log(res)
+          dispatch('fetchRecipes')
+        })
+        .catch(err => console.error(err))
+    },
     fetchRecipeComments ({ commit }, recipeId) {
       const URL = API.url + recipeCommentAPI.search_all(recipeId)
       axios.get(URL)
@@ -162,6 +171,7 @@ export default {
         .then(res => {
           console.log(res)
           dispatch('fetchRecipeComments', data.params.recipeId)
+          dispatch('fetchRecipeDetail', data.params.recipeId)
         })
         .catch(err => console.error(err))
     },
@@ -190,6 +200,7 @@ export default {
         .then(res => {
           console.log(res)
           dispatch('fetchRecipeComments', recipeId)
+          dispatch('fetchRecipeDetail', recipeId)
         })
         .catch(err => console.error(err))
     },
