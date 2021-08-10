@@ -348,27 +348,32 @@ public class UserController {
 	}
 	
 	@Transactional
-	@GetMapping("/tokenValid")
-	@ApiOperation(value = "토큰 점검 & 유저 정보 확인")
-	public ResponseEntity<Map<String, Object>> gettokenValid(HttpServletRequest req) throws Exception{
+	@GetMapping("/tokenUpdate/{userid}")
+	@ApiOperation(value = "유저 업데이트 후 토큰 갱신")
+	public ResponseEntity<Map<String, Object>> gettokenValid(@PathVariable int userid) throws Exception{
+		User user = userDao.getUserByUserid(userid);
 		
-		Map<String, Object> resultMap = new HashMap<>();
-		HttpStatus status = null;
-
-		try {
-			resultMap.putAll(jwtService.get(req.getHeader("access-token")));
-			resultMap.put("status", true);
-
-			status = HttpStatus.ACCEPTED;
+	   	String token = "";
+    	Map<String, Object> resultMap = new HashMap<>();
+		ResponseEntity<Map<String, Object>> entity = null;
+    	try {
+    		token = jwtService.create(user);
 			
-		}catch(RuntimeException e){
+			resultMap.putAll(jwtService.get(token));
+			
+			resultMap.put("status", true);
+			resultMap.put("data", user);
+			resultMap.put("token", token);
+			
+			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+    	}catch(RuntimeException e){
 			//Logger.info("로그인 실패",e);
-			System.out.println("여기서 실패");
 			resultMap.put("message", e.getMessage());
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			entity = ResponseEntity.badRequest().body(resultMap);
 		}
+    	
 		
-		return new ResponseEntity<Map<String,Object>>(resultMap, status);
+		return entity;
 		
 	}
 	
@@ -469,7 +474,7 @@ public class UserController {
 	
 	@ApiOperation(value = "회원 정보 수정", response = String.class)
     @PutMapping(value = "/modify_user")
-	public ResponseEntity<Map<String, Object>> modify_user(@RequestBody User request) throws IOException {
+	public ResponseEntity<String> modify_user(@RequestBody User request) throws IOException {
 
     	User user = userDao.getUserByUserid(request.getUserid());
     	
@@ -477,26 +482,8 @@ public class UserController {
     	user.setPhone(request.getPhone());
     	if(request.getPassword().length()>0) user.setPassword(passwordEncoder.encode(request.getPassword()));
     	userDao.save(user);
-    	String token = "";
-    	Map<String, Object> resultMap = new HashMap<>();
-		ResponseEntity<Map<String, Object>> entity = null;
-    	try {
-    		token = jwtService.create(user);
-			
-			resultMap.putAll(jwtService.get(token));
-			
-			resultMap.put("status", true);
-			resultMap.put("data", user);
-			resultMap.put("token", token);
-			
-			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
-    	}catch(RuntimeException e){
-			//Logger.info("로그인 실패",e);
-			resultMap.put("message", e.getMessage());
-			entity = ResponseEntity.badRequest().body(resultMap);
-		}
-    	
-		return entity;
+
+    	return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 
     @ApiOperation(value = "회원 탈퇴", response = String.class)
