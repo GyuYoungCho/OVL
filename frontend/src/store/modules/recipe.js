@@ -112,7 +112,6 @@ export default {
       const URL = API.url + recipeAPI.like_list(userId)
       axios.get(URL)
         .then(res => {
-          console.log(res)
           commit('SET_RECIPE_LIKE_LIST', res.data)
         })
         .catch(err => console.error(err))
@@ -120,8 +119,7 @@ export default {
     likeRecipe({ dispatch }, { userId, recipeId }) {
       const URL = API.url + recipeAPI.like(userId, recipeId)
       axios.get(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeLikeList', userId)
           dispatch('fetchRecipes')
           dispatch('fetchRecipeDetail', recipeId)
@@ -140,8 +138,7 @@ export default {
     deleteRecipe({ dispatch }, recipeId) {
       const URL = API.url + recipeAPI.delete(recipeId)
       axios.delete(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipes')
         })
         .catch(err => console.error(err))
@@ -163,12 +160,9 @@ export default {
         .catch(err => console.error(err))
     },
     registComment ({ dispatch }, data) {
-      console.log(data)
       const URL = API.url + recipeCommentAPI.regist()
-      console.log(URL)
       axios.post(URL, null, data)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeComments', data.params.recipeId)
           dispatch('fetchRecipeDetail', data.params.recipeId)
         })
@@ -177,8 +171,7 @@ export default {
     likeRecipeComment ({ dispatch }, { userId, recipeId, recipeCommentId }) {
       const URL = API.url + recipeCommentAPI.like(userId, recipeCommentId)
       axios.get(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeCommentLikeList', userId)
           dispatch('fetchRecipeComments', recipeId)
         })
@@ -187,8 +180,7 @@ export default {
     modifyRecipeComment ({ dispatch }, { data, recipeId }) {
       const URL = API.url + recipeCommentAPI.modify()
       axios.put(URL, null, data)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeComments', recipeId)
         })
         .catch(err => console.error(err))
@@ -196,8 +188,7 @@ export default {
     deleteRecipeComment ({ dispatch }, { recipeId, recipeCommentId }) {
       const URL = API.url + recipeCommentAPI.delete(recipeCommentId)
       axios.delete(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeComments', recipeId)
           dispatch('fetchRecipeDetail', recipeId)
         })
@@ -206,8 +197,7 @@ export default {
     registRecipeCommentReply ({ commit, dispatch }, { data, recipeId }) {
       const URL = API.url + recipeReplyAPI.regist()
       axios.post(URL, null, data)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           const finalData = {recipeCommentId: data.params.commentId}
           axios.get(API.url + recipeReplyAPI.select_all(data.params.commentId))
             .then(res => {
@@ -233,8 +223,7 @@ export default {
     likeRecipeCommentReply ({ dispatch }, { recipeCommentId, userId, recipeReplyId}) {
       const URL = API.url + recipeReplyAPI.like(userId, recipeReplyId)
       axios.get(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeCommentReply', recipeCommentId)
           dispatch('fetchRecipeReplyLikeList', userId)
         })
@@ -251,8 +240,7 @@ export default {
     modifyRecipeReply ({ dispatch }, { data, recipeCommentId }) {
       const URL = API.url + recipeReplyAPI.modify()
       axios.put(URL, null, data)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeCommentReply', recipeCommentId)
         })
         .catch(err => console.error(err))
@@ -260,8 +248,7 @@ export default {
     deleteRecipeReply ({ dispatch }, { recipeCommentId, recipeReplyId, recipeId }) {
       const URL = API.url + recipeReplyAPI.delete(recipeReplyId)
       axios.delete(URL)
-        .then(res => {
-          console.log(res)
+        .then(() => {
           dispatch('fetchRecipeCommentReply', recipeCommentId)
           dispatch('fetchRecipeComments', recipeId)
         })
