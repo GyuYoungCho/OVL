@@ -47,7 +47,6 @@ import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 
-
 export default {
     data() {
         return {
@@ -132,8 +131,8 @@ export default {
 
             axios.put(URL, payload).then(res => {
                 console.log("회원정보 수정 결과 : ",res.data);
-                localStorage.setItem("access-token", res.headers["access-token"]);
-                this.$store.dispatch('user/getUserInfo');
+
+                this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
                 this.$router.push({ name: 'Login' })
                 })
                 .catch(err => 

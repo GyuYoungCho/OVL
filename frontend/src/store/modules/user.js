@@ -2,8 +2,7 @@
 import axios from "axios";
 import API from "@/api/index.js";
 import userAPI from "@/api/user.js";
-const storage = window.localStorage;
-var vuexdata = '';
+
 export default {
 namespaced: true,
 state: {
@@ -84,7 +83,8 @@ actions: {
     })
         .then((res) => {
 
-        if (res.data) {
+            if (res.data) {
+            console.log("res.data: ", res.data)
             store.commit("setUserInfo", res.data.UserDto);
             this.state.isLogin = true;
             //console.log(this.state);
@@ -116,29 +116,6 @@ actions: {
     logout(store) {
         store.commit("setLogout");
     },
-
-    getTokenUserInfo(store) {
-        let token = localStorage.getItem("access-token");
-        if (!token) {
-            return;
-        }
-        axios({
-            method: "get",
-            url: API.url + userAPI.tokenValid(),
-            headers: { "access-token": token },
-        })
-            .then((res) => {
-            if (res.data) {
-                console.log("getTokenUserInfo : ",res.data.UserDto);
-                store.commit("setReset");
-                store.commit("setUserInfo", res.data.UserDto);
-                this.state.isLogin = true;
-            } else console.log("실패.");
-            })
-            .catch((err) => {
-            console.log(err);
-            });
-    },
     deleteUser(store) {
         let token = localStorage.getItem("access-token");
         axios({
@@ -153,9 +130,11 @@ actions: {
         })
     },
     getUserRank(store, payload) {
+        let token = localStorage.getItem("access-token");
         axios({
             method: "get",
             url: API.url + userAPI.rank(payload),
+            headers: {"access-token" : token}
         }).then((res) => {
             if (res) {
                 // console.log(res.data.rank);
@@ -173,14 +152,14 @@ actions: {
         console.log("token : ", token);
         axios({
             method: "get",
-            url: API.url + userAPI.select(payload),
+            url: API.url + userAPI.tokenUpdate(payload),
             headers: {"access-token" : token}
         })
             .then((res) => {
                 console.log("업데이트!! : ", res.data);
                 store.commit("setReset");
                 localStorage.setItem("access-token", res.headers["access-token"]);
-                store.commit("setUserInfo", res.data);
+                store.commit("setUserInfo", res.data.UserDto);
                 this.state.isLogin = true;
             })
             .catch((err) => {

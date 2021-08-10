@@ -24,8 +24,8 @@ export default {
   info() {
     return "/user/info";
   },
-  tokenValid() {
-    return "/user/tokenValid";
+  tokenUpdate(user_id) {
+    return `/user/tokenUpdate/${user_id}`;
   },
   search_id(name, phone) {
     return `/user/search_id/${name}/${phone}`;
