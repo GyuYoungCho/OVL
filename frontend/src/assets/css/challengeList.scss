@@ -1,4 +1,55 @@
-// .challenge {
+.grid-cell {
+  // 뷰티파이 그리드의 기본 패딩인 12px 에서 줄여야 레이아웃이 맞고, 
+  // !important 속성으로 override 해야 제대로 먹습니다.
+  padding: 6px !important;
+  font-size: x-small;
 
+  // 위의 음식, 옷, 화장품들의 그림자와 동일하게 설정
+  .card {
+    box-shadow: -2px -2px 5px rgba(255, 255, 255, 0.5), 2px 2px 5px rgba(170, 170, 204, 0.25),
+      5px 5px 10px rgba(170, 170, 204, 0.5), -5px -5px 10px #ffffff;
+      padding: 6px !important;
+    
+    // cardContent 가 display flex + flex direction column 이므로 
+    // ChallengeList.vue 에서의 개별 카드영역 안의 (1) ~ (7) 이 세로로 나열되게 됩니다. 
+    &Content {
+      display: flex;
+      flex-direction: column;
 
-// }
+      &Area {
+        margin-bottom: 1px;
+        
+        // 타이틀의 font-size를 더미데이터 제목 길이에 따라 수정 가능합니다.
+        &Title {
+          font-size: 11px;
+          margin-left: 2px;
+          font-weight: bold;
+        }
+      }
+    }
+    &Image {
+      width: 100%;
+    }
+    
+  }
+  // flex column 의 기본 값은 flex-stretch 이므로 버튼이 이미 길고, 색상만 바꿔주면 됩니다.
+  // 기본 버튼 css
+  .beginParticipation {
+    background-color: $freditgreen;
+    color: white;
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  // 기본 버튼 css 로부터 background-color를 제외한 모든 css 프로퍼티를 상속 받습니다.
+  .myParticipation {
+    @extend .beginParticipation;
+    background-color: $hy-blue;
+  }
+
+  .alreadyInParticipation {
+    @extend .beginParticipation;
+    background-color: $hy-grey;
+  }
+}
+
