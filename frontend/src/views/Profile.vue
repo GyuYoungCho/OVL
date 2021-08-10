@@ -56,7 +56,7 @@ export default {
         console.log(err)
         })
     }
-    //this.$store.dispatch("user/getTokenUserInfo");
+    this.$store.dispatch("user/getUserInfo");
 
   },
   mounted(){

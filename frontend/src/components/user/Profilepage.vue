@@ -124,12 +124,13 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     },
     created() {
         //url userid 체크
+        let userid = this.$route.params.userid;
+        //this.$store.dispatch('user/getUpdateUserInfo', userid);
         console.log("profilepage : ", this.userinfo.nickname);
         this.nickname = this.userinfo.nickname;
-        this.userid = this.userinfo.userid;
-        this.$store.dispatch("user/getUserRank", this.userinfo.userid);
-        this.$store.dispatch("follow/getFollowingList", this.userinfo.userid);
-        this.$store.dispatch("follow/getFollowerList", this.userinfo.userid);
+        this.$store.dispatch("user/getUserRank", userid);
+        this.$store.dispatch("follow/getFollowingList", userid);
+        this.$store.dispatch("follow/getFollowerList", userid);
 
         //console.log(this.followerList)
         this.follower = this.followerList.length;
@@ -151,7 +152,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
     },
     closeDialog() { //Dialog 닫히는 동작
-      this.dialog = false;
+    this.dialog = false;
     },
     },
 
