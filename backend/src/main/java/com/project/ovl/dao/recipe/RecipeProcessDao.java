@@ -9,5 +9,6 @@ import com.project.ovl.model.recipe.RecipeProcess;
 
 public interface RecipeProcessDao extends JpaRepository<RecipeProcess, String>{
 	RecipeProcess findRecipeProcessByRecipeId(int recipe_id);
+	RecipeProcess findRecipeProcessByRecipeProcessId(int process_id);
 	List<RecipeProcess> findByRecipeId(Recipe recipeId);
 }

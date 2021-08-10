@@ -99,7 +99,7 @@ public class RecipePhotoHandler {
 					RecipeProcess process = new RecipeProcess(0, contentList.get(i), photoList.get(i).getOriginalFilename(), path + "/" + new_file_name, photoList.get(i).getSize()+"", recipe);
 					processDao.save(process);
 				} else { // 사진 수정 일 때
-					RecipeProcess process = processDao.findRecipeProcessByRecipeId(idList.get(i));
+					RecipeProcess process = processDao.findRecipeProcessByRecipeProcessId(idList.get(i));
 					process.setFilename(photoList.get(i).getOriginalFilename());
 					process.setFilepath(path + "/" + new_file_name);
 					process.setFilesize(photoList.get(i).getSize()+"");
