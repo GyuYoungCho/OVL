@@ -67,18 +67,15 @@ public class RecipePhotoHandler {
 	}
 	
 	public void saveProfile(List<MultipartFile> pic, int recipeId) throws IllegalStateException, IOException {
-		if (CollectionUtils.isEmpty(pic)) {
+		if (!CollectionUtils.isEmpty(pic)) {
 			String path = "src/main/resources/static/recipe/" + recipeId;
 			File file = dirSetting(path);
-			
 			for (int i=1;i<pic.size();i++) {
 				String new_file_name = pathSetting(pic.get(i));
-				
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				recipe.setOriginal_file_name(pic.get(i).getOriginalFilename());
 				recipe.setStored_file_path(path + "/" + new_file_name);
 				recipeDao.save(recipe);
-				
 				photoSave(file, new_file_name, path, pic.get(i));
 			}
 		}

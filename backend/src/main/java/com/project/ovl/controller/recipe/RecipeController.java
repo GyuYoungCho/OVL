@@ -103,11 +103,9 @@ public class RecipeController {
 		recipeDao.save(recipe);
 		
 		photoHandler.saveProfile(pic, recipe.getRecipeId());
-		System.out.println("대표사진 등록완료");
 		
 		// 레시피 과정 등록
 		photoHandler.saveProcess(files, processContent, null, recipe.getRecipeId(), 0);
-		System.out.println("과정 등록 완료");
 		
 		// 챌린지 중일 경우 인증
 		if(user.getChallengeId().getChallengeId()!=1
