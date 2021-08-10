@@ -1,0 +1,101 @@
+.modifyuser {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vh;
+  }
+
+  img {
+    max-width: 50vw;
+    align-self: center;
+  }
+
+  .inputOnlyRead {
+    background-color: $hy-green;
+    border-radius: 15px;
+    padding: 10px 10px;
+    min-width: 75vw;
+    color: $hy-grey;
+  }
+
+  input {
+    // margin-top: 20px;
+    background-color: $hy-green;
+    border-radius: 15px;
+    padding: 10px 10px;
+    min-width: 75vw;
+  }
+
+  .bg-freditgreen {
+    background-color: $freditgreen !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .disabledBtn {
+    background-color: $hy-grey !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .inputBtnDiv {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .finalBtn {
+    margin-top: 2vh;
+  }
+
+  .invalidTxt {
+    color: $hy-red;
+    margin: 0;
+    font-size: small;
+  }
+}
+//프로필 scss
+.profilepage {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+
+  .icon-btn {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+  }
+
+  .icon-btn-img {
+    width: 20px;
+    height: 20px;
+  }
+  .testarea {
+    background-color: $hy-green;
+  }
+  .bg-freditgreen {
+    background-color: $mild-bg !important;
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 5px 10px;
+    width: 100px;
+  }
+  .postArea {
+    .wrapper {
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-gap: 10px;
+      background-color: #fff;
+    }
+  }
+  .ingdate {
+    font-size: medium;
+    color: $freditgreen;
+  }
+}

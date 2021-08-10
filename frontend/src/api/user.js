@@ -24,8 +24,8 @@ export default {
   info() {
     return "/user/info";
   },
-  tokenValid() {
-    return "/user/tokenValid";
+  tokenUpdate(user_id) {
+    return `/user/tokenUpdate/${user_id}`;
   },
   search_id(name, phone) {
     return `/user/search_id/${name}/${phone}`;
@@ -34,8 +34,11 @@ export default {
     return `/user/modify_pw/${email}/${password}`;
   },
   // PathVariable, RequestPart, RequestParam
-  modify_user(nickname, phone) {
-    return `/user/modify_user/${nickname}/${phone}`;
+  modify_user() {
+    return `/user/modify_user`;
+  },
+  modify_pic (user_id){
+    return `/user//modify_pic/${user_id}`;
   },
   select(user_id) {
     return `/user/select/${user_id}`;
@@ -43,4 +46,8 @@ export default {
   delete(user_id) {
     return `/user/delete/${user_id}`;
   },
+  rank (user_id) {
+    return `/user/rank/${user_id}`
+  },
+
 };

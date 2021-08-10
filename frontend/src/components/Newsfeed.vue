@@ -28,8 +28,8 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-             <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">  
-             <div v-html="contentReplace(info.postId.content)"></div>
+            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">  
+            <div v-html="contentReplace(info.postId.content)"></div>
           </div>
 
           <!-- 좋아요, 댓글 -->
