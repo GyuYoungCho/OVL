@@ -35,7 +35,7 @@
               </v-list-item>
             </RouterLink>
             
-            <RouterLink :to="{ name: 'Profile' }">           
+            <RouterLink :to="{ name: 'Profile', params: { userid: userinfo.userid} }">           
               <v-list-item class="mb-2 text-dec">
                 <v-icon>mdi-card-account-details-outline</v-icon>
                 <v-list-item-title class="ms-4">내 프로필</v-list-item-title>
