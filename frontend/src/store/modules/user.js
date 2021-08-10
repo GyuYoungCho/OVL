@@ -26,7 +26,7 @@ mutations: {
     setUserInfo(state, payload) {
         state.isLogin = true;
         state.userinfo = payload;
-        //console.log(state.userinfo.nickname + "유저아이디확인");
+        console.log("유저 : ", state.userinfo.nickname);
     },
     setLogout(state) {
     state.isLogin = false;
@@ -83,11 +83,8 @@ actions: {
         headers: { "access-token": token },
     })
         .then((res) => {
-        //console.log(res);
 
         if (res.data) {
-            //console.log(res.data.UserDto);
-            //console.log("성공!!!!!!!!!!!!");
             store.commit("setUserInfo", res.data.UserDto);
             this.state.isLogin = true;
             //console.log(this.state);
@@ -99,7 +96,6 @@ actions: {
         });
     },
     login(store, loginObj) {
-        //console.log("로그인 확인");
         return new Promise(function(resolve) {
         axios({
         method: "post",
@@ -110,7 +106,6 @@ actions: {
             localStorage.setItem("access-token", res.headers["access-token"]);
             resolve();
             store.commit("setUserInfo", res.data.data);
-            //console.log("확인한다 로그인3");
         })
         .catch((err) => {
             alert("이메일과 비밀번호를 확인하세요.");
@@ -123,26 +118,26 @@ actions: {
     },
 
     getTokenUserInfo(store) {
-    let token = localStorage.getItem("access-token");
-    if (!token) {
-        return;
-    }
-    axios({
-        method: "get",
-        url: API.url + userAPI.tokenValid(),
-        headers: { "access-token": token },
-    })
-        .then((res) => {
-        if (res.data) {
-            console.log(res.data.UserDto);
-            store.commit("setReset");
-            store.commit("setUserInfo", res.data.UserDto);
-            this.state.isLogin = true;
-        } else console.log("실패.");
+        let token = localStorage.getItem("access-token");
+        if (!token) {
+            return;
+        }
+        axios({
+            method: "get",
+            url: API.url + userAPI.tokenValid(),
+            headers: { "access-token": token },
         })
-        .catch((err) => {
-        console.log(err);
-        });
+            .then((res) => {
+            if (res.data) {
+                console.log("getTokenUserInfo : ",res.data.UserDto);
+                store.commit("setReset");
+                store.commit("setUserInfo", res.data.UserDto);
+                this.state.isLogin = true;
+            } else console.log("실패.");
+            })
+            .catch((err) => {
+            console.log(err);
+            });
     },
     deleteUser(store) {
         let token = localStorage.getItem("access-token");
@@ -163,7 +158,7 @@ actions: {
             url: API.url + userAPI.rank(payload),
         }).then((res) => {
             if (res) {
-                console.log(res.data.rank);
+                // console.log(res.data.rank);
                 store.commit("setUserRank", res.data.rank);
                 this.state.rank = res.rank;
             }
@@ -175,22 +170,18 @@ actions: {
     },
     getUpdateUserInfo(store, payload) {
         let token = localStorage.getItem("access-token");
+        console.log("token : ", token);
         axios({
             method: "get",
             url: API.url + userAPI.select(payload),
             headers: {"access-token" : token}
         })
             .then((res) => {
-            if (res.data) {
-                console.log("User Update");
-                //console.log(res.data.userid);
-                //storage.vuex.user.userinfo.setItem("userinfo", JSON.stringify(res.data))
-                vuexdata = storage.getItem("vuex")
+                console.log("업데이트!! : ", res.data);
                 store.commit("setReset");
-                console.log(JSON.parse(vuexdata.user.userinfo))
-                store.commit("setUserInfo", JSON.stringify(vuexdata.user.userinfo));
+                localStorage.setItem("access-token", res.headers["access-token"]);
+                store.commit("setUserInfo", res.data);
                 this.state.isLogin = true;
-            } else console.log("업데이트 실패.");
             })
             .catch((err) => {
             console.log(err);
