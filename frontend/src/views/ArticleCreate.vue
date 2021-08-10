@@ -22,11 +22,20 @@
           </div>
           <!-- 캐러셀 영역 -->
           <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
-            <v-carousel-item
-              v-for="(previewItem,i) in previewItems"
-              :key="i"
-              :src="previewItem.src"
-            ></v-carousel-item>
+            <v-carousel-item v-for="(previewItem,idx) in previewItems" :key="idx" :src="previewItem.src" style="text-align:right">
+              <!-- 사진 수정 -->
+              <span @click="photoModify(idx)">
+                <label for="modifyFile"><v-icon class="photoClick">mdi-check-circle-outline</v-icon></label>
+                <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0">  
+              </span>
+              <!-- 사진 삭제 -->
+              <span @click="photoDelete(idx, 0)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <!-- 사진 추가 -->
+              <span>
+                <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
+                <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(0)" style="width:0; height:0">
+              </span>
+            </v-carousel-item>
           </v-carousel>
         </div>
         <!-- 수정 시 캐러셀 영역 -->
@@ -39,11 +48,11 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUpload" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <span @click="photoDelete(idx, 1)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
-                <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload" style="width:0; height:0">
+                <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(1)" style="width:0; height:0">
               </span>
             </v-carousel-item>
           </v-carousel>
@@ -130,6 +139,7 @@
         // console.log(this.category)
       },
       fileUpload () {
+        console.log("files : ", this.$refs.files.files);
         for (let i = 0; i < this.$refs.files.files.length; i++) {
           console.log(this.$refs.files.files[i]);
           // 1. 파일 업로드를 클릭 했을 시, 백에 보낼 sendList 를 포문 돌려 완성해 줍니다.
@@ -226,7 +236,14 @@
       photoModify(idx) {
         if (idx!=0) this.tempIdx = idx;
       },
-      modifyFileUpload() {
+      modifyFileUploadRegist() { // 게시글 등록 시 사진 수정
+        const previewUrl = URL.createObjectURL(this.$refs.modifyFiles[0].files[0]);
+        this.previewItems[this.tempIdx] = {"src":previewUrl};
+        this.sendList[this.tempIdx] = this.$refs.modifyFiles[0].files[0];
+        this.previewItems.push("지워");
+        this.previewItems.splice(this.previewItems.length-1, 1);
+      },
+      modifyFileUpload() { // 게시글 수정 시 사진 수정
         if (this.photoList[this.tempIdx].filesize == 0) { // 수정한 사진. 또 수정하는거니까 modifyPHotoList, idList에 추가하면 안됨
           var idx = this.modifyIdList.indexOf(this.photoList[this.tempIdx].postPhotoId);
           this.modifyPhotoList[idx] = this.$refs.modifyFiles[0].files[0];
@@ -245,21 +262,33 @@
         this.photoList.push("지워");
         this.photoList.splice(this.photoList.length-1, 1);
       },
-      newFileUpload() {
+      newFileUpload(type) {
         for (let i = 0; i < this.$refs.plusFiles[0].files.length; i++) {
-          this.plusPhotoList.push(this.$refs.plusFiles[0].files[i])
           const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
-          this.photoList.push({
-            "filesize":0,
-            "url":previewUrl
-          })
+          if (type==0) {
+            this.sendList.push(this.$refs.plusFiles[0].files[i])
+            this.previewItems.push({src:previewUrl})
+          } else {
+            this.plusPhotoList.push(this.$refs.plusFiles[0].files[i])
+            const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
+            this.photoList.push({
+              "filesize":0,
+              "url":previewUrl
+            })
+          }
         }
       },
-      photoDelete(idx) {
+      photoDelete(idx, type) { // 사진 삭제 
         var result = confirm("정말 삭제하시겠습니까?");
         if (result) {
-          this.deleteIdList.push(this.photoList[idx].postPhotoId);
-          this.photoList.splice(idx, 1);
+          if (type==1) { // 게시글 수정일 때
+            this.deleteIdList.push(this.photoList[idx].postPhotoId);
+            this.photoList.splice(idx, 1);
+          } else { // 게시글 등록일 때
+            this.sendList.splice(idx, 1);
+            this.previewItems.splice(idx, 1); 
+          }
+          
           alert("삭제 되었습니다.");
         }
       }
