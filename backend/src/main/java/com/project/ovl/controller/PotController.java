@@ -120,6 +120,22 @@ public class PotController {
 		}
 	}
 	
+	@DeleteMapping("/attend_cancel/{potid}/{userid}")
+	@ApiOperation(value = "pot 참여 취소")
+	public ResponseEntity<String> attend_cancel(@PathVariable int potid, @PathVariable int userid){
+		User user = userDao.getUserByUserid(userid);
+		Pot pot = potDao.getPotByPotid(potid);
+		
+		List<PotRelation> dpr = potrelationDao.findAll();
+		
+		for(PotRelation pr : dpr) {
+			if(pr.getPotid()==pot && pr.getUserid() == user) {
+				potrelationDao.delete(pr);
+				return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<String>(FAIL, HttpStatus.FAILED_DEPENDENCY);
+	}
 	
 	@GetMapping("/select_all")
 	@ApiOperation(value = "전체 팟 조회", response = Pot.class)

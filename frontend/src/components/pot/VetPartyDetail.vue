@@ -29,7 +29,19 @@
               </v-col>
             </v-row>
             <v-row>
+              <v-col>
               <span>{{this.potitem.content}}</span>
+              </v-col>
+              <v-col v-if="mypot">
+                <v-btn icon dark @click="cancelDetail" justify="end">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+              </v-col>
+              <v-col v-else>
+                <v-btn dark @click="potcancel()" justify="end">
+                  <span>참여 취소</span>
+                </v-btn>
+              </v-col>
             </v-row>
           </v-card>
     </v-dialog>
@@ -53,11 +65,23 @@ export default {
   },
   data(){
     return{
-
+      mypot : false,
+      attendpot : false,
     }
   },
   computed:{
     ...mapGetters("pot", ["potattendusers"]),
+    ...mapGetters("user", ["userinfo"]),
+  },
+  created(){
+    this.mypot = false
+    this.attendpot = false
+    if(this.userinfo.userid == this.potitem.userid) {
+      this.mypot = true
+    }
+    if(this.potattendusers.includes(this.userinfo.userid)){
+      this.attendpot = true
+    }
   },
   methods:{
     ...mapActions("pot",["setPotAttendUsers"]),
@@ -66,18 +90,34 @@ export default {
     },
 
     potattend() {
-      axios.get(API.url + potAPI.attend(1,1))
+        axios.get(API.url + potAPI.attend(this.potitem.potid,this.userinfo.userid))
+        .then((res) => {
+            if (res.data === "success") {
+                this.confirmModal()
+            }
+        })
+        .catch((error) => {
+            alert("참여 ㄴ");
+            console.log(error);
+        })
+
+        this.$emit('openSnackBar', true)
+    },
+
+    potcancel() {
+      axios.delete(API.url + potAPI.attend_cancel(this.potitem.potid, this.userinfo.userid))
         .then((res) => {
           if (res.data === "success") {
-            alert("참여 성공");
+            
             this.$router.push({ name: "VetPartyList" })
           }
         })
         .catch((error) => {
-          alert("참여 ㄴ");
+          alert("삭제 ㄴ");
           console.log(error);
         })
     },
+
 
     potmod() {
       axios.put(API.url + potAPI.modify(1))

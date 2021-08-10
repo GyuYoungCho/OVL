@@ -19,8 +19,8 @@
                 <span>{{this.rows}}명/</span>
                 <span>{{this.userpot.total_people}}명</span>
             </v-col>
-            <v-divider vertical class="mx-2"></v-divider>
-
+            <v-divider vertical class="mx-1"></v-divider>
+            <v-col cols="1" class="pa-0">
             <div class="icon_frame">
                 <v-img src="@/assets/icon/meat.png" alt="" v-if="btnActive[4]"> </v-img>
                 <v-img src="@/assets/icon/fish.png" alt="" v-else-if="btnActive[3]"> </v-img>
@@ -28,9 +28,14 @@
                 <v-img src="@/assets/icon/egg.png" alt="" v-else-if="btnActive[1]"> </v-img>
                 <v-img src="@/assets/icon/vege.png" alt="" v-else> </v-img>
             </div>
-        
+            </v-col>
+            <v-col  class="pa-0">
+                <v-btn icon @click="openDetailModal(true)">
+                  <v-icon>mdi-menu-left-outline</v-icon>
+                </v-btn>
+            </v-col>
         </v-container>
-        <vet-party-detail :potitem="userpot" :pot_detail_modal="modalOpen"></vet-party-detail>
+        <!-- <vet-party-detail :potitem="userpot" :pot_detail_modal="modalOpen"></vet-party-detail> -->
 
     </div>  
 </template>
@@ -38,11 +43,11 @@
 <script>
 import moment from 'moment';
 import { mapGetters, mapActions} from 'vuex';
-import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
+// import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
 
 export default {
     components:{
-        VetPartyDetail,
+        // VetPartyDetail,
     },
     data() {
         return {

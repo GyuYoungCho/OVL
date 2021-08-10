@@ -1,0 +1,148 @@
+.recipeDetail {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+  }
+  .likedHeart {
+    color: $heart-green !important;  
+  }
+  
+  .unlikedHeart {
+    color: $hy-grey !important;
+  }
+  
+  .chatIcon {
+    color: $hy-grey !important;
+  }
+
+  .recipePic {
+    border-radius: 8px;
+  }
+
+  .recipeTab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2vh;
+    
+    &Btn {
+      background-color: $hy-green;
+      font-size: 17px;
+      padding-left: 8vw;
+      padding-right: 8vw;
+      padding-top: 1vw;
+      padding-bottom: 1vw;
+      border-top-right-radius: 8px;
+      border-top-left-radius: 8px;
+    }
+
+    .unselectedBtn {
+      // background-color: $hy-green;
+      font-size: 17px;
+      padding-left: 8vw;
+      padding-right: 8vw;
+      padding-top: 1vw;
+      padding-bottom: 1vw;
+    }
+
+  }
+
+  .recipeTabContent {
+    background-color: $hy-green;
+
+    .recipeIngredient {
+      padding: 5vw;
+    }
+
+    .recipeProcess {
+      // margin-top: 0;
+
+      .oneProcess {
+        display: flex;
+        // justify-content: space-between;
+        align-items: center;
+        margin: 5vw;
+        // margin-top: 5vw;
+        .processContent {
+          margin-left: 5vw;
+          margin-right: 5vw;
+        }
+        .processPic {
+          max-width: 30vw;
+          border-radius: 4px;
+        }
+      }
+    }
+    
+    .recipeComment {
+      display: flex;
+      flex-direction: column;
+      padding: 5vw;
+
+      .commentRegisterForm {
+        display: flex;
+        // justify-content: space-between;
+        .lineContainer {
+          width: 100%;
+          .commentInputForm {
+            display: flex;
+            .commentInput {
+              width: 100%;
+            }
+            .commentCreateBtn {
+              width: 10vw;
+              padding-right: 1vw;
+              font-size: small;
+              color: $freditgreen;
+            }
+          }
+        }
+        
+      }
+      .oneComment {
+        display: flex;
+        flex-direction: column;
+
+        .commentUserAndContent {
+          display: flex;
+          align-items: center;
+          .commentContent {
+            margin-bottom: 0;
+            margin-left: 2vw;
+            width: 100%;
+          }
+        }
+
+        .infoBelowOneComment {
+          color: $hy-grey;
+          font-size: small;
+          .oneInfo {
+            margin-right: 3vw;
+          }
+        }
+
+        .oneReply {
+          margin-left: 5vw;
+          font-size: small;
+          display: flex;
+          align-items: center;
+
+          .replyContent {
+            margin-left: 4vw;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+  }
+  
+  
+}
