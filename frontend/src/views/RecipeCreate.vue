@@ -137,10 +137,21 @@ export default {
       const formData = new FormData()
 
       formData.append('title', this.title)
+
+      const dummy1 = new File(["ex"], "ex.txt", {
+          type: "text/plain",
+        });
+      formData.append('picture', dummy1)
       formData.append('picture', this.picture)
       formData.append('content', this.content)
       formData.append('ingredient', this.ingredient)
-      formData.append('userId', this.userinfo.userid) // 임의로 넣은 값
+      formData.append('userId', this.userinfo.userid)
+
+      const dummy2 = new File(["ex"], "ex.txt", {
+          type: "text/plain",
+        });
+      formData.append('files', dummy2)
+      contentList.push('0')
       for(let i=0; i < this.processImgFiles.length; i++ ) {
         contentList.push(this.processImgFiles[i].text)
         formData.append('files', this.processImgFiles[i])

@@ -13,6 +13,7 @@ import FindPassword from "../views/FindPassword.vue";
 import Profile from "../views/Profile.vue";
 import RecipeCreate from "../views/RecipeCreate.vue";
 import RecipeDetail from "../views/RecipeDetail.vue";
+import RecipeUpdate from "../views/RecipeUpdate.vue";
 import RecipeSearch from "../views/RecipeSearch.vue";
 import VetPartyCreate from "../views/VetPartyCreate.vue";
 import VetPartyList from "../views/VetPartyList.vue";
@@ -93,6 +94,11 @@ const routes = [
     path: "/recipe_detail",
     name: "RecipeDetail",
     component: RecipeDetail,
+  },
+  {
+    path: "/recipe_update",
+    name: "RecipeUpdate",
+    component: RecipeUpdate,
   },
   {
     path: "/recipe_search",

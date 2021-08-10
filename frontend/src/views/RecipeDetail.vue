@@ -19,7 +19,7 @@
           </template>
           <v-list>
             <!-- 레시피 수정 -->
-            <v-list-item>
+            <v-list-item @click="onRecipeUpdateClick">
               <v-list-item-title>수정</v-list-item-title>
             </v-list-item>
             <!-- 레시피 삭제 -->
@@ -185,6 +185,11 @@ export default {
         recipeId: this.recipe.recipeId,
       }
       this.likeRecipe(data)
+    },
+    onRecipeUpdateClick () {
+      if (confirm('레시피를 수정하시겠습니까?')) {
+        this.$router.push({ name: 'RecipeUpdate' })
+      }
     },
     onRecipeDeleteClick () {
       if (confirm('레시피를 정말 삭제하시겠습니까?')) {
