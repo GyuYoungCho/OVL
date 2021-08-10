@@ -104,7 +104,6 @@ public class RecipeController {
 		
 		photoHandler.saveProfile(pic, recipe.getRecipeId());
 		
-		
 		// 레시피 과정 등록
 		photoHandler.saveProcess(files, processContent, null, recipe.getRecipeId(), 0);
 		
