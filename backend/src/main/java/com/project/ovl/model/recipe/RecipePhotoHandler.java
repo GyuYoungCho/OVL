@@ -84,7 +84,7 @@ public class RecipePhotoHandler {
 		}
 	}
 
-	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 1 : 등록, 2 : 수정
+	public void saveProcess(List<MultipartFile> photoList, List<String> contentList, List<Integer> idList, int recipeId, int type) throws Exception { // type 0 : 등록, 1 : 수정
 		if (!CollectionUtils.isEmpty(photoList)) {
 			String path = "src/main/resources/static/recipe/" + recipeId;
 			File file = dirSetting(path);
@@ -95,7 +95,7 @@ public class RecipePhotoHandler {
 				
 				Recipe recipe = recipeDao.findRecipeByRecipeId(recipeId);
 				
-				if (type==1) { // 등록 일 때 
+				if (type==0) { // 등록 일 때 
 					RecipeProcess process = new RecipeProcess(0, contentList.get(i), photoList.get(i).getOriginalFilename(), path + "/" + new_file_name, photoList.get(i).getSize()+"", recipe);
 					processDao.save(process);
 				} else { // 사진 수정 일 때
