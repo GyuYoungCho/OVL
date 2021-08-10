@@ -127,8 +127,14 @@
         .infoBelowOneComment {
           color: $hy-grey;
           font-size: small;
-          .oneInfo {
-            margin-right: 3vw;
+          .infoFirstLine {
+            display: flex;
+            .oneInfo {
+              margin-left: 3vw;
+            }
+          }
+          .infoSecondLine {
+            margin-left: 3vw;
           }
         }
 
@@ -151,8 +157,9 @@
           .infoBelowOneReply {
             color: $hy-grey;
             font-size: small;
+            display: flex;
             .oneInfo {
-              margin-right: 3vw;
+              margin-left: 3vw;
           }
           }
         }
