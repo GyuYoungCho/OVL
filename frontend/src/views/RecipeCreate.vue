@@ -73,6 +73,7 @@ import axios from 'axios'
 import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
 import { mapGetters } from 'vuex'
+import fileUpload from '@/api/fileUpload.js'
 
 export default {
   data: () => ({
@@ -132,57 +133,41 @@ export default {
       this.processImgFiles = this.processImgFiles.filter(data => data.number !== number)
     },
     
-    onRecipeBtnClick() {
+    async onRecipeBtnClick() {
       let contentList = []
-      const formData = new FormData()
+      let tempPic = []
+      var params = new URLSearchParams();
+      tempPic.push(this.picture);
 
-      formData.append('title', this.title)
+      var picPathList = await fileUpload.upload(tempPic, 'recipe');
+      var processPathList = await fileUpload.upload(this.processImgFiles, 'recipe');
 
-      const dummy1 = new File(["ex"], "ex.txt", {
-          type: "text/plain",
-        });
-      formData.append('picture', dummy1)
-      formData.append('picture', this.picture)
-      formData.append('content', this.content)
-      formData.append('ingredient', this.ingredient)
-      formData.append('userId', this.userinfo.userid)
+      params.append('title', this.title);
+      params.append('content', this.content)
+      params.append('ingredient', this.ingredient)
+      params.append('userId', this.userinfo.userid)
 
-      const dummy2 = new File(["ex"], "ex.txt", {
-          type: "text/plain",
-        });
-      formData.append('files', dummy2)
+      params.append('picPathList', picPathList)
       contentList.push('0')
       for(let i=0; i < this.processImgFiles.length; i++ ) {
         contentList.push(this.processImgFiles[i].text)
-        formData.append('files', this.processImgFiles[i])
       }
+
+      params.append('processPathList', processPathList)
+      params.append('contentList', contentList)
 
       
       const URL = API.url + recipeAPI.regist()
-      console.log(API.url + recipeAPI.contentList())
-      console.log(URL)
 
-      axios.post(API.url + recipeAPI.contentList(), contentList, {
-            headers: {
-              "access-token": localStorage.getItem('access-token')
-            }
-          })
-          .then(res =>  {
-            console.log(res)
-            axios.post(URL, formData, 
-              { headers: {
-                  "access-token": localStorage.getItem('access-token'),
-                  "Content-Type": 'multipart/form-data',
-                }
-              })
-              .then(res => {
-                console.log(res)
-                this.$router.push({ name: 'RecipeSearch' })
-              })
-              .catch(err => console.error(err))
-          })
-          .catch(err => console.error(err))
-
+      axios.post(URL, params)
+      .then((response) => {
+        alert("보냈슴!");
+        if (response.data.job=="success") this.$router.push({name:"RecipeSearch"});
+      })
+      .catch((error) => {
+        alert("못보냈슴!");
+        console.log(error);
+      })
     }
   },
   computed: {

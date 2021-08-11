@@ -18,7 +18,7 @@
         
         <div v-if="containmentValid(recipe)">
           <ProfileName :user="recipe.userid"></ProfileName>
-          <img :src="srcPath(recipe)" alt="" @click="onImgClick(recipe)" class="recipePic">
+          <img :src="recipe.filepath" alt="" @click="onImgClick(recipe)" class="recipePic">
           <div class="oneRecipeContent">
             <span>{{ recipe.title }}</span>
             <span class="oneRecipeTime">{{ calTime(recipe) }}</span>
@@ -67,9 +67,6 @@ export default {
         recipeId: recipe.recipeId,
       }
       this.likeRecipe(data)
-    },
-    srcPath(recipe){
-      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
     },
     calTime (recipe) {
       return moment(recipe.time).fromNow()

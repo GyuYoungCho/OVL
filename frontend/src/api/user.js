@@ -9,9 +9,6 @@ export default {
   join() {
     return "/user/join";
   },
-  join_profile() {
-    return "/user/join/profile";
-  },
   email_auth(type, email) {
     return `/user/email_auth/${type}/${email}`;
   },

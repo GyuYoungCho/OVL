@@ -100,7 +100,7 @@
       {{ recipe.title}}
     </div>
     <!-- 대표 사진 -->
-    <img :src="srcPath(recipe)" alt="" class="recipePic">
+    <img :src="recipe.filepath" alt="" class="recipePic">
     
     <div class="recipeContent">
       {{ recipe.content }}
@@ -126,7 +126,7 @@
         <div v-for="(process, idx) in recipeDetail" :key="idx">
           <hr v-if="idx!==0">  
           <div class="oneProcess">
-            <img :src="processSrcPath(recipe, process)" alt="" class="processPic">
+            <img :src="process.filepath" alt="" class="processPic">
             <p class="processContent" v-html="changeLine(process.content)"></p>
           </div>
         </div>
@@ -372,12 +372,6 @@ export default {
       this.deleteRecipeReply(data)
     },
 
-    srcPath(recipe) {
-      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
-    },
-    processSrcPath(recipe, process) {
-      return "http://localhost:8080/recipe/" + recipe.recipeId + "/" + process.filepath.split('/').reverse()[0];
-    },
     onRegistCommentBtnClick () {
       this.registComment(this.comment)
       this.content = ""

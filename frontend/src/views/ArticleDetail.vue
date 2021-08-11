@@ -41,10 +41,7 @@
         <v-row>
 
           <v-col cols="6" md="1">
-            <div class="postProfile">
-              <img :src="userPath()" width=17% style="border-radius: 50%;">
-              <div class="ml-1 inline" style="font-size:large">{{post.userId.nickname}}</div>
-            </div>
+            <ProfileName :user="post.userId"></ProfileName>
           </v-col>
 
           <!-- 게시글 좋아요, 댓글 -->
@@ -82,7 +79,7 @@
         <!-- 사진 캐러셀 -->
         <v-carousel class="carouselBorder my-1" hide-delimiters height="30vh" style="border-radius: 8px;">
           <v-carousel-item
-            v-for="(info,idx) in postPhotoList" :key="idx" :src="photoPath(idx)"
+            v-for="(info,idx) in postPhotoList" :key="idx" :src="postPhotoList[idx].filepath"
           ></v-carousel-item>
         </v-carousel>
 
@@ -106,7 +103,8 @@
           <!-- 댓글 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
           <v-row>
             <v-col cols="10" md="1">
-              <img :src="commentUserPath(info)" width=10% style="border-radius: 50%;">
+              
+              <img :src="info.userId.filepath" width=10% style="border-radius: 50%;">
               {{info.userId.nickname}} &nbsp;
               {{info.content}}
             </v-col>
@@ -149,7 +147,7 @@
                 <!-- 답글 프로필, 유저 닉네임, 답글 내용, 하트 -->
                 <v-row>
                   <v-col cols="10" md="1">
-                    <img :src="replyUserPath(replyInfo)" width=10% style="border-radius: 50%;">
+                    <img :src="replyInfo.postCommentId.userId.filepath" width=10% style="border-radius: 50%;">
                     {{replyInfo.userId.nickname}} &nbsp;
                     {{replyInfo.content}}
                   </v-col>
@@ -184,9 +182,12 @@
 </template>
 
 <script>
+import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapState} from "vuex";
-import API from '@/api/index.js'
 export default {
+  components: {
+    ProfileName
+  },
   data() {
     return {
       commentInput:"", // 댓글 입력 창
@@ -290,18 +291,6 @@ export default {
       if (this.showReply.includes(postCommentId)) return true;
       else return false;
     },  
-    userPath() { // 프로필 사진 이미지 출력
-      return API.url+"/profile/"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
-    },
-    commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
-      return API.url+"/profile/"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
-    },
-    replyUserPath(info) { // 답글 프로필 사진 이미지 출력
-      return API.url+"/profile/"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
-    },
-    photoPath(idx){ // 대표 이미지 출력
-      return API.url+"/post/"+this.post.postId+"/"+this.postPhotoList[idx].filepath.split('/').reverse()[0];
-    },
     isPostLike() { // 게시글 좋아요 눌렀는지 확인
       if (this.postLikeList.includes(this.post.postId)) return true;
       else return false;
