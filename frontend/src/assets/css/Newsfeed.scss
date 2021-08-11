@@ -18,3 +18,8 @@
 .smallFont {
     font-size: small ;
 }
+
+.contentAndTime {
+    display: flex;
+    justify-content: space-between;
+}

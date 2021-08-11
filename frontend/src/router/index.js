@@ -133,4 +133,37 @@ const router = new VueRouter({
   routes,
 });
 
+import store from '@/store'
+// 로그인한 사람만 갈 수 있는 페이지와 아닌 사람만 갈 수 있는 페이지 구분
+router.beforeEach((to, from, next) => {
+
+  // 로그인 안 해야 갈 수 있는 페이지
+  const outerPages = ['Signup', 'Login', 'FindEmail', 'FindPassword',]
+  // 로그인 해야 갈 수 있는 페이지
+  const privatePages = ['NotFound', 'ArticleCreate', 'ArticleDetail', 'ChallengeDetail', 'ChallengeList', 'Profile', 
+  'RecipeCreate', 'RecipeDetail', 'RecipeUpdate', 'RecipeSearch', 'VetPartyCreate', 'VetPartyList', 'ModifyUser', 'ModifyPic', 
+  'OtherProfile']
+
+  const authRequired = privatePages.includes(to.name)
+  const guestRequired = outerPages.includes(to.name)
+  const isLoggedIn = store.getters['user/isLogin']
+  
+  // 존재하지 않는 페이지로 이동하려 한다면
+  if (!to.name) {
+    next({ name: 'NotFound' })
+  }
+
+  // 로그인한 사용자가 로그인하면 못 가는 페이지로 이동하려 할 때
+  if (isLoggedIn && guestRequired) {
+    next({ name: 'Main' })
+  }
+  // 로그인 안 한 사용자가 로그인해야 갈 수 있는 페이지로 이동하려 할 때
+  if (!isLoggedIn && authRequired) {
+    next({ name: 'Login' })
+  } else {
+    next()
+  }  
+})
+
+
 export default router;

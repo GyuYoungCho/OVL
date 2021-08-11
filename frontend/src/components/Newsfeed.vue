@@ -28,8 +28,12 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">  
-            <div v-html="contentReplace(info.postId.content)"></div>
+            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">
+            <div class="contentAndTime">
+              <div v-html="contentReplace(info.postId.content)"></div>
+              <span>{{ calTime(info.postId.time) }}</span>
+            </div>
+              
           </div>
 
           <!-- 좋아요, 댓글 -->
@@ -56,6 +60,8 @@
 <script>
 import {mapState} from "vuex";
 import API from '@/api/index.js'
+import moment from 'moment'
+
 
 export default {
   data() {
@@ -93,7 +99,10 @@ export default {
         "type": 1 // 뉴스피드
       }
       this.$store.dispatch("post/postLike", payload);
-    }
+    },
+    calTime (time) {
+      return moment(time).fromNow()
+    },
   },
   computed: {
     ...mapState("post", (["postList", "postLikeList"])),
