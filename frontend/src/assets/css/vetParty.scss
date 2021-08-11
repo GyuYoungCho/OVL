@@ -64,7 +64,6 @@
 
   .notBtnComp {
     background-color: $hy-grey;
-    color: white;
     border-radius: 8px;
     margin-top: 15px;
     padding: 7px 0px;
@@ -168,5 +167,9 @@
     background-color: $hy-grey;
     opacity: 0.5;
     pointer-events: none;
+  }
+
+  .mouse-over-bgcolor {
+    background-color: $hy-grey;
   }
 }

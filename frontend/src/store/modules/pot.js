@@ -104,6 +104,7 @@ export default {
           return 0;
         });
       }
+      console.log(state.userpots);
     },
     SELECT_REST(state, payload) {
       state.rest = payload;
@@ -140,6 +141,8 @@ export default {
       axios
         .get(API.url + potAPI.select(user_id))
         .then((res) => {
+          console.log(res.data);
+          console.log(user_id);
           commit("set_User_Pots", res.data);
         })
         .catch((error) => {

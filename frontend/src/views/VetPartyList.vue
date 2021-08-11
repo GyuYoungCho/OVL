@@ -156,13 +156,13 @@ export default {
         this.snackbar = false
       }, 2000)
 
-      this.$router.go();
+      // this.$router.go();
     }
   },
   mounted: function(){
     this.$nextTick(function(){
-      this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
       this.$store.dispatch("pot/setPotItems")
+      this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
       this.$store.dispatch("pot/selectPot",[])
     })
   }
