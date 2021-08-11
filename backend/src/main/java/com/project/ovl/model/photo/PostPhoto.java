@@ -27,9 +27,7 @@ public class PostPhoto {
 	@Column(name = "post_photo_id")
     private int postPhotoId;
 	
-	private String filename; // 파일 원본명
 	private String filepath; // 파일 저장 경로
-	private String filesize;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "postId")

@@ -22,9 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.challenge.ChallengeCertificationDao;
@@ -39,7 +37,6 @@ import com.project.ovl.model.challenge.Challenge;
 import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.like.PostLike;
-import com.project.ovl.model.photo.PhotoHandler;
 import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
@@ -80,21 +77,15 @@ public class PostController {
 	PostCommentController commentController;
 	
 	@Autowired
-	PhotoHandler photoHandler;
-	
-	@Autowired
 	ChallengeDao challengeDao;
 	
 	@Autowired
 	ChallengeCertificationDao challengeCertificationDao;
 	
-	private Set<Integer> deleteId;
-	private List<Integer> modifyId;
-	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("category") String category,
-											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
+	public ResponseEntity<Map<String, String>> regist(@RequestParam("pathList") List<String> pathList, @RequestParam("category") String category,
+			@RequestParam("content") String content, @RequestParam("userId") String userId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
@@ -115,7 +106,10 @@ public class PostController {
 		Post post = new Post(0, Integer.parseInt(category), content, 0, 0, new Date(), user);
 		postDao.save(post);
 		// 이미지 저장
-		photoHandler.parseFileInfo(files, post.getPostId(), 0, null);
+		for (int i=1;i<pathList.size();i++) {
+			PostPhoto photo = new PostPhoto(0, pathList.get(i), post);
+			postPhotoDao.save(photo);
+		}
 		
 		// 챌린지 중일 경우 인증
 		if(user.getChallengeId().getChallengeId()!=1
@@ -151,19 +145,11 @@ public class PostController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
-	@PostMapping("/modifyList")
-	@ApiOperation(value="게시글 수정 관련 리스트 가져오기")
-	public ResponseEntity<String> modifyList(@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam(value="modifyIdList", required=false) List<Integer> modifyIdList) {
-		deleteId = deleteIdList;
-		modifyId = modifyIdList;
-		
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	}
-	
 	@PutMapping("/modify")
 	@ApiOperation(value = "게시글 수정")
-	public ResponseEntity<Map<String, String>> modify(@RequestPart("modifyPhotoList") List<MultipartFile> modifyPhotoList, @RequestPart("plusPhotoList") List<MultipartFile> plusPhotoList,
-			@RequestPart("category") String category, @RequestPart("content") String content, @RequestPart("postId") String postId) throws Exception {
+	public ResponseEntity<Map<String, String>> modify(@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam("modifyIdList") List<Integer> modifyIdList,
+			@RequestParam("modifyPhotoList") List<String> modifyPhotoList, @RequestParam("plusPhotoList") List<String> plusPhotoList,
+			@RequestParam("category") String category, @RequestParam("content") String content, @RequestParam("postId") String postId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
@@ -254,18 +240,25 @@ public class PostController {
 		postDao.save(post);
 		
 		// 사진 삭제
-		if (deleteId.size()>0) {
+		if (deleteIdList.size()>1) {
 			List<PostPhoto> deleteList = postPhotoDao.findAll();
 			for (PostPhoto pp : deleteList) {
-				if (deleteId.contains(pp.getPostPhotoId())) postPhotoDao.delete(pp);
+				if (deleteIdList.contains(pp.getPostPhotoId())) postPhotoDao.delete(pp);
 			}
 		}
 		
 		// 사진 수정
-		if (modifyPhotoList.size()>0) photoHandler.parseFileInfo(modifyPhotoList, Integer.parseInt(postId), 1, modifyId);
+		for (int i=1;i<modifyIdList.size();i++) {
+			PostPhoto photo = postPhotoDao.findPostPhotoByPostPhotoId(modifyIdList.get(i));
+			photo.setFilepath(modifyPhotoList.get(i));
+			postPhotoDao.save(photo);
+		}
 		
 		// 사진 추가
-		if (modifyPhotoList.size()>0) photoHandler.parseFileInfo(plusPhotoList, Integer.parseInt(postId), 0, null);
+		for (int i=1;i<plusPhotoList.size();i++) {
+			PostPhoto photo = new PostPhoto(0, plusPhotoList.get(i), post);
+			postPhotoDao.save(photo);
+		}
 		
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
@@ -408,7 +401,6 @@ public class PostController {
 		Collections.sort(returnList, (o1, o2)-> {
 			return Integer.compare(o2.getPostPhotoId(), o1.getPostPhotoId());
 		});
-		System.out.println("return list ; " + returnList);
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
 	
