@@ -156,7 +156,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
     },
     closeDialog() { //Dialog 닫히는 동작
-    this.dialog = false;
+        this.dialog = false;
     },
     },
 

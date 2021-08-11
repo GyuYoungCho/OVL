@@ -1,15 +1,15 @@
 <template>
 <v-container>
         <div class="px-7 mt-4">
-            <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
-            <img src="@/assets/icon/cream.png" alt="" class="icon-btn-img"></button>
-            <button class="icon-btn" v-else @click="selectTypeIcon(0)">
-            <img src="@/assets/icon/cream_selected.png" alt="" class="icon-btn-img"></button>
-
-            <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
+            <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)">
             <img src="@/assets/icon/recipe.png" alt="" class="icon-btn-img"></button>
-            <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+            <button class="icon-btn" v-else @click="selectTypeIcon(0)">
             <img src="@/assets/icon/recipe_selected.png" alt="" class="icon-btn-img"></button>
+
+            <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)" >
+            <img src="@/assets/icon/cream.png" alt="" class="icon-btn-img"></button>
+            <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+            <img src="@/assets/icon/cream_selected.png" alt="" class="icon-btn-img"></button>
 
             <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
             <img src="@/assets/icon/hanger.png" alt="" class="icon-btn-img"></button>
@@ -20,7 +20,7 @@
                 <!-- 컨테이너 1: 카테고리가 딱히 정해지지 않으면 챌린지 리스트 전체를 렌더링 합니다 -->
     <v-container v-if="showAll">
       <v-row>
-        <v-col v-for="(challenge, idx) in challengeList" :key="idx" cols="4" class="grid-cell">
+        <v-col v-for="(challenge, idx) in userchallengeList" :key="idx" cols="4" class="grid-cell">
           <!-- 개별 card 영역 : 카드들이 위의 v-for 태그로 인해 그리드로 들어가게 됩니다 -->
           <v-container class="card">
             <article class="cardContent">
@@ -72,7 +72,7 @@
     <!-- 컨테이너 2: 음식 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
     <v-container v-else-if="!btnActive[0]">
       <v-row>
-        <v-col v-for="(challenge, idx) in foodChallengeList" :key="idx" cols="4" class="grid-cell">
+        <v-col v-for="(challenge, idx) in userfoodChallengeList" :key="idx" cols="4" class="grid-cell">
           <v-container class="card">
             <article class="cardContent">
               <div class="cardContentArea">
@@ -116,7 +116,7 @@
     <!-- 컨테이너 3: 옷 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
     <v-container v-else-if="!btnActive[1]">
       <v-row>
-        <v-col v-for="(challenge, idx) in clothChallengeList" :key="idx" cols="4" class="grid-cell">
+        <v-col v-for="(challenge, idx) in userclothChallengeList" :key="idx" cols="4" class="grid-cell">
           <v-container class="card">
             <article class="cardContent">
               <div class="cardContentArea">
@@ -160,7 +160,7 @@
     <!-- 컨테이너 4: 화장품 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
     <v-container v-else-if="!btnActive[2]">
       <v-row>
-        <v-col v-for="(challenge, idx) in cosmeticChallengeList" :key="idx" cols="4" class="grid-cell">
+        <v-col v-for="(challenge, idx) in usercosmeticChallengeList" :key="idx" cols="4" class="grid-cell">
           <v-container class="card">
             <article class="cardContent">
               <div class="cardContentArea">
@@ -223,7 +223,7 @@ data() {
     }
 },
 methods: {
-      ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
+      ...mapActions("challenge", ["fetchUserChallengeList", "challengeAttend"]),
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
@@ -246,7 +246,7 @@ methods: {
     },
 },
 computed: {
-    ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
+    ...mapGetters("challenge", ["userchallengeList", "userfoodChallengeList", "userclothChallengeList", "usercosmeticChallengeList"]),
     ...mapState("post", (["postList", "postLikeList"])),
     ...mapState("user", (["userinfo"])),
 },
@@ -254,7 +254,8 @@ created() {
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
     // 1. 컴포넌트가 렌더링 되면 일단 스토어의 전체 챌린지 리스트를 뷰엑스에 업데이트 합니다.
-    this.fetchChallengeList()
+    console.log("유젗 챌릸진 정보", this.userinfo.userid);
+    this.$store.dispatch("challenge/fetchUserChallengeList", {challenge_id: this.userinfo.challengeId.challengeId, user_id: this.userinfo.userid});
 },
 }
 </script>

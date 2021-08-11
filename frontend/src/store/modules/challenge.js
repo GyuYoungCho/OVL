@@ -10,7 +10,10 @@ export default {
     foodChallengeList: [],
     clothChallengeList: [],
     cosmeticChallengeList: [],
-    
+    userchallengeList: [],
+    userfoodChallengeList: [],
+    userclothChallengeList: [],
+    usercosmeticChallengeList: [],
   },
   getters: {
     challengeList (state) {
@@ -25,7 +28,18 @@ export default {
     cosmeticChallengeList (state) {
       return state.cosmeticChallengeList
     },
-    
+    userchallengeList (state) {
+      return state.challengeList
+    },
+    userfoodChallengeList (state) {
+      return state.foodChallengeList
+    },
+    userclothChallengeList (state) {
+      return state.clothChallengeList
+    },
+    usercosmeticChallengeList (state) {
+      return state.cosmeticChallengeList
+    },
   },
   mutations: {
     // 일단 모든 챌린지 리스트를 받고, filter로 카테고리별로 뽑아낸 리스트를 만들어 줍니다.
@@ -34,6 +48,12 @@ export default {
       state.foodChallengeList = challengeList.filter((eachList)=> eachList.category===1)
       state.clothChallengeList = challengeList.filter((eachList)=> eachList.category===2)
       state.cosmeticChallengeList = challengeList.filter((eachList)=> eachList.category===3)
+    },
+    SET_USER_CHALLENGE_LISTS (state, userchallengeList) {
+      state.userchallengeList = userchallengeList
+      state.userChallengeList = userchallengeList.filter((eachList)=> eachList.category===1)
+      state.userclothChallengeList = userchallengeList.filter((eachList)=> eachList.category===2)
+      state.userfoodChallengeList = userchallengeList.filter((eachList)=> eachList.category===3)
     },
 
   },
@@ -68,6 +88,18 @@ export default {
         })
         .catch((err) => console.log(err))
       },
-      
+    fetchUserChallengeList(store, {challenge_id, user_id}) {
+        const URL = API.url + challengeAPI.search_mychallenge(challenge_id, user_id)
+        axios({
+          method: 'GET',
+          url: URL,
+          params: {
+            user_id,
+            challenge_id,
+          }
+        })
+          .then((res) => store.commit('SET_USER_CHALLENGE_LISTS', res.data) )
+          .catch((err)=>{console.error(err)})
+      },
     }
   }

@@ -10,34 +10,6 @@
       </div>
     </div>
 
-    <!-- 커스텀 모달 -->
-    <v-dialog v-model="participation" hide-overlay max-width="300">
-      <v-card>
-        <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
-          <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn icon dark @click="participation = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <!-- 모달 컨텐츠 영역 -->
-        <v-container>
-        <div class="modalContent">
-          <div class="mb-3">
-            <span class="modalContentMessage">
-              이미 참여한 챌린지가 있습니다! <br>
-              참여 취소를 원하시면 내 프로필에서 취소해 주세요!
-            </span>
-          </div>
-          <div class="modalContentButtonArea">
-            <button class="modalContentButton" @click="participation = false">확인</button>
-          </div>
-        </div>
-        </v-container>
-      </v-card>
-    </v-dialog>
-
     <!-- 컨테이너 1: 카테고리가 딱히 정해지지 않으면 챌린지 리스트 전체를 렌더링 합니다 -->
     <v-container v-if="!nowSelectedCategory.trim()">
       <v-row>
@@ -80,9 +52,9 @@
               </div>
               <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
+                <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
+                <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
+                <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
               </div>
             </article>
           </v-container>
@@ -124,9 +96,9 @@
                 ({{challenge.period/7}}주)
               </div>
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
+                <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
+                <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
+                <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
               </div>
             </article>
           </v-container>
@@ -168,9 +140,9 @@
                 ({{challenge.period/7}}주)
               </div>
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
+                <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
+                <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
+                <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
               </div>
             </article>
           </v-container>
@@ -212,9 +184,9 @@
                 ({{challenge.period/7}}주)
               </div>
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
+                <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
+                <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
+                <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
               </div>
             </article>
           </v-container>
@@ -236,8 +208,6 @@ export default {
       cosmeticSelected: false,
       // 현재 선택된 카테고리가 무엇인지 가리키는 변수
       nowSelectedCategory: '',
-      // 커스텀 모달 온오프 위한 변수
-      participation: false,
     }
   },
   methods: {
