@@ -27,9 +27,7 @@ public class RecipeProcess {
     private int recipeProcessId;
 	
 	private String content;
-	private String filename;
 	private String filepath;
-	private String filesize;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipeId")

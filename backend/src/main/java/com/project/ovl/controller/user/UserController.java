@@ -1,6 +1,5 @@
 package com.project.ovl.controller.user;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,7 +77,6 @@ import com.project.ovl.model.recipe.RecipeComment;
 import com.project.ovl.model.recipe.RecipeProcess;
 import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.report.Report;
-import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
 
@@ -228,59 +223,11 @@ public class UserController {
 	
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
-	public ResponseEntity<Integer> join(@Valid @RequestBody SignupRequest request){
+	public ResponseEntity<String> join(@RequestBody User user){
 		
 		Challenge basic = challengedao.findByChallengeId(1);
-		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				passwordEncoder.encode(request.getPassword()), request.getExperience(), request.getAccount_open(), request.getWarning(), null, null,basic);
-		
-		userDao.save(saveUser);
-		return new ResponseEntity<>(saveUser.getUserid(), HttpStatus.OK);
-
-	}
-	
-	@PostMapping("/join/profile")
-	@ApiOperation(value = "가입 시 프로필 사진 등록")
-	public ResponseEntity<String> joinprofile(@RequestPart MultipartFile picture,
-								@RequestPart String user_id) throws IOException{
-		User saveUser = userDao.getUserByUserid(Integer.parseInt(user_id));
-		String originalFileExtension;
-		if(picture!=null) {
-    		
-            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile/" + user_id;
-            File file = new File(path);
-            
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            String contentType = picture.getContentType();
-
-            if(!ObjectUtils.isEmpty(contentType)) {
-
-                if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpg";
-                else if(contentType.contains("image/png"))
-                    originalFileExtension = ".png";
-              
-                else {
-                	userDao.save(saveUser);
-            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-                }
-                String new_file_name = System.nanoTime() + originalFileExtension;
-                saveUser.setStored_file_path(path + "/" + new_file_name);
-                saveUser.setOriginal_file_name(picture.getOriginalFilename());
-                
-                userDao.save(saveUser);
-                
-                file = new File(absolutePath + path + File.separator + new_file_name);
-                picture.transferTo(file);
-                
-                file.setWritable(true);
-                file.setReadable(true);
-            }
-            
-    	}
+		User saveUser = new User(0, user.getEmail(), user.getNickname(), user.getName(), user.getPhone(),
+				passwordEncoder.encode(user.getPassword()), 0, 0, 0, "https://ovl-bucket.s3.ap-northeast-2.amazonaws.com/defaultImg.jpg" ,basic);
 		
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -314,7 +261,6 @@ public class UserController {
 				entity = ResponseEntity.badRequest().body(resultMap);
 			}
 		}catch(RuntimeException e){
-			//Logger.info("로그인 실패",e);
 			resultMap.put("message", e.getMessage());
 			entity = ResponseEntity.badRequest().body(resultMap);
 		}
@@ -337,7 +283,6 @@ public class UserController {
 			status = HttpStatus.ACCEPTED;
 			
 		}catch(RuntimeException e){
-			//Logger.info("로그인 실패",e);
 			System.out.println("여기서 실패");
 			resultMap.put("message", e.getMessage());
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -424,51 +369,51 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
-    @PutMapping(value = "/modify_pic/{user_id}")
+    @PostMapping(value = "/modify_pic/{user_id}")
 	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic) throws IOException {
-    	User useropt = userDao.getUserByUserid(user_id);
-    	String originalFileExtension;
-    	
-    	if(pic!=null) {
-    		
-    		File file = new File(useropt.getStored_file_path());
-    		if(file.exists() == true){
-    			file.delete();
-    		}
-            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile/" + useropt.getUserid();
-            file = new File(path);
-            
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            String contentType = pic.getContentType();
-
-            if(!ObjectUtils.isEmpty(contentType)) {
-
-                if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpg";
-                else if(contentType.contains("image/png"))
-                    originalFileExtension = ".png";
-              
-                else {
-                	userDao.save(useropt);
-            		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
-                }
-                String new_file_name = System.nanoTime() + originalFileExtension;
-                useropt.setStored_file_path(path + "/" + new_file_name);
-                useropt.setOriginal_file_name(pic.getOriginalFilename());
-                
-                userDao.save(useropt);
-                
-                file = new File(absolutePath + path + File.separator + new_file_name);
-                pic.transferTo(file);
-                
-                file.setWritable(true);
-                file.setReadable(true);
-            }
-            
-    	}
+//    	User useropt = userDao.getUserByUserid(user_id);
+//    	String originalFileExtension;
+//    	
+//    	if(pic!=null) {
+//    		
+//    		File file = new File(useropt.getStored_file_path());
+//    		if(file.exists() == true){
+//    			file.delete();
+//    		}
+//            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
+//            String path = "src/main/resources/static/profile/" + useropt.getUserid();
+//            file = new File(path);
+//            
+//            if(!file.exists()){
+//                file.mkdirs();
+//            }
+//            String contentType = pic.getContentType();
+//
+//            if(!ObjectUtils.isEmpty(contentType)) {
+//
+//                if(contentType.contains("image/jpeg"))
+//                    originalFileExtension = ".jpg";
+//                else if(contentType.contains("image/png"))
+//                    originalFileExtension = ".png";
+//              
+//                else {
+//                	userDao.save(useropt);
+//            		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+//                }
+//                String new_file_name = System.nanoTime() + originalFileExtension;
+//                useropt.setStored_file_path(path + "/" + new_file_name);
+//                useropt.setOriginal_file_name(pic.getOriginalFilename());
+//                
+//                userDao.save(useropt);
+//                
+//                file = new File(absolutePath + path + File.separator + new_file_name);
+//                pic.transferTo(file);
+//                
+//                file.setWritable(true);
+//                file.setReadable(true);
+//            }
+//            
+//    	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	

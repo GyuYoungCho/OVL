@@ -9,9 +9,6 @@ export default {
   join() {
     return "/user/join";
   },
-  join_profile() {
-    return "/user/join/profile";
-  },
   email_auth(type, email) {
     return `/user/email_auth/${type}/${email}`;
   },
@@ -38,7 +35,7 @@ export default {
     return `/user/modify_user`;
   },
   modify_pic (user_id){
-    return `/user//modify_pic/${user_id}`;
+    return `/user/modify_pic/${user_id}`;
   },
   select(user_id) {
     return `/user/select/${user_id}`;

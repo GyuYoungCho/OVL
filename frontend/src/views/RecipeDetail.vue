@@ -1,5 +1,71 @@
 <template>
 <v-container>
+  <!-- 레시피 삭제 모달 -->
+  <v-dialog v-model="deleteModal" hide-overlay max-width="300" persistent>
+    <v-card>
+      <!-- 모달 타이틀 영역 -->
+      <v-toolbar dense color="#004627">
+        <v-toolbar-title class="modalTitle">{{ recipe.title }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon dark @click="deleteModal = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <!-- 모달 컨텐츠 영역 -->
+      <v-container>
+      <div class="modalContent">
+        <div class="mb-3">
+          <span class="modalContentMessage">
+            정말로 삭제하시겠습니까?
+          </span>
+        </div>
+        <div class="modalContentButtonArea">
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <button class="modalContentButton" @click="onDeleteConfirmClick">확인</button>
+          <v-spacer></v-spacer>
+          <button class="modalContentButton" @click="deleteModal = false">취소</button>
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+        </div>
+      </div>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  <!-- 레시피 수정 모달 -->
+  <v-dialog v-model="updateModal" hide-overlay max-width="300">
+    <v-card>
+      <!-- 모달 타이틀 영역 -->
+      <v-toolbar dense color="#004627">
+        <v-toolbar-title class="modalTitle">{{ recipe.title }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon dark @click="updateModal = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <!-- 모달 컨텐츠 영역 -->
+      <v-container>
+      <div class="modalContent">
+        <div class="mb-3">
+          <span class="modalContentMessage">
+            정말로 수정하시겠습니까?
+          </span>
+        </div>
+        <div class="modalContentButtonArea">
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <button class="modalContentButton" @click="onUpdateConfirmClick">확인</button>
+          <v-spacer></v-spacer>
+          <button class="modalContentButton" @click="updateModal = false">취소</button>
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+        </div>
+      </div>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
   <section class="recipeDetail">
     <!-- 레시피 작성자 정보 -->
     <div class="header">
@@ -34,7 +100,7 @@
       {{ recipe.title}}
     </div>
     <!-- 대표 사진 -->
-    <img :src="srcPath(recipe)" alt="" class="recipePic">
+    <img :src="recipe.filepath" alt="" class="recipePic">
     
     <div class="recipeContent">
       {{ recipe.content }}
@@ -60,7 +126,7 @@
         <div v-for="(process, idx) in recipeDetail" :key="idx">
           <hr v-if="idx!==0">  
           <div class="oneProcess">
-            <img :src="processSrcPath(recipe, process)" alt="" class="processPic">
+            <img :src="process.filepath" alt="" class="processPic">
             <p class="processContent" v-html="changeLine(process.content)"></p>
           </div>
         </div>
@@ -178,6 +244,9 @@ export default {
 
     modifyCommentId: -1,
     modifyReplyId: -1,
+
+    deleteModal: false,
+    updateModal: false,
   }),
   methods: {
     ...mapActions(['registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
@@ -193,15 +262,17 @@ export default {
       this.likeRecipe(data)
     },
     onRecipeUpdateClick () {
-      if (confirm('레시피를 수정하시겠습니까?')) {
-        this.$router.push({ name: 'RecipeUpdate' })
-      }
+      this.updateModal = true
+    },
+    onUpdateConfirmClick () {
+      this.$router.push({ name: 'RecipeUpdate' })
     },
     onRecipeDeleteClick () {
-      if (confirm('레시피를 정말 삭제하시겠습니까?')) {
-        this.deleteRecipe(this.recipe.recipeId)
-        this.$router.push({ name: 'RecipeSearch' })
-      }
+      this.deleteModal = true
+    },
+    onDeleteConfirmClick () {
+      this.deleteRecipe(this.recipe.recipeId)
+      this.$router.push({ name: 'RecipeSearch' })
     },
     onRecipeTagBtnClick (option) {
       this.tab = option
@@ -301,12 +372,6 @@ export default {
       this.deleteRecipeReply(data)
     },
 
-    srcPath(recipe) {
-      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
-    },
-    processSrcPath(recipe, process) {
-      return "http://localhost:8080/recipe/" + recipe.recipeId + "/" + process.filepath.split('/').reverse()[0];
-    },
     onRegistCommentBtnClick () {
       this.registComment(this.comment)
       this.content = ""

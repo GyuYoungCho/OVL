@@ -11,7 +11,7 @@
       <label for="pictureImageInput">
         <div class="img-container">
             <img :src="picture.previewURL" alt="" v-if="!!picture">
-            <img :src="srcPath(recipe)" alt="" v-else>
+            <img :src="recipe.filepath" alt="" v-else>
         </div>
       </label>
 
@@ -40,7 +40,7 @@
             <div class="process-data">
               <label for="processImgInput" @click="onExistingProcessPicClick(index)">
                 <div class="preivew-img-container">
-                  <img class="preview-img" :src="!!processFile.filepath ? processSrcPath(processFile.filepath) : processFile.previewURL" alt="" >
+                  <img class="preview-img" :src="!!processFile.filepath ? processFile.filepath : processFile.previewURL" alt="" >
                 </div>
               </label>
               <textarea cols="30" rows="10" v-model="processFile.content" @input="onProcessFileContentChange(processFile)"></textarea>
@@ -70,6 +70,7 @@ import { mapGetters, mapActions } from 'vuex'
 import axios from 'axios'
 import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
+import fileUpload from '@/api/fileUpload.js'
 
 export default {
   data () {
@@ -100,7 +101,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchRecipeDetail']),
+    ...mapActions(['fetchRecipeDetail', 'fetchRecipeComments']),
     onTabBtnClick () {
       this.isIngredient = !this.isIngredient
     },
@@ -109,13 +110,6 @@ export default {
       const picture = this.$refs.file.files[0]
       picture.previewURL = URL.createObjectURL(picture)
       this.picture = picture
-    },
-
-    srcPath(recipe) {
-      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
-    },
-    processSrcPath(filepath) {
-      return "http://localhost:8080/recipe/" + this.recipe.recipeId + "/" + filepath.split('/').reverse()[0];
     },
 
     deleteProcessImg(index) {
@@ -169,52 +163,46 @@ export default {
       }
     },
 
-    onRecipeUpdateBtnClick () {
-      const formData = new FormData()
-
-      // 대표사진
-      const dummy1 = new File(["ex"], "ex.txt", {
-          type: "text/plain",
-        });
-      formData.append('picture', dummy1)
-      if (this.picture) {
-        formData.append('picture', this.picture)
-      }
-      // 수정사진 리스트
-      const dummy2 = new File(["ex"], "ex.txt", {
-          type: "text/plain",
-        });
-      formData.append('modifyPhotoList', dummy2)
-      for (let i=0; i < this.modifyPhotoList.length; i++) {
-        formData.append('modifyPhotoList', this.modifyPhotoList[i])
-      }
+    async onRecipeUpdateBtnClick () {
+      const params = new URLSearchParams()
+      let tempPic = [];
+      tempPic.push(this.picture);
+      var picPathList = await fileUpload.upload(tempPic, 'recipe');
+      var modifyPathList = await fileUpload.upload(this.modifyPhotoList, 'recipe');
+      var plusPathList = await fileUpload.upload(this.plusPhotoList, 'recipe');
       
-      // 추가하는 사진 리스트, 추가하는 과정 내용 리스트 
-      const dummy3 = new File(["ex"], "ex.txt", {
-          type: "text/plain",
-        });
       const plusContentList = []
 
-      formData.append('plusPhotoList', dummy3)
-      plusContentList.push(0)
+      plusContentList.push("temp")
 
       for (let i=0; i < this.plusPhotoList.length; i++) {
-        formData.append('plusPhotoList', this.plusPhotoList[i])
         plusContentList.push(this.plusPhotoList[i].content)
       }
-
       // 타이틀, 내용, 재료, 레시피아이디
-      formData.append('title', this.title)
-      formData.append('content', this.content)
-      formData.append('ingredient', this.ingredient)
-      formData.append('recipeId', this.recipe.recipeId)
+      params.append('title', this.title)
+      params.append('content', this.content)
+      params.append('ingredient', this.ingredient)
+      params.append('recipeId', this.recipe.recipeId)
+
+      console.log("title : ", this.title);
+      console.log("content : ", this.content);
+      console.log("ingredient : ", this.ingredient);
+      console.log("recipeId : ", this.recipe.recipeId);
+
+      params.append('picPathList', picPathList)
+      params.append('modifyPathList', modifyPathList)
+      params.append('plusPathList', plusPathList)
+
+      console.log("picPathList : ", picPathList);
+      console.log("modifyPathList : ", modifyPathList);
+      console.log("plusPathList : ", plusPathList);
 
       // 수정 과정 아이디 리스트
       const modifyContentIdList = this.modifyContentIdList
       console.log('수정 과정 아이디 리스트;', modifyContentIdList)
       // 수정 과정 내용 리스트
       const modifyContentList = []
-      modifyContentList.push(0)
+      modifyContentList.push("temp")
       for (let i=1; i < modifyContentIdList.length; i++) {
         modifyContentList.push(this.modifyContentObj[modifyContentIdList[i]])
       }
@@ -225,32 +213,33 @@ export default {
       // 삭제된 사진 아이디 리스트
       const deleteIdList = this.deleteIdList
 
-      // 요청 보낼 params
-      const params = new URLSearchParams()
       params.append('deleteIdList', deleteIdList)
       params.append('modifyContentIdList', modifyContentIdList)
       params.append('modifyContentList', modifyContentList)
       params.append('modifyPhotoIdList', modifyPhotoIdList)
       params.append('plusContentList', plusContentList)
 
-      axios.post(API.url + recipeAPI.modifyList(), params)
-        .then(res => {
-          if (res.data==='success') {
-            axios.put(API.url + recipeAPI.modify(), formData,  {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
-              .then(res => {
-                if (res.data==='success') {
-                  this.fetchRecipeDetail(this.recipe.recipeId)
-                  this.$router.push({ name: 'RecipeDetail' })
-                }
-              })
-              .catch(err => console.error(err))
-          }
-        })
-        .catch(err => console.error(err))
+      console.log("deleteIdList : ", deleteIdList);
+      console.log("modifyContentIdList : ", modifyContentIdList);
+      console.log("modifyContentList : ", modifyContentList);
+      console.log("modifyPhotoIdList : ", modifyPhotoIdList);
+      console.log("plusContentList : ", plusContentList);
+
+      const URL = API.url + recipeAPI.modify();
+
+      axios.put(URL, params)
+      .then((response) => {
+        alert("보냈슴!");
+        if (response.data=="success") {
+          this.fetchRecipeDetail(this.recipe.recipeId)
+          this.fetchRecipeComments(this.recipe.recipeId)
+          this.$router.push({ name: 'RecipeDetail' })
+        }
+      })
+      .catch((error) => {
+        alert("못보냈슴!");
+        console.log(error);
+      })
     }
   },
 
