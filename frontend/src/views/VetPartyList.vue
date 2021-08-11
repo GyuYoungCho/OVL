@@ -2,29 +2,30 @@
   <div>
     <v-container>
       <section  class="vetparty">
-      <pot-search :search="search" class="mt-3"></pot-search>
+      <pot-search class="mt-3" @searchKeyword="searchKeyword"></pot-search>
       <map-view class="mt-6"></map-view>
      
      <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
-        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot">
+        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
+        @openDetailModal="openDetailModal">
           
         </user-pot-list>
       </v-list>
 
-      <v-list v-if="searchpots.length==0">
-        <!-- <all-pot-list v-for="(potitem, index) in potitems" :key="index" :potitem="potitem"
-          @openSnackBarTop="openSnackBarTop">
-        </all-pot-list> -->
-      </v-list>
       
-      <v-list v-else>
+      
+      <v-list>
         <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
-        @openSnackBarTop="openSnackBarTop">
+        @openDetailModal="openDetailModal" @openAttendModal="openAttendModal">
             
         </all-pot-list>
       </v-list>
       <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+      <vet-party-detail :modalDetail="modalDetail"
+          @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
       
+      <message-modal :modalMessage="modalMessage" :sign="sign"
+              @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
       <v-overlay :value="overlay"></v-overlay>
       
@@ -37,9 +38,11 @@ import { mapGetters, mapActions } from 'vuex';
 import AllPotList from '@/components/pot/AllPotList.vue'
 import UserPotList from '@/components/pot/UserPotList.vue'
 import MapView from '@/components/basic/MapView.vue';
-import PotSearch from '@/components/pot/PotSearch.vue';
+import PotSearch from '@/components/basic/PotSearch.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
-// import AttendModal from '@/components/pot/AttendModal.vue'
+import MessageModal from '@/components/pot/MessageModal.vue'
+import VetPartyDetail from '@/components/pot/VetPartyDetail.vue';
+
 
 export default {
   components: { 
@@ -48,7 +51,8 @@ export default {
     MapView,
     PotSearch,
     ConfirmSnack,
-    // AttendModal,
+    VetPartyDetail,
+    MessageModal,
   },
   data(){
  
@@ -57,37 +61,62 @@ export default {
       allSteps: [
         "과일채소", "계란","유제품","생선","고기"
       ],
-      searchpots : [],
+      order : [
+        "이름", "식당",
+      ],
+      
       overlay : false,
-
+      modalDetail : false,
+      modalMessage : false,
       snackbar : false,
       message : "안녕 난 디폴트야" ,
+      sign : '',
     }
   },
   computed:{
-    ...mapGetters("pot", ['potitems','userpots']),
+    ...mapGetters("pot", ['potitems','userpots','selectpot']),
     ...mapGetters("user", ['userinfo']),
+
+    searchpots() {
+      const search = this.search.toLowerCase()
+
+      if (!search) return this.potitems
+
+      return this.potitems.filter(item => {
+        const text = item.restaurant_name.toLowerCase()
+
+        return text.indexOf(search) > -1
+      })
+    },
   },
   created() {
-      this.$nextTick(function(){
-        this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-        this.$store.dispatch("pot/setPotItems")
-        this.$store.dispatch("pot/selectPot",[])
-      })
-      console.log(this.userpots)
-      this.snackbar = false,
-      this.overlay = false,
-      this.searchpots = this.potitems
+      
+      this.modalDetail = false
+      this.modalMessage = false
+      this.snackbar = false
+      this.overlay = false
   },
   methods:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
-    searchPots(keyword){
-      keyword
+    
+    searchKeyword(val){
+      this.search = val
     },
-    overlayChange(val){
-      this.overlay = val
+
+    openDetailModal(val){
+        this.modalDetail = val
     },
-    openSnackBarTop(val, sign){
+    openAttendModal(val){
+        this.sign = "attend"
+        this.modalMessage = val
+    },
+
+    openMessageModal(val,sign){
+        this.sign = sign
+        this.modalMessage = val
+    },
+
+    openSnackBar(val, sign){
       console.log("final")
       if(sign=="attend"){
         this.message = "참여되었습니다."
@@ -99,13 +128,7 @@ export default {
         this.message = "인원이 차서 참여할 수 없어요ㅠㅠ"
       }
 
-      this.$nextTick(function(){
-        this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-        this.$store.dispatch("pot/setPotItems")
-        this.$store.dispatch("pot/selectPot",[])
-      })
-
-      this.searchpots = this.potitems
+      
       this.snackbar = val
       this.overlay = val
       setTimeout(() => {
@@ -113,10 +136,17 @@ export default {
         this.overlay = false
         this.snackbar = false
       }, 1000)
+
       this.$router.go();
     }
   },
-  
+  mounted: function(){
+    this.$nextTick(function(){
+      this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+      this.$store.dispatch("pot/setPotItems")
+      this.$store.dispatch("pot/selectPot",[])
+    })
+  }
 }
 </script>
 

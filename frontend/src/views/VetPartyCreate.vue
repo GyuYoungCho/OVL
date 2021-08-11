@@ -4,9 +4,12 @@
     <section  class="vetparty">
       <v-row justify="end">
         <v-spacer></v-spacer>
+          
           <v-btn icon @click="goList()" justify="end">
-      <v-icon>mdi-chevron-double-right</v-icon>
-    </v-btn>
+             <v-icon>mdi-chevron-double-right</v-icon>
+          </v-btn>
+        
+          
     </v-row>
     <h4 v-if="type==0">채식팟 생성</h4>
     <h4 v-else>채식팟 수정</h4>
@@ -240,8 +243,6 @@ export default {
               if(extraRoadAddr !== ''){
                   extraRoadAddr = ' (' + extraRoadAddr + ')';
               }
-              this.extraAddress = extraRoadAddr
-
               this.detailAddress = ''
           }
         }).open()

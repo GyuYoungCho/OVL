@@ -8,9 +8,11 @@ export default {
   state: {
     restitems: [],
     potitems: [],
+    passpotitems: [],
     userpots: [],
     rest: Object,
     selectpot: Object,
+    potattendusers: [],
   },
   getters: {
     restitems(state) {
@@ -28,6 +30,9 @@ export default {
     selectpot(state) {
       return state.selectpot;
     },
+    potattendusers(state) {
+      return state.potattendusers;
+    },
   },
   mutations: {
     set_Rest_Items(state, payload) {
@@ -36,7 +41,7 @@ export default {
     set_Pot_Items(state, payload) {
       let datas = [];
       let user = [];
-      if (state.consoleuserpots) {
+      if (state.userpots) {
         state.userpots.forEach((item) => {
           user.push(item.potid);
         });
@@ -83,6 +88,9 @@ export default {
     SELECT_POT(state, payload) {
       state.selectpot = payload;
     },
+    set_Attend_User(state, payload) {
+      state.potattendusers = payload;
+    },
   },
   actions: {
     setRestItems(store) {
@@ -122,6 +130,17 @@ export default {
 
     selectPot({ commit }, pot) {
       commit("SELECT_POT", pot);
+    },
+
+    potAttendUsers({ commit }, pot_id) {
+      axios
+        .get(API.url + potAPI.attendcount(pot_id))
+        .then((res) => {
+          commit("set_Attend_User", res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };
