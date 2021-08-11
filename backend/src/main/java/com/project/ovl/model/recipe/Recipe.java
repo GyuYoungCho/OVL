@@ -39,8 +39,7 @@ public class Recipe {
 	private int like_count;
 	private int comment_count;
 	
-	private String original_file_name;
-	private String stored_file_path;
+	private String filepath;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

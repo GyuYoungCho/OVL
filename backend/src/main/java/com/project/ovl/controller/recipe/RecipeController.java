@@ -18,12 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.challenge.ChallengeCertificationDao;
 import com.project.ovl.dao.recipe.RecipeCommentDao;
@@ -37,7 +34,6 @@ import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.like.RecipeLike;
 import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.recipe.RecipeComment;
-import com.project.ovl.model.recipe.RecipePhotoHandler;
 import com.project.ovl.model.recipe.RecipeProcess;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
@@ -76,19 +72,12 @@ public class RecipeController {
 	RecipeCommentController commentController;
 	
 	@Autowired
-	RecipePhotoHandler photoHandler;
-	
-	@Autowired
 	ChallengeCertificationDao challengeCertificationDao;
-	
-	private List<String> processContent, modifyContent, plusContent;
-	private Set<Integer> deleteId;
-	private List<Integer> modifyPhotoId, modifyContentId;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "레시피 등록")
-	public ResponseEntity<Map<String,String>> regist(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient, @RequestPart("userId") String userId,
-										@RequestPart("picture") List<MultipartFile> pic, @RequestPart("files") List<MultipartFile> files) throws Exception {
+	public ResponseEntity<Map<String,String>> regist(@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("ingredient") String ingredient, @RequestParam("userId") String userId,
+			@RequestParam("picPathList") List<String> picPathList, @RequestParam("processPathList") List<String> processPathList, @RequestParam("contentList") List<String> contentList) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
@@ -99,13 +88,14 @@ public class RecipeController {
 		user.setExperience(user.getExperience()+20);
 		
 		// 레시피 등록
-		Recipe recipe = new Recipe(0, title, content, ingredient, new Date(), 0, 0, null, null, user);
+		Recipe recipe = new Recipe(0, title, content, ingredient, new Date(), 0, 0, picPathList.get(1), user);
 		recipeDao.save(recipe);
 		
-		photoHandler.saveProfile(pic, recipe.getRecipeId());
-		
 		// 레시피 과정 등록
-		photoHandler.saveProcess(files, processContent, null, recipe.getRecipeId(), 0);
+		for (int i=1;i<processPathList.size();i++) {
+			RecipeProcess process = new RecipeProcess(0, contentList.get(i), processPathList.get(i), recipe);
+			recipeProcessDao.save(process);
+		}
 		
 		// 챌린지 중일 경우 인증
 		if(user.getChallengeId().getChallengeId()!=1
@@ -140,59 +130,51 @@ public class RecipeController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
-	@PostMapping("/regist/contentList")
-	@ApiOperation(value = "레시피 과정 설명 등록")
-	public ResponseEntity<String> contentList(@RequestBody List<String> contentList) {
-		processContent = contentList;
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	}
-	
-	@PostMapping("modifyList")
-	@ApiOperation(value = "레시피 수정 리스트 관련")
-	public ResponseEntity<String> modifyList(@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam(value="modifyPhotoIdList", required=false) List<Integer> modifyPhotoIdList,
-			@RequestParam(value="modifyContentIdList", required=false) List<Integer> modifyContentIdList, @RequestParam(value="modifyContentList", required=false) List<String> modifyContentList,
-			@RequestParam(value="plusContentList", required=false) List<String> plusContentList) {
-		deleteId = deleteIdList;
-		modifyPhotoId = modifyPhotoIdList;
-		modifyContentId = modifyContentIdList;
-		modifyContent = modifyContentList;
-		plusContent = plusContentList;
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	}
-	
 	@PutMapping("/modify")
 	@ApiOperation(value = "레시피 수정")
-	public ResponseEntity<String> modify(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient, @RequestPart("recipeId") String recipeId,
-			@RequestPart("picture") List<MultipartFile> picture, @RequestPart("modifyPhotoList") List<MultipartFile> modifyPhotoList, @RequestPart("plusPhotoList") List<MultipartFile> plusPhotoList) throws Exception {
+	public ResponseEntity<String> modify(@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("ingredient") String ingredient, @RequestParam("recipeId") String recipeId,
+			@RequestParam("picPathList") List<String> picPathList, @RequestParam("modifyPathList") List<String> modifyPathList, @RequestParam("plusPathList") List<String> plusPathList,
+			@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam("modifyPhotoIdList") List<Integer> modifyPhotoIdList, 
+			@RequestParam("modifyContentIdList") List<Integer> modifyContentIdList, @RequestParam("modifyContentList") List<String> modifyContentList,
+			@RequestParam("plusContentList") List<String> plusContentList) throws Exception {
 		
 		// 레시피 게시물 수정
 		Recipe recipe = recipeDao.findRecipeByRecipeId(Integer.parseInt(recipeId));
 		recipe.setTitle(title);
 		recipe.setContent(content);
 		recipe.setIngredient(ingredient);
+		if (picPathList.size()>1) recipe.setFilepath(picPathList.get(1));
 		recipeDao.save(recipe);
 		
-		// 대표 사진 수정
-		photoHandler.saveProfile(picture, Integer.parseInt(recipeId));
-		
 		// 과정 삭제
-		if (deleteId.size()>0) {
+		if (deleteIdList.size()>1) {
 			List<RecipeProcess> processList = recipeProcessDao.findAll();
 			for (RecipeProcess rp : processList) {
-				if (deleteId.contains(rp.getRecipeProcessId())) recipeProcessDao.delete(rp);
+				if (deleteIdList.contains(rp.getRecipeProcessId())) recipeProcessDao.delete(rp);
 			}
 		}
 		
 		// 과정 사진 수정
-		photoHandler.saveProcess(modifyPhotoList, null, modifyPhotoId, Integer.parseInt(recipeId), 1);
-		// 과정 내용 수정
-		for (int i=1;i<modifyContentId.size();i++) {
-			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyContentId.get(i));
-			process.setContent(modifyContent.get(i));
+		for (int i=1;i<modifyPhotoIdList.size();i++) {
+			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyPhotoIdList.get(i));
+			process.setFilepath(modifyPathList.get(i));
 			recipeProcessDao.save(process);
 		}
+		
+		
+		// 과정 내용 수정
+		for (int i=1;i<modifyContentIdList.size();i++) {
+			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyContentIdList.get(i));
+			process.setContent(modifyContentList.get(i));
+			recipeProcessDao.save(process);
+		}
+		
 		// 과정 사진, 내용 추가
-		photoHandler.saveProcess(plusPhotoList, plusContent, null, Integer.parseInt(recipeId), 0);
+		for (int i = 1; i < plusPathList.size(); i++) {
+			RecipeProcess process = new RecipeProcess(0, plusContentList.get(i), plusPathList.get(i), recipe);
+			recipeProcessDao.save(process);
+		}
+		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	

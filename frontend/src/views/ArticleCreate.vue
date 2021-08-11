@@ -71,6 +71,8 @@
 <script>
   import axios from "axios";
   import {mapState} from "vuex";
+  import fileUpload from "@/api/fileUpload.js";
+  import API from "@/api/index.js";
 
   export default {
     data () {
@@ -89,10 +91,10 @@
 
         // ↓ 여기서부터 게시글 수정 관련 변수
         type:0, // 등록인지 수정인지 구분하기 위함 0 : 등록, 나머지(postId) : 수정
-        deleteIdList:[], // 삭제할 사진 아이디 저장하는 리스트
+        deleteIdList:[0], // 삭제할 사진 아이디 저장하는 리스트
         photoList:[], // 게시글 수정 시 가져온 사진 리스트
         modifyPhotoList: [], // 게시글 수정 사진 저장할 리스트
-        modifyIdList: [], // 수정하는 사진 아이디 저장할 리스트
+        modifyIdList: [0], // 수정하는 사진 아이디 저장할 리스트
         plusPhotoList: [], // 새로 추가하는 사진 저장할 리스트
         tempIdx:0, // 임시 저장
       }
@@ -151,28 +153,20 @@
       },
       photoPath(idx) {
         if (this.photoList[idx].filesize==0) return this.photoList[idx].url;
-        else return "http://localhost:8080/post/"+this.post.postId+"/"+this.photoList[idx].filepath.split('/').reverse()[0];
+        else return this.photoList[idx].filepath;
       },
       // @@@@@@@@@@@@ 미충족시 막을 로직 필요함 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-      send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
-        const formData = new FormData();
-        var file = new File(["ex"], "ex.txt", { // 임시 파일
-          type: "text/plain",
-        });
-        formData.append('files', file);
-        for (var index=0;index<this.sendList.length;index++) {  // 등록할 사진들 저장
-          formData.append('files', this.sendList[index]);
-        }
+      async send() { // 게시글 등록을 위해 백으로 게시글 정보 보내는 함수'
+        var pathList = await fileUpload.upload(this.sendList, 'post');
+        
         this.sendList=[]; // formData에 append 후 이미지 리스트 비워주기
-        formData.append('category', this.category); // 카테고리 
-        formData.append('content', this.content); // 내용
-        formData.append('userId', this.userinfo.userid); // 유저 아이디
+        var params = new URLSearchParams();
+        params.append("category", this.category);
+        params.append("content", this.content);
+        params.append("userId", this.userinfo.userid);
+        params.append("pathList", pathList);
 
-        axios.post('http://localhost:8080/post/regist', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+        axios.post(API.url+'/post/regist', params)
         .then((response) => {
           alert("보냈슴!");
           console.log(response.data);
@@ -182,55 +176,28 @@
           console.log(error);
         })
       },
-      modify() { // 게시글 수정
-        const formData = new FormData();
-        var file = new File(["ex"], "ex.txt", { // 임시 파일
-          type: "text/plain",
-        });
-
-        formData.append('modifyPhotoList', file) // 수정을 하나도 안할 때를 위해 추가
-        formData.append('plusPhotoList', file) // 추가를 하나도 안할 때를 위해 추가
-
-        // 수정할 사진 리스트
-        for (let i=0;i<this.modifyPhotoList.length;i++) {
-          formData.append('modifyPhotoList', this.modifyPhotoList[i]);
-        }
-        // 추가할 사진 리스트
-        for (let i=0;i<this.plusPhotoList.length;i++) {
-          formData.append('plusPhotoList', this.plusPhotoList[i]);
-        }
-        
-        formData.append('category', this.category); // 카테고리 
-        formData.append('content', this.content); // 내용
-        formData.append('postId', this.post.postId); // 게시글 아이디
-        
-        // 수정하는 postId 리스트, 삭제하는 postId 리스트
+      async modify() { // 게시글 수정
         var params = new URLSearchParams();
-        params.append("deleteIdList", this.deleteIdList);
-        params.append("modifyIdList", this.modifyIdList);
         
-        axios.post('http://localhost:8080/post/modifyList'
-        , params).then((res)=> {
-          alert("리스트 보냈슴!");
-          if (res.data=="success") {
-            axios.put('http://localhost:8080/post/modify', formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            })
-            .then((response) => {
-              alert("보냈슴!");
-              if (response.data.job=="success") this.$router.push({path:"/"});
-              console.log(response.data);
-            })
-            .catch((error) => {
-              alert("못보냈슴!");
-              console.log(error);
-            })
-          }
-        }).catch((err)=> {
-          alert("리스트 못보냈슴!!");
-          console.log(err);
+        var modifyPathList = await fileUpload.upload(this.modifyPhotoList, 'post');
+        var plusPathList = await fileUpload.upload(this.plusPhotoList, 'post');
+        
+        params.append("deleteIdList", this.deleteIdList); // 삭제하는 postId 리스트
+        params.append("modifyIdList", this.modifyIdList); // 수정하는 postId 리스트
+        params.append("modifyPhotoList", modifyPathList);
+        params.append("plusPhotoList", plusPathList);
+
+        params.append("category", this.category); // 카테고리 
+        params.append("content", this.content); // 내용
+        params.append("postId", this.post.postId); // 게시글 아이디
+        
+        axios.put(API.url+'/post/modify', params)
+        .then((response) => {
+          console.log(response.data);
+          if (response.data.job=="success") this.$router.push({path:"/article_detail/"+this.post.postId});
+        })
+        .catch((error) => {
+          console.log(error);
         })
       },
       photoModify(idx) {

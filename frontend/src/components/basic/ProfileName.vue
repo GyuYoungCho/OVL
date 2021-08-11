@@ -2,7 +2,7 @@
     <div class="d-flex">
         <v-list-item-avatar size=25>
             <v-img
-            :src="profile"
+            :src="user.filepath"
             ></v-img>
         </v-list-item-avatar>
         <v-list-item-content>
@@ -13,16 +13,10 @@
 </template>
 
 <script>
-import API from "@/api/index.js";
 
 export default {
     props: {
         user : Object,
     },
-    computed:{
-        profile() {
-            return API.url + "/profile/" + this.user.userid + "/"+ this.user.stored_file_path.split('/').reverse()[0]
-        },
-    }
 }
 </script>

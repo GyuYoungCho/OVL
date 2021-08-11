@@ -55,7 +55,7 @@
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
-import defaultImg from '@/assets/image/defaultImg.png'
+import 'url-search-params-polyfill';
 
 export default {
   data: () => ({
@@ -91,7 +91,6 @@ export default {
     const URL = API.url + userAPI.email_auth('join', this.email)
     axios.get(URL)
       .then(res => {
-        // alert('이메일이 전송되었습니다.')
         console.log(res)
         if (res.data === "success") {
           alert('인증번호가 이메일로 전송되었습니다.')
@@ -117,54 +116,16 @@ export default {
       
     },
     onSignupBtnClick () {
-
-      const dataURLtoFile = (dataurl, fileName) => {
-
-      var arr = dataurl.split(','),
-          mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]), 
-          n = bstr.length, 
-          u8arr = new Uint8Array(n);
-          
-        while(n--){
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        
-        return new File([u8arr], fileName, {type:mime});
-      }
-
-
-
-      const URL = API.url + userAPI.join()
+      const url = API.url + userAPI.join();
       const { email, name, nickname, password, phone } = this
       const data = { email, name, nickname, password, phone }
-      // let receive_id = ""
-      console.log(data)
-      axios.post(URL, data)
-        .then(res => {
-          var file = dataURLtoFile(defaultImg,'default.png');
 
-          const pro_URL = API.url + userAPI.join_profile()
-          
-          var formData = new FormData();
-          formData.append("picture",file)
-          formData.append("user_id",String(res.data))
-          
-          
-
-          axios.post(pro_URL, formData)
-            .then(res => {
-              console.log(res)
-              this.$router.push({ name: 'Login' })
+      axios.post(url, data)
+        .then((res)=>{
+            if (res.data=="success") this.$router.push({name:'Login'}) 
+        }).catch((err)=> {
+            console.log(err);
         })
-        .catch(err => console.error(err))
-          // receive_id = "8"
-          // this.$router.push({ name: 'Login' })
-        })
-      .catch(err => console.error(err))
-    
-    //Usage example:
-    
     },
 
   },
