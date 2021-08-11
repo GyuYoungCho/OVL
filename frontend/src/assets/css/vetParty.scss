@@ -130,13 +130,43 @@
       border-radius: 15px;
       margin-right: 30px;
     }
+
+    .row {
+      height: 35px;
+    }
+    .v-select .dropdown-toggle {
+      border: none;
+    }
+
+    div {
+      .v-input__slot {
+        margin-bottom: 15px;
+        padding-left: 10px;
+      }
+
+      .v-select__slot {
+        margin-bottom: 11px;
+        padding-left: 10px;
+      }
+    }
   }
 
   .detext {
     font-size: 13px;
   }
 
+  select.v-select-select {
+    background: transparent;
+    border: none;
+  }
+
   div:disabled {
     background-color: $hy-grey;
+  }
+
+  .disabledArea {
+    background-color: $hy-grey;
+    opacity: 0.5;
+    pointer-events: none;
   }
 }

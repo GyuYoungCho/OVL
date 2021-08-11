@@ -1,5 +1,7 @@
 /<template>
-    <div style="text-align: left"  @click="openDetailModal(true)" >
+    <div class="mt-3">
+    <div style="text-align: left" :disabled="avail" class="potlist"
+        :class="{ 'abledArea': !avail, 'disabledArea': avail }" @click="openDetailModal(true)" >
         <v-divider></v-divider>
         
         <v-container class="d-flex pt-0 pb-0 pl-0">
@@ -23,7 +25,7 @@
         </v-container>
     </v-row>
     <v-row>
-        <v-container class="d-flex subinfo mb-2 pt-0">
+        <v-container class="d-flex subinfo mb-2 pt-0 pb-0">
             <v-col cols="3" class="pa-0">
                 <v-icon>mdi-calendar-month</v-icon>
                 <span>{{this.meet_date}}</span>
@@ -58,6 +60,7 @@
     </v-row>
    
     </div>  
+    </div>
 </template>
 
 <script>
@@ -111,7 +114,9 @@ export default {
             return this.potattendusers.length
         },
         avail(){
-            return this.potitem.total_people < this.potattendusers.length
+            
+            return (this.potitem.total_people <= this.potattendusers.length) || 
+                    ((new Date(this.potitem.time)).getTime() < (new Date()).getTime())
         }
         
     },

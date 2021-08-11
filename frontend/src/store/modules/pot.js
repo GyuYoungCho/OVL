@@ -21,6 +21,9 @@ export default {
     potitems(state) {
       return state.potitems;
     },
+    passpotitems(state) {
+      return state.passpotitems;
+    },
     userpots(state) {
       return state.userpots;
     },
@@ -39,8 +42,11 @@ export default {
       state.restitems = payload;
     },
     set_Pot_Items(state, payload) {
-      let datas = [];
+      let potdatas = [];
+      let notdatas = [];
       let user = [];
+      let today = new Date().getTime();
+      console.log(today);
       if (state.userpots) {
         state.userpots.forEach((item) => {
           user.push(item.potid);
@@ -49,12 +55,29 @@ export default {
       if (payload) {
         payload.forEach((item) => {
           if (!user.includes(item.potid)) {
-            datas.push(item);
+            if (today < new Date(item.time).getTime()) {
+              potdatas.push(item);
+            } else {
+              notdatas.push(item);
+            }
           }
         });
       }
-      if (datas) {
-        state.potitems = datas.sort(function(pot1, pot2) {
+      if (potdatas) {
+        state.potitems = potdatas.sort(function(pot1, pot2) {
+          let x = pot1.time;
+          let y = pot2.time;
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      if (notdatas) {
+        state.passpotitems = notdatas.sort(function(pot1, pot2) {
           let x = pot1.time;
           let y = pot2.time;
           if (x < y) {

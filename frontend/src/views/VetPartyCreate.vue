@@ -107,8 +107,9 @@
       
       <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
       <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정하기</button>
+      <v-overlay :value="overlay"></v-overlay>
     </section>
-    <v-overlay :value="overlay"></v-overlay>
+    
     <confirm-snack :snackbar="snack" :text="message"></confirm-snack>
     </v-container>
   </div>
@@ -163,7 +164,7 @@ export default {
       }
   },
   computed: {
-    ...mapGetters("pot", ["rest", "selectpot"]),
+    ...mapGetters("pot", ["rest", "selectpot","userpots"]),
     ...mapGetters("user", ['userinfo']),
     
     isValid () {
@@ -172,7 +173,14 @@ export default {
     },
   },
   created(){
-    
+
+    this.updateStore()
+
+    this.search = ''
+    this.snack = false
+    this.overlay = false
+    this.rest_list_modal = false
+
     if (this.$route.params.type !=0) {
       this.type = 1
       this.roadAddress = this.selectpot.place
@@ -208,10 +216,7 @@ export default {
       this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"
     }
 
-    this.search = ''
-    this.snack = false
-    this.overlay = false
-    this.rest_list_modal = false
+    
   },
   methods: {
     
@@ -264,7 +269,7 @@ export default {
       date.setMinutes(this.times.split(":")[1])
       
       this.pot.time = date
-      
+
       if(this.type ==0){
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
           .then((res) => {
@@ -294,8 +299,10 @@ export default {
       this.setPotItems()
 
       setTimeout(() => {
-        this.$router.push({ name: "VetPartyList" })
-      }, 1000)
+        this.snack = false
+        this.overlay = false
+        this.goList()
+      }, 2000)
     },
 
     changedRest(){
@@ -330,8 +337,15 @@ export default {
     },
     cancelAddres(){
       this.rest_list_modal = false
-    }
+    },
 
+    async updateStore(){
+          
+        await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+        await this.$store.dispatch("pot/setPotItems")
+        await this.$store.dispatch("pot/selectPot",[])
+      
+    }
   },
   
   watch:{
@@ -343,7 +357,19 @@ export default {
           
           oldVal
       },
-  }
+  },
+  mounted(){
+    if(this.userpots.length >=3 && this.$route.params.type ==0){
+      this.message = "이미 3개 참여 중이라 생성할 수 없어요!"
+      this.snack = true
+      this.overlay = true
+      
+      setTimeout(() => {
+        this.goList()
+      }, 2000)
+    }
+  },
+  
 }
 </script>
 

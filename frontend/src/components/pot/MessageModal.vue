@@ -38,7 +38,7 @@ export default {
     
     computed:{
         ...mapGetters("user", ["userinfo"]),
-        ...mapGetters("pot", ["selectpot","potattendusers"]),
+        ...mapGetters("pot", ["selectpot","potattendusers","userpots"]),
         message(){
           if(this.sign=="attend"){
             return "팟에 참여하시겠습니까?"
@@ -56,7 +56,13 @@ export default {
         },
         potprocess(val) {
           if(val=="attend"){
-            if(this.potattendusers.length < this.selectpot.total_people){
+            if(this.potattendusers.length >= this.selectpot.total_people){
+              this.$emit('openSnackBar', true , "not_attend")
+            }
+            else if(this.userpots.length >=3){
+              this.$emit('openSnackBar', true , "dis_attend")
+            }
+            else{
               axios.post(API.url + potAPI.attend(this.selectpot.potid,this.userinfo.userid))
               .then((res) => {
                   if (res.data === "success") {
@@ -69,9 +75,6 @@ export default {
                   alert("참여x");
                   console.log(error);
               })
-            }
-            else{
-              this.$emit('openSnackBar', true , "not_attend")
             }
           }
 

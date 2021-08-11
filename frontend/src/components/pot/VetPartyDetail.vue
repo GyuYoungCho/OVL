@@ -3,6 +3,7 @@
     <v-dialog
           v-model="modalDetail"
           height="500"
+          @click:outside="cancelDetail()"
           transition="dialog-bottom-transition"
           max-width="1000px">
         <v-card tile>
@@ -10,7 +11,7 @@
           <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
             <profile-name :user="selectpot.userid" class="ml-3 mt-1"></profile-name>
             <v-spacer></v-spacer>
-            <v-btn icon dark @click="cancelDetail" justify="end">
+            <v-btn icon dark @click="cancelDetail()" justify="end">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-toolbar>
@@ -71,6 +72,11 @@ import { mapGetters} from 'vuex';
 import ProfileName from '@/components/basic/ProfileName.vue';
 
 export default {
+  data(){
+    return{
+      modals : true,
+    }
+  },
   components: { 
     ProfileName,
   },
@@ -88,6 +94,9 @@ export default {
     },
     rows() {
         return this.potattendusers.length
+    },
+    detailable(){
+      return this.modals && this.modalDetail
     },
     attendme(){
         let flag = true;
