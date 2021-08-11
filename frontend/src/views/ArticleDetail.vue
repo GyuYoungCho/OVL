@@ -1,6 +1,40 @@
 <template>
   <div>
     <v-container class="px-7 mt-4">
+      <!-- 게시물 삭제 모달 -->
+      <v-dialog v-model="deleteModal" hide-overlay max-width="300">
+        <v-card>
+          <!-- 모달 타이틀 영역 -->
+          <v-toolbar dense color="#004627">
+            <v-toolbar-title class="modalTitle">{{ post.title }}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon dark @click="deleteModal = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <!-- 모달 컨텐츠 영역 -->
+          <v-container>
+          <div class="modalContent">
+            <div class="mb-3">
+              <span class="modalContentMessage">
+                정말로 삭제하시겠습니까?
+              </span>
+            </div>
+            <div class="modalContentButtonArea">
+              <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
+              <button class="modalContentButton" @click="postModify('삭제')">확인</button>
+              <v-spacer></v-spacer>
+              <button class="modalContentButton" @click="deleteModal = false">취소</button>
+              <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
+            </div>
+          </div>
+          </v-container>
+        </v-card>
+      </v-dialog>
+
+
       <!-- 게시글 시작 -->
       <div>
         <!-- post header - 프로필 사진, 유저 닉네임, 좋아요, 댓글 -->
@@ -32,7 +66,8 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)">
+                <!-- <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)"> -->
+                <v-list-item v-for="(item, index) in items" :key="index" @click="onDeleteUpdateClick(item.title)">
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -167,12 +202,23 @@ export default {
       ],
       inputBtn:"게시", // 댓글 입력 창 게시 or 수정
       replyBtnClickId:0,
+
+      deleteModal: false,
+      updateModal: false,
     }
   },
   methods: {
     alertDeleteConfirm() { // 삭제 alert
       var result = confirm("정말 삭제하시겠습니까?");
       return result;
+    },
+    onDeleteUpdateClick(title) {
+      console.log(title)
+      if (title==="삭제") {
+        this.deleteModal = true
+      } else {
+        this.postModify(title)
+      }
     },
     commentModify(info) { // 댓글 수정 
       this.isComment = true;
@@ -188,7 +234,7 @@ export default {
       this.replyId = replyInfo.postReplyId;
     },
     commentDelete(info) { // 댓글 삭제
-      if (this.alertDeleteConfirm()) {
+      if (confirm("정말 삭제하시겠습니까?")) {
         let paylaod = {
           "commentId" : info.postCommentId,
           "postId" : this.post.postId
@@ -220,14 +266,14 @@ export default {
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
       if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
       else { // 삭제
-        if (this.alertDeleteConfirm()) {
-          var payload = {
-            "userId" : this.userinfo.userid,
-            "postId" : this.post.postId
-          }
-          var move = this.$store.dispatch("post/postDelete", payload);
-          if (move) this.$router.push({path:"/"});
+        // if (this.alertDeleteConfirm()) {
+        var payload = {
+          "userId" : this.userinfo.userid,
+          "postId" : this.post.postId
         }
+        var move = this.$store.dispatch("post/postDelete", payload);
+        if (move) this.$router.push({path:"/"});
+        // }
       }
     },
     replyClick(info) { // 답글 보기 or 숨기기

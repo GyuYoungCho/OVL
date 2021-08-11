@@ -8,7 +8,9 @@
           <option value="like">인기순</option>
           <option value="comment">댓글순</option>
         </select>
-        <input type="text" placeholder="검색" v-model="query" class="searchBar">
+        <input type="text" placeholder="검색" v-model="query" class="searchBar" @input="onSearchInput" @keyup.enter="onSearchBtnClick">
+        <!-- 검색 아이콘은 아이패드 프로, 갤럭시 폴드에서 위치 깨짐, absolute라 어쩔 수 없나... -->
+        <v-btn icon absolute right @click="onSearchBtnClick"><v-icon color="white" dark>mdi-magnify</v-icon></v-btn>        
       </div>
 
 
@@ -49,6 +51,7 @@ export default {
   data: () => ({
     query: "",
     selectedOption: "",
+    searchClicked: false,
   }),
   methods: {
     ...mapActions(['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes',]),
@@ -68,8 +71,14 @@ export default {
     calTime (recipe) {
       return moment(recipe.time).fromNow()
     },
+    onSearchInput () {
+      this.searchClicked = false
+    },
+    onSearchBtnClick () {
+      this.searchClicked = true
+    },  
     containmentValid (recipe) {
-      return recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query)
+      return this.searchClicked ? recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query) : true
     }
     
   },
