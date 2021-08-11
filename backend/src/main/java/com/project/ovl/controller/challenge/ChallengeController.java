@@ -143,7 +143,7 @@ public class ChallengeController {
 		}
 	}
 	
-	@GetMapping("/search_history/{user_id}")
+	@GetMapping("/search_history/{challenge_id}/{user_id}")
 	@ApiOperation(value = "이전에 참여한 챌린지")
 	public ResponseEntity<List<Challenge>> search_history(@PathVariable int user_id) {
 		
@@ -158,5 +158,37 @@ public class ChallengeController {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 	}
+	
+	@GetMapping("/search_mychallenge/{challenge_id}/{user_id}")
+	@ApiOperation(value = "내 모든 챌린지")
+	public ResponseEntity<List<Challenge>> search_mychallenge(@RequestParam int challenge_id, @RequestParam int user_id){
+		//나의 이전 챌린지 이력
+		Optional<List<ChallengeHistory>> historylist = challengeHistoryDao.findByUserIdUserid(user_id);
+		//나의 현재 챌린지 이력 조회 
+		Optional<List<User>> userlist = userDao.findByChallengeIdChallengeId(challenge_id);
+		Challenge challenge = challengeDao.findByChallengeId(challenge_id);
+		//다담을 리스트
+		List<Challenge> totallist = new ArrayList<>();
+		
+		for(User u : userlist.get()) {
+			if(u.getUserid() == user_id) {
+				totallist.add(u.getChallengeId());
+				break;
+			}
+		}
+
+		if(historylist.isPresent()) {
+			for(ChallengeHistory ch : historylist.get()) {
+				totallist.add(ch.getChallengeId());
+			}
+		}
+		if(!totallist.isEmpty()) {
+			return new ResponseEntity<>(totallist, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+	}
+	
+	
 	
 }

@@ -46,7 +46,6 @@ export default {
         allSteps: [
           "화장품", "레시피", "옷",
         ],
-      showAll: false,
       btnActive: {0:true,1:false,2:false},
     }
   },
@@ -58,24 +57,17 @@ export default {
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
     },
     selectTypeIcon(num){
-        if(this.btnActive[num] === true){
-            this.btnActive[num] = false;
-            this.showAll = true;
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
-        }else if(this.btnActive[num] ===false){
-            this.btnActive[num] = true;
-            this.showAll = false;
-            for(var i = 0; i < 3; i++){
-              if(i !== num){
-                this.btnActive[i] = false;
-              }
-            }
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
+      //console.log(num);
+      this.post.step = this.allSteps[num]
+     // console.log(this.btnActive[num])
+      if(!this.btnActive[num]){
+        this.btnActive[num] = true;
+        for(var i = 0; i< 3; i++){
+          if(num != i){
+            this.btnActive[i] = false;
+          }
         }
+      }
     },
   },
   computed: {
