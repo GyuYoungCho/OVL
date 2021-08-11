@@ -5,6 +5,8 @@
           height="500"
           @click:outside="cancelDetail()"
           transition="dialog-bottom-transition"
+          scrollable
+          max-height="500px"
           max-width="1000px">
         <v-card tile>
           <v-toolbar color="#004627" dark>
@@ -16,33 +18,28 @@
             </v-btn>
           </v-toolbar>
             <v-col>
-              <v-row>
-                <v-col cols="6" class="mt-3">
+              <v-row class="pl-3">
+                <v-col class="mt-3">
                   <v-row>
                     <v-icon>mdi-map-marker</v-icon>
                     <span>{{this.selectpot.restaurant_name}}</span>
-                  </v-row>
-                  <v-row class="mt-5">
+                  </v-row >
+                  <v-row class="mt-7">
                     <v-icon>mdi-calendar-month</v-icon>
                     <span>{{this.meet_date}}</span> 
                   </v-row>
-                  <v-row class="mt-5">
+                  <v-row class="mt-7">
                     <v-icon>mdi-clock-time-nine-outline</v-icon>
                     <span>{{this.meet_time}}</span>
                   </v-row>
                 </v-col>
-                <v-col cols="1" class="mt-1" justify="end">
-                    <v-icon>mdi-account-outline</v-icon>
-                </v-col>
-                <v-col cols="3">
-                  <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
-                </v-col>
+                
               </v-row>
-              <v-row>
+              <v-row class="pl-3">
                 <v-col cols="7">
                   <span>{{this.selectpot.content}}</span>
                 </v-col>
-                <v-col v-if="mypot" justify="end">
+                <v-col v-if="mypot" justify="end" class="pa-0">
                   <v-btn dark @click="potModify()"  width="10">
                     <span>수정</span>
                   </v-btn>
@@ -59,6 +56,13 @@
                   </v-btn>
                 </v-col>
               </v-row>
+              <v-divider class="mt-4" ></v-divider>
+              <v-row class="mt-5 pl-3">
+                <v-icon>mdi-account-outline</v-icon>
+              </v-row>
+              <v-col class="mt-5 pl-3">
+                <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
+              </v-col>  
             </v-col>
           </v-card>
     </v-dialog>
