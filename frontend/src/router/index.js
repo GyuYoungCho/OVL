@@ -41,9 +41,13 @@ const routes = [
     component: Login,
   },
   {
-    path: "*",
+    path: "/404",
     name: "NotFound",
     component: NotFound,
+  },
+  {
+    path: "*",
+    redirect: "/404"
   },
   {
     path: "/article_create/:type",
