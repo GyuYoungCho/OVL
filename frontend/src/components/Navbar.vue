@@ -1,9 +1,11 @@
 <template>
   <div>
     <!-- dense 하면 좀더 좁은 nav bar (48px 이 가능함) -->
-      <v-app-bar color="accent-4" dense white>
+      <v-app-bar color="white" dense class="navBar">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <!-- justify content between 해주는 태그가 v-spacer -->
+        <v-spacer></v-spacer>
+        <span class="navbarTitle">OVL</span>
         <v-spacer></v-spacer>
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">

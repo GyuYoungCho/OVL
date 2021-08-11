@@ -7,6 +7,13 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Chosunilbo_myungjo';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 // 이쪽 영역에 각 컴포넌트의 클래스에 해당하는 글꼴이 무엇인지 지정해 줍니다.
 
 // 1. 기본적으로 특정 클래스에 어떤 글꼴을 설정할지 명시하지 않는다면,
