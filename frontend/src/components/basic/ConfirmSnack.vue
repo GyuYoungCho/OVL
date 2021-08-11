@@ -24,7 +24,7 @@ export default {
   },
   data(){
     return{
-      timeout : 1000,
+      timeout : 2000,
       avail : false,
     }
   },

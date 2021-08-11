@@ -1,15 +1,22 @@
 /<template>
-    <div style="text-align: left"  @click="openDetailModal(true)">
+    <div class="mt-3">
+    <div style="text-align: left" :disabled="avail" class="potlist"
+        :class="{ 'abledArea': !avail, 'disabledArea': avail }" @click="openDetailModal(true)" >
         <v-divider></v-divider>
         
         <v-container class="d-flex pt-0 pb-0 pl-0">
+        
             <profile-name :user="potitem.userid"></profile-name>
         
         <v-row align="center" justify="end">
+        <button v-if="avail" class="py-0 px-3 mt-0 notBtnComp" style="font-size:12px"
+                >마감</button>
+        
         <v-icon>mdi-map-marker</v-icon>
             <span class="p">{{this.potitem.restaurant_name}}</span>
         
         </v-row>
+        
         </v-container>
     
     <v-row>
@@ -18,7 +25,7 @@
         </v-container>
     </v-row>
     <v-row>
-        <v-container class="d-flex subinfo mb-2 pt-0">
+        <v-container class="d-flex subinfo mb-2 pt-0 pb-0">
             <v-col cols="3" class="pa-0">
                 <v-icon>mdi-calendar-month</v-icon>
                 <span>{{this.meet_date}}</span>
@@ -51,29 +58,22 @@
             </v-col>
         </v-container>
     </v-row>
-    <vet-party-detail :potitem="potitem" :pot_detail_modal="modalDetail"
-        @openDetailModal="openDetailModal" @openSnackBar="openSnackBar"></vet-party-detail>
-    <attend-modal :potitem="potitem" :modalopen="AttendModalT" :rows="rows"
-              @openAttendModal="openAttendModal" @openSnackBar="openSnackBar"></attend-modal>
    
     </div>  
+    </div>
 </template>
 
 <script>
-import moment from 'moment';
-import { mapGetters} from 'vuex';
 import axios from "axios";
 import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
-import VetPartyDetail from '@/components/pot/VetPartyDetail.vue'
+import moment from 'moment';
+import { mapGetters, mapActions} from 'vuex';
 import ProfileName from '@/components/basic/ProfileName.vue';
-import AttendModal from '@/components/pot/AttendModal.vue'
 
 export default {
     components:{
-        VetPartyDetail,
         ProfileName,
-        AttendModal,
         
     },
     data() {
@@ -83,9 +83,8 @@ export default {
             ],
             
             btnActive: {0:false,1:false,2:false,3:false,4:false},
-            modalDetail : false,
-            AttendModalT : false,
-            potattendusers : 0,
+            
+            potattendusers : [],
             snackbar : false,
         };
     },
@@ -93,9 +92,12 @@ export default {
         potitem: Object,
         
     },
-    created(){
-        this.modalDetail=false
-        this.AttendModalT=false
+    mounted: function(){
+
+        this.$nextTick(function(){
+            this.potUsers(this.potitem.potid)
+            this.stepToIcon(this.potitem.step)
+        })
     },
     computed: {
         
@@ -108,13 +110,19 @@ export default {
             return moment(this.potitem.time).format("HH:mm")
         },
         rows() {
+            console.log(this.potattendusers.length)
             return this.potattendusers.length
         },
+        avail(){
+            
+            return (this.potitem.total_people <= this.potattendusers.length) || 
+                    ((new Date(this.potitem.time)).getTime() < (new Date()).getTime())
+        }
         
     },
     methods: {
-
-        potAttendUsers(pot_id) {
+        ...mapActions('pot', ['selectPot','potAttendUsers']),
+        potUsers(pot_id) {
             axios.get(API.url + potAPI.attendcount(pot_id))
                 .then((res) => {
                 this.potattendusers = res.data
@@ -124,10 +132,14 @@ export default {
             });
         },
         openDetailModal(val){
-            this.modalDetail = val;
+            this.selectPot(this.potitem)
+            this.potAttendUsers(this.potitem.potid)
+            this.$emit('openDetailModal', val)
         },
         openAttendModal(val){
-            this.AttendModalT = val;
+            this.selectPot(this.potitem)
+            this.potAttendUsers(this.potitem.potid)
+            this.$emit('openAttendModal', val)
         },
 
         stepToIcon(item) {
@@ -138,15 +150,6 @@ export default {
                 }
             }
         },
-
-        openSnackBar(val, sign){
-            this.snackbar = val
-            this.$emit('openSnackBarTop', this.snackbar, sign)
-        }
-    },
-    mounted(){
-        this.potAttendUsers(this.potitem.potid)
-        this.stepToIcon(this.potitem.step)
     },
     
 }

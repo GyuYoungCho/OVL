@@ -8,9 +8,11 @@ export default {
   state: {
     restitems: [],
     potitems: [],
+    passpotitems: [],
     userpots: [],
     rest: Object,
     selectpot: Object,
+    potattendusers: [],
   },
   getters: {
     restitems(state) {
@@ -18,6 +20,9 @@ export default {
     },
     potitems(state) {
       return state.potitems;
+    },
+    passpotitems(state) {
+      return state.passpotitems;
     },
     userpots(state) {
       return state.userpots;
@@ -28,15 +33,21 @@ export default {
     selectpot(state) {
       return state.selectpot;
     },
+    potattendusers(state) {
+      return state.potattendusers;
+    },
   },
   mutations: {
     set_Rest_Items(state, payload) {
       state.restitems = payload;
     },
     set_Pot_Items(state, payload) {
-      let datas = [];
+      let potdatas = [];
+      let notdatas = [];
       let user = [];
-      if (state.consoleuserpots) {
+      let today = new Date().getTime();
+      console.log(today);
+      if (state.userpots) {
         state.userpots.forEach((item) => {
           user.push(item.potid);
         });
@@ -44,12 +55,29 @@ export default {
       if (payload) {
         payload.forEach((item) => {
           if (!user.includes(item.potid)) {
-            datas.push(item);
+            if (today < new Date(item.time).getTime()) {
+              potdatas.push(item);
+            } else {
+              notdatas.push(item);
+            }
           }
         });
       }
-      if (datas) {
-        state.potitems = datas.sort(function(pot1, pot2) {
+      if (potdatas) {
+        state.potitems = potdatas.sort(function(pot1, pot2) {
+          let x = pot1.time;
+          let y = pot2.time;
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      if (notdatas) {
+        state.passpotitems = notdatas.sort(function(pot1, pot2) {
           let x = pot1.time;
           let y = pot2.time;
           if (x < y) {
@@ -82,6 +110,9 @@ export default {
     },
     SELECT_POT(state, payload) {
       state.selectpot = payload;
+    },
+    set_Attend_User(state, payload) {
+      state.potattendusers = payload;
     },
   },
   actions: {
@@ -122,6 +153,17 @@ export default {
 
     selectPot({ commit }, pot) {
       commit("SELECT_POT", pot);
+    },
+
+    potAttendUsers({ commit }, pot_id) {
+      axios
+        .get(API.url + potAPI.attendcount(pot_id))
+        .then((res) => {
+          commit("set_Attend_User", res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

@@ -1,55 +1,60 @@
 <template>
   <div>
     <v-dialog
-          v-model="pot_detail_modal"
-          
+          v-model="modalDetail"
+          height="500"
+          @click:outside="cancelDetail()"
           transition="dialog-bottom-transition"
           max-width="1000px">
         <v-card tile>
           <v-toolbar color="#004627" dark>
-          <v-toolbar-title >{{this.potitem.title}}</v-toolbar-title>
-            <profile-name :user="potitem.userid"></profile-name>
+          <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
+            <profile-name :user="selectpot.userid" class="ml-3 mt-1"></profile-name>
             <v-spacer></v-spacer>
-            <v-btn icon dark @click="cancelDetail" justify="end">
+            <v-btn icon dark @click="cancelDetail()" justify="end">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-toolbar>
-            <v-col xs="7">
+            <v-col>
               <v-row>
-                <v-col>
+                <v-col cols="6" class="mt-3">
                   <v-row>
                     <v-icon>mdi-map-marker</v-icon>
-                    <span>{{this.potitem.restaurant_name}}</span>
-                    <v-icon>mdi-map-marker</v-icon>
-                    <span>{{this.potitem.restaurant_name}}</span>
-                    <v-icon>mdi-map-marker</v-icon>
-                    <span>{{this.potitem.restaurant_name}}</span>
+                    <span>{{this.selectpot.restaurant_name}}</span>
+                  </v-row>
+                  <v-row class="mt-5">
+                    <v-icon>mdi-calendar-month</v-icon>
+                    <span>{{this.meet_date}}</span> 
+                  </v-row>
+                  <v-row class="mt-5">
+                    <v-icon>mdi-clock-time-nine-outline</v-icon>
+                    <span>{{this.meet_time}}</span>
                   </v-row>
                 </v-col>
-                <v-col class ="md-3" justify="end">
+                <v-col cols="1" class="mt-1" justify="end">
                     <v-icon>mdi-account-outline</v-icon>
                 </v-col>
-                <v-col>
+                <v-col cols="3">
                   <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col>
-                  <span>{{this.potitem.content}}</span>
+                <v-col cols="7">
+                  <span>{{this.selectpot.content}}</span>
                 </v-col>
-                <v-col v-if="mypot">
-                  <v-btn dark @click="potModify()" justify="end">
+                <v-col v-if="mypot" justify="end">
+                  <v-btn dark @click="potModify()"  width="10">
                     <span>수정</span>
                   </v-btn>
-                  <v-btn dark @click="openDeleteModal(true)" justify="end">
+                  <v-btn dark @click="openMessageModal('delete')" justify="end" width="10">
                     <span>삭제</span>
                   </v-btn>
                 </v-col>
                 <v-col v-else>
-                  <v-btn v-if="attendme(potattendusers)" dark @click="openAttendModal(true)" justify="end">
+                  <v-btn v-if="attendme" dark @click="openMessageModal('attend')" justify="end">
                     <span>참여하기</span>
                   </v-btn>
-                  <v-btn v-else dark @click="openCancelModal(true)" justify="end">
+                  <v-btn v-else dark @click="openMessageModal('cancel')" justify="end">
                     <span>참여취소</span>
                   </v-btn>
                 </v-col>
@@ -57,106 +62,46 @@
             </v-col>
           </v-card>
     </v-dialog>
-    <attend-modal :potitem="potitem" :modalopen="AttendModalT" :rows="potattendusers.length"
-              @openAttendModal="openAttendModal" @openSnackBar="openSnackBar"></attend-modal>
-    <cancel-modal :potitem="potitem" :modalopen="CancelModalT"
-              @openCancelModal="openCancelModal" @openSnackBar="openSnackBar"></cancel-modal>
-    <delete-modal :potitem="potitem" :modalopen="DeleteModalT"
-              @openDeleteModal="openDeleteModal" @openSnackBar="openSnackBar"></delete-modal>
+    
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import API from '@/api/index.js'
-import potAPI from '@/api/pot.js'
-import { mapGetters, mapActions } from 'vuex';
+import moment from "moment"
+import { mapGetters} from 'vuex';
 import ProfileName from '@/components/basic/ProfileName.vue';
-import AttendModal from '@/components/pot/AttendModal.vue'
-import CancelModal from '@/components/pot/CancelModal.vue'
-import DeleteModal from '@/components/pot/DeleteModal.vue'
 
 export default {
-  components: { 
-    ProfileName,
-    AttendModal,
-    CancelModal,
-    DeleteModal,
-  },
-  props:{
-    pot_detail_modal : Boolean,
-    potitem : Object,
-  },
   data(){
     return{
-      mypot : false,
-      attendpot : false,
-      CancelModalT : false,
-      AttendModalT : false,
-      DeleteModalT : false,
-      potattendusers : [],
+      modals : true,
     }
+  },
+  components: { 
+    ProfileName,
+  },
+  props:{
+    modalDetail : Boolean,
   },
   computed:{
     ...mapGetters("user", ["userinfo"]),
-    ...mapGetters("pot", ["selectpot"]),
+    ...mapGetters("pot", ["selectpot","potattendusers"]),
+    meet_date(){
+        return moment(this.selectpot.time).format("ddd MM/DD")
+    },
+    meet_time(){
+        return moment(this.selectpot.time).format("HH:mm")
+    },
     rows() {
         return this.potattendusers.length
     },
-  },
-  created(){
-    this.mypot = false
-    this.attendpot = false
-    this.selectPot(this.potitem)
-    this.potAttendUsers(this.potitem.potid)
-    if(this.userinfo.userid == this.potitem.userid.userid) {
-      this.mypot = true
-    }else{
-      
-      this.potattendusers.forEach((item) => {
-        console.log(item.userid.userid)
-          if (item.userid == this.userinfo.userid) {
-            this.attendpot = true
-          }
-    });
-    }
-  },
-  methods:{
-    ...mapActions("pot", ["selectPot"]),
-
-    cancelDetail() {
-      this.$emit('openDetailModal', false)
+    detailable(){
+      return this.modals && this.modalDetail
     },
-
-    openAttendModal(val){
-        this.AttendModalT = val;
-    },
-    openCancelModal(val){
-        this.CancelModalT = val;
-    },
-    openDeleteModal(val){
-        this.DeleteModalT = val;
-    },
-    potModify(){
-        this.selectPot(this.potitem)
-        this.$router.push({path:"/vetparty_create/1"});
-    },
-
-    potAttendUsers(pot_id) {
-        axios.get(API.url + potAPI.attendcount(pot_id))
-            .then((res) => {
-            this.potattendusers = res.data
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-    },
-    attendme(users) {
+    attendme(){
         let flag = true;
-        if(users && users.length!=0){
-          users.forEach((item) => {
-            console.log(item.userid == this.userinfo.userid)
-            // console.log(this.userinfo.userid)
+        if(this.potattendusers.length!=0){
+          this.potattendusers.forEach((item) => {
             if (item.userid == this.userinfo.userid) {
               flag = false
             }
@@ -164,11 +109,29 @@ export default {
         }
         return flag
     },
-
-    openSnackBar(val, sign){
-      console.log(sign)
-        this.$emit('openSnackBar', val, sign)
+    mypot(){
+     
+      if(this.selectpot.length!=0 && this.userinfo.userid == this.selectpot.userid.userid) {
+        return true
+      }else{
+        return false
+      }
     }
+  },
+  methods:{
+
+    cancelDetail() {
+      this.$emit('openDetailModal', false)
+    },
+
+    openMessageModal(sign){
+        this.$emit('openMessageModal', true, sign)
+    },
+    potModify(){
+        // this.selectPot(this.potitem)
+        this.$router.push({path:"/vetparty_create/1"});
+    },
+
   },
 
 }
