@@ -8,7 +8,7 @@
       </div>
       
       <div>
-        <input type="password" placeholder="비밀번호" v-model="userinfo.password">
+        <input type="password" placeholder="비밀번호" v-model="userinfo.password" @keyup.enter="login">
       </div>
       
       <div>
