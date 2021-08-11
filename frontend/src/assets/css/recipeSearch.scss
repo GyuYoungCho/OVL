@@ -7,7 +7,11 @@
   &Header {
     display: flex;
     justify-content: space-between;
+    height: 10vw;
+    
 
+    
+    
     .sortSelect {
       background: url("../../assets/icon/flipped_triangle.png") no-repeat 90% 50%;
       background-size: 15px;
@@ -17,20 +21,30 @@
       padding: 2px;
       box-shadow: 0 2px 2px $hy-grey;
     }
-
+    
     option {
       // background-color: $lighter-green;
       border: none;
     }
-
+    
     .searchBar {
       border: 1px solid $hy-grey;
       border-radius: 10px;
-      padding: 2px;
+      padding: 2vw;
       box-shadow: 0 2px 2px $hy-grey;
       width: 100%;
       margin-left: 3vw;
     }
+
+
+    i {
+      background-color: $freditgreen;
+      border-radius: 15px;
+      margin-right: 2vw;
+      margin-top: calc(5vw - 12);
+    }
+
+    
   }
 
   .oneRecipe {
@@ -63,3 +77,4 @@
     border-radius: 8px;
   }
 }
+
