@@ -206,7 +206,7 @@
 </template>
 
 <script>
-import {mapState, mapActions} from "vuex";
+import {mapGetters, mapState, mapActions} from "vuex";
 
 export default {
 data() {
@@ -246,12 +246,15 @@ methods: {
     },
 },
 computed: {
+    ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
     ...mapState("post", (["postList", "postLikeList"])),
     ...mapState("user", (["userinfo"])),
 },
 created() {
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+    // 1. 컴포넌트가 렌더링 되면 일단 스토어의 전체 챌린지 리스트를 뷰엑스에 업데이트 합니다.
+    this.fetchChallengeList()
 },
 }
 </script>

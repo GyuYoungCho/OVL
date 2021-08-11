@@ -10,7 +10,7 @@
 
 import ProfilePage from '@/components/user/Profilepage.vue'
 //import JoinUs from '@/components/JoinUs.vue'
-import {mapGetters, mapState} from "vuex"
+import {mapGetters, mapState, mapActions} from "vuex"
 import API from "@/api/index.js";
 import userAPI from "@/api/user.js";
 import axios from 'axios'
@@ -25,6 +25,7 @@ export default {
 
   computed:{
     ...mapGetters('user',["userinfo"]),
+    ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
     ...mapState('user', ["isLogin"]),
 
   },

@@ -121,15 +121,16 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         }
     },
     computed:{
-    ...mapGetters("user",(["userinfo", "challenge"])),
-    ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
-    ...mapState("user", (["isLogin", "rank"])),
-    time() {
-        const start = moment(this.start_date);
-        const now = moment(new Date());
-        console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-        return now.diff(start, 'days') + 1;
-    },
+        ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
+        ...mapGetters("user",(["userinfo", "challenge"])),
+        ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
+        ...mapState("user", (["isLogin", "rank"])),
+        time() {
+            const start = moment(this.start_date);
+            const now = moment(new Date());
+            console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
+            return now.diff(start, 'days') + 1;
+        },
         userPath() { // 프로필 사진 이미지 출력
             return API.url + "/profile/" + this.userinfo.userid + "/"+ this.userinfo.stored_file_path.split('/').reverse()[0]
         },
@@ -166,12 +167,12 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
             const formData = new FormData()
             formData.append('picture', picture)
-
-            axios({
-                method:"post",
-                URL: API.url + userAPI.modify_pic(this.userinfo.userid),
-                data: formData,
-            }).then((res)=>{
+            console.log(API.url + userAPI.modify_pic(this.userinfo.userid))
+            axios.post(API.url + userAPI.modify_pic(this.userinfo.userid), formData,
+                {headers: {'Content-Type' : 'multipart/form-data'}
+                    
+                }
+            ).then((res)=>{
                // if(res.status === success)
                 this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid)
                 console.log(res.status)
