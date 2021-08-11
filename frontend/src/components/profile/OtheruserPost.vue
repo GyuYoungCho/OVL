@@ -24,7 +24,7 @@
                     
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>  
+                        <img :src="postPath(idx)" width=80px;>  
 
                     </div>
                 </div>
@@ -46,33 +46,28 @@ export default {
         allSteps: [
           "화장품", "레시피", "옷",
         ],
-      showAll: false,
       btnActive: {0:true,1:false,2:false},
     }
   },
   methods: {
+    postPath(idx){ // 대표 이미지 출력
+      return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
+    },
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
     },
     selectTypeIcon(num){
-        if(this.btnActive[num] === true){
-            this.btnActive[num] = false;
-            this.showAll = true;
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
-        }else if(this.btnActive[num] ===false){
-            this.btnActive[num] = true;
-            this.showAll = false;
-            for(var i = 0; i < 3; i++){
-              if(i !== num){
-                this.btnActive[i] = false;
-              }
-            }
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
+      //console.log(num);
+      this.post.step = this.allSteps[num]
+     // console.log(this.btnActive[num])
+      if(!this.btnActive[num]){
+        this.btnActive[num] = true;
+        for(var i = 0; i< 3; i++){
+          if(num != i){
+            this.btnActive[i] = false;
+          }
         }
+      }
     },
   },
   computed: {

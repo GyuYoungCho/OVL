@@ -15,4 +15,7 @@ export default {
   follow (from_id, to_id) {
     return `/follow/follow/${from_id}/${to_id}`
   },
+  unfollow (from_id, to_id) {
+    return `/follow/follow/${from_id}/${to_id}`
+  },
 }

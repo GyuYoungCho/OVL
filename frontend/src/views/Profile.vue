@@ -1,10 +1,8 @@
 <template>
   <div>
-        <v-container>
           <!-- Mypage Profile 페이지로 이동 -->
         <ProfilePage v-if="this.isUser"/>
         <Welcome v-else/>
-        </v-container>
   </div>
 </template>
 
@@ -12,7 +10,7 @@
 
 import ProfilePage from '@/components/user/Profilepage.vue'
 //import JoinUs from '@/components/JoinUs.vue'
-import {mapGetters, mapState} from "vuex"
+import {mapGetters, mapState, mapActions} from "vuex"
 import API from "@/api/index.js";
 import userAPI from "@/api/user.js";
 import axios from 'axios'
@@ -26,7 +24,8 @@ export default {
   },
 
   computed:{
-    ...mapGetters('user',["userinfo","isLogin"]),
+    ...mapGetters('user',["userinfo"]),
+    ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
     ...mapState('user', ["isLogin"]),
 
   },
@@ -56,7 +55,7 @@ export default {
         console.log(err)
         })
     }
-    //this.$store.dispatch("user/getTokenUserInfo");
+    this.$store.dispatch("user/getUserInfo");
 
   },
   mounted(){

@@ -160,8 +160,25 @@ actions: {
             })
         .catch((err) => {
             console.log(err);
+<<<<<<< HEAD
         });
     },
+=======
+            });
+    },
+    // getOtherUserInfo(payload) {
+    //     axios({
+    //         method: "get",
+    //         url: API.url + userAPI.select(payload),
+    //     }).then((res) => {
+    //             console.log(" 다른 유저 : ", res.data);
+    //         })
+    //         .catch((err) => {
+    //         console.log("ohter User 정보 조회 실패"); 
+    //         console.log(err);
+    //         });
+    //     },
+>>>>>>> branch 'master' of https://lab.ssafy.com/s05-webmobile2-sub3/S05P13A606.git
         
 },
 };

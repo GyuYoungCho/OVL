@@ -369,7 +369,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
-    @PutMapping(value = "/modify_pic/{user_id}")
+    @PostMapping(value = "/modify_pic/{user_id}")
 	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic) throws IOException {
 //    	User useropt = userDao.getUserByUserid(user_id);
 //    	String originalFileExtension;

@@ -24,4 +24,7 @@ export default {
   search_history (user_id) {
     return `/challenge/search_history/${user_id}`
   },
+  search_mychallenge (challenge_id, user_id) {
+    return `/challenge/search_mychallenge/${challenge_id}/${user_id}`;
+  },
 }
