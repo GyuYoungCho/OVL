@@ -319,6 +319,15 @@ public class RecipeController {
 		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
 	}
 	
+	@GetMapping("/search_myrecipe/{user_id}")
+	@ApiOperation(value = "나의 레시피 검색")
+	public ResponseEntity<List<Recipe>> myrecipes(@PathVariable int user_id) {
+		User user = userDao.getUserByUserid(user_id);
+		List<Recipe> recipeList = recipeDao.findByUserid(user);
+		
+		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
+	}
+	
 	@GetMapping("/like/{user_id}/{recipe_id}")
 	@ApiOperation(value = "좋아요 누르기 or 취소")
 	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int recipe_id) {
