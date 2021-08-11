@@ -71,11 +71,18 @@
     height: 20px;
     margin-right: 15px;
   }
-  .profile-img {
+  .profile-img2 {
     border-radius: 50%;
-    border: 3px dotted gray;
+    border: 4px dotted gray;
   }
-
+  input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+  }
   .icon-btn-img {
     width: 20px;
     height: 20px;

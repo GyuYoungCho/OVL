@@ -4,7 +4,7 @@
             <div centered class="container mt-5 d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <div class="image text-center"> <img src="@/assets/image/gyu.png" class="profile-img" width="100" style="border-radius: 50%;">
+                        <div class="image text-center"> <img :src="userPath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
                     <div class="mb-0 mt-0">{{nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
@@ -94,6 +94,7 @@ import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment';
+import API from '@/api/index.js'
 
 export default {
 components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
@@ -119,7 +120,10 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         const now = moment(new Date());
         // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
         return now.diff(start, 'days') + 1;
-    }
+    },
+        userPath() { // 프로필 사진 이미지 출력
+            return API.url + "/profile/" + this.userinfo.userid + "/"+ this.userinfo.stored_file_path.split('/').reverse()[0]
+        },
 
     },
     created() {
