@@ -73,22 +73,22 @@
           <div class="lineContainer">
             <!-- 댓글 작성 폼 -->
             <div class="commentInputForm" v-if="contentMode==='comment'">
-              <input type="text" class="commentInput" placeholder="댓글 달기.." v-model="content">
+              <input type="text" class="commentInput" placeholder="댓글 달기.." v-model="content" @keyup.enter="onRegistCommentBtnClick">
               <button class="commentCreateBtn" @click="onRegistCommentBtnClick">게시</button>
             </div>
             <!-- 답글 작성 폼 -->
             <div class="commentInputForm" v-if="contentMode==='reply'">
-              <input type="text" class="commentInput" :placeholder="replyCommentUser + '님에게 답글 달기..'" v-model="content">
+              <input type="text" class="commentInput" :placeholder="replyCommentUser + '님에게 답글 달기..'" v-model="content" @keyup.enter="onRegistReplyBtnClick">
               <button class="commentCreateBtn" @click="onRegistReplyBtnClick">게시</button>
             </div>
             <!-- 댓글 수정 폼 -->
             <div class="commentInputForm" v-if="contentMode==='commentModify'">
-              <input type="text" class="commentInput" v-model="content">
+              <input type="text" class="commentInput" v-model="content" @keyup.enter="onModifyCommentBtnClick">
               <button class="commentCreateBtn" @click="onModifyCommentBtnClick">수정</button>
             </div>
             <!-- 답글 수정 폼 -->
             <div class="commentInputForm" v-if="contentMode==='replyModify'">
-              <input type="text" class="commentInput" v-model="content">
+              <input type="text" class="commentInput" v-model="content" @keyup.enter="onModifyReplyBtnClick">
               <button class="commentCreateBtn" @click="onModifyReplyBtnClick">수정</button>
             </div>
             <hr> 
@@ -105,7 +105,7 @@
           <div class="infoBelowOneComment">
             <div class="infoFirstLine">
               <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
-              <span class="oneInfo" @click="onReplyClick(recipeComment)">{{ contentMode!=='reply' ? '답글달기' : '답글취소' }}</span>
+              <span class="oneInfo" @click="onReplyClick(recipeComment)">{{ replyCommentId!==recipeComment.recipeCommentId ? '답글달기' : '답글취소' }}</span>
               <div class="oneInfo">
                 <!-- 댓글 수정 -->
                 <span v-if="recipeComment.userId.userid===userinfo.userid" @click="onModifyCommentClick(recipeComment)">수정</span> |
@@ -217,12 +217,14 @@ export default {
     onReplyClick (recipeComment) {
       if (this.contentMode!=="reply") {
         this.contentMode = "reply"
+        this.replyCommentUser = recipeComment.userId.nickname
+        this.replyCommentId = recipeComment.recipeCommentId
       } else {
         this.contentMode = "comment"
+        this.replyCommentUser = ""
+        this.replyCommentId = ""
       }
       this.content = ""
-      this.replyCommentUser = recipeComment.userId.nickname
-      this.replyCommentId = recipeComment.recipeCommentId
     },
     onModifyCommentClick (recipeComment) {
       if (this.contentMode!=="commentModify") {

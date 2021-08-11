@@ -61,7 +61,7 @@
         <!-- 입력 폼 -->
         <div>
           <v-icon>mdi-subdirectory-arrow-right</v-icon>
-          <input type="text" class="pa-1" style="width:80%; font-size:small" :placeholder="holder" v-model="commentInput">
+          <input type="text" class="pa-1" style="width:80%; font-size:small" :placeholder="holder" v-model="commentInput" @keyup.enter="regist">
           <button @click="regist"><span style="color:#004627">{{inputBtn}}</span></button>
           <hr class="mt-1">
         </div>
