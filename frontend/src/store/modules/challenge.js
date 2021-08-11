@@ -1,7 +1,6 @@
 import axios from 'axios'
 import API from '@/api/index.js'
 import challengeAPI from '@/api/challenge.js'
-// import userAPI from "@/api/user.js"
 
 export default {
   namespaced: true,
@@ -25,7 +24,7 @@ export default {
     },
     cosmeticChallengeList (state) {
       return state.cosmeticChallengeList
-    }
+    },
     
   },
   mutations: {
@@ -36,7 +35,6 @@ export default {
       state.clothChallengeList = challengeList.filter((eachList)=> eachList.category===2)
       state.cosmeticChallengeList = challengeList.filter((eachList)=> eachList.category===3)
     },
-
 
   },
   actions: {
@@ -71,11 +69,5 @@ export default {
         .catch((err) => console.log(err))
       },
       
-      // 유저의 챌린지 관련 정보를 갱신해 주는 로직
-      // fetchUserChallengeInfo ({commit}) {
-      //     const URL =  API.url + userAPI.select()
-      //   }   
-
-
-      }
     }
+  }
