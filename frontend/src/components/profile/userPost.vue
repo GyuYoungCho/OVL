@@ -19,11 +19,11 @@
             <!-- 사진 배열하기 -->
             <v-container v-if="showAll">
               <v-row>
-                <v-col v-for="(info, idx) in postList" :key="idx" cols="4" class="grid-cell">
+                <v-col v-for="(info, idx) in postList" :key="idx" cols="4" class="grid-cell-2">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>   
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">   
 
                     </div>
 
@@ -32,11 +32,11 @@
             </v-container>
             <v-container v-else-if="btnActive[0]">
               <v-row>
-                <v-col v-for="(info, idx) in foodPostList" :key="idx" cols="4" class="grid-cell">
+                <v-col v-for="(info, idx) in foodPostList" :key="idx" cols="4" class="grid-cell-2">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>    
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">    
 
                     </div>
 
@@ -45,11 +45,11 @@
             </v-container> 
             <v-container v-else-if="btnActive[2]">
               <v-row>
-                <v-col v-for="(info, idx) in clothPostList" :key="idx" cols="4" class="grid-cell">
+                <v-col v-for="(info, idx) in clothPostList" :key="idx" cols="4" class="grid-cell-2">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>  
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 
@@ -58,11 +58,11 @@
             </v-container> 
             <v-container v-else-if="btnActive[1]">
               <v-row>
-                <v-col v-for="(info, idx) in cosmeticPostList" :key="idx" cols="4" class="grid-cell">
+                <v-col v-for="(info, idx) in cosmeticPostList" :key="idx" cols="4" class="grid-cell-2">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>  
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 
@@ -114,7 +114,7 @@ export default {
     ...mapGetters("user", ["userinfo"]),
   },
   created() {
-    this.$store.dispatch("post/getPostList", this.userinfo.userid);
+    this.$store.dispatch("post/getUserPostList", this.userinfo.userid);
     console.log("foodlist :",this.foodPostList)
     //this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
   },

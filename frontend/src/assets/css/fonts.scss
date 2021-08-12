@@ -1,15 +1,17 @@
 // @font-face 들은 폰트를 가져오는 CDN 입니다.
 
 @font-face {
-  font-family: 'SDSamliphopangche_Basic';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Basic.woff') format('woff');
+  font-family: "SDSamliphopangche_Basic";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts-20-12@1.0/SDSamliphopangche_Basic.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Chosunilbo_myungjo';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');
+  font-family: "Chosunilbo_myungjo";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -20,11 +22,13 @@
 // 삼립빵체가 전체 프로젝트의 default 글꼴로 설정되게 합니다.
 
 * {
-  font-family: 'SDSamliphopangche_Basic';
+  font-family: "SDSamliphopangche_Basic";
 }
 
 .welcome-text {
-  font-family: 'Shadows Into Light', cursive;
+  font-family: "Shadows Into Light", cursive;
 }
-
+.recipe-slogan {
+  font-family: "Shadows Into Light", cursive;
+}
 // 2. 각 클레스에 맞는 font를 설정할 수 있습니다.
