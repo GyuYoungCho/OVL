@@ -47,20 +47,12 @@
   div {
     .v-input__slot {
       margin-bottom: 0px;
-      padding-left: 10px;
-      padding-bottom: 0px;
-    }
-
-    .v-input__control {
-      height: 30px;
+      padding: 0px;
+      margin-right: 10px;
     }
 
     .v-select__slot {
-      margin-bottom: 11px;
       padding-left: 10px;
-    }
-
-    .v-select__slot {
       i {
         color: white;
       }

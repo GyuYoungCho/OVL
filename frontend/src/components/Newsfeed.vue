@@ -4,6 +4,11 @@
     <v-container class="px-6 mt-4">
       <feed-search @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></feed-search>
+      <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
+        <v-col class="mt-5 pl-3">
+            <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
+        </v-col> 
+      </v-card>
       <!-- 캐러셀 영역 -->
       <!-- <v-carousel hide-delimiters>
         <v-carousel-item
@@ -13,7 +18,7 @@
         ></v-carousel-item>
       </v-carousel> -->
 
-      <div v-for="(info, idx) in postList" :key="idx" class="mt-9">
+      <div v-for="(info, idx) in searchPost" :key="idx" class="mt-9">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
@@ -118,39 +123,33 @@ export default {
     ...mapState("user", (["userinfo","userlist"])),
 
     searchPost() {
+      console.log(this.ord)
       const search = this.search.toLowerCase()
-      const allitems = this.postList
       
-      if (!search) return allitems
-      if(this.ord==this.order[1]){
-        return allitems.filter(item => {
-          const text = item.restaurant_name.toLowerCase()
-
-          return text.indexOf(search) > -1
-        })
-      }else{
-        return allitems.filter(item => {
-          const text = item.userid.nickname.toLowerCase()
-
-          return text.indexOf(search) > -1
-        })
-      }
-    },
-    searchUser(){
-      const search = this.search.toLowerCase()
-      if(this.ord=='Post' || search) return []
-      const allitems = this.userlist
-      return allitems.filter(item => {
-        const text = item.restaurant_name.toLowerCase()
+      if (!search || this.ord == 'User') return this.postList
+      
+      const allitems = this.postList.filter(item => {
+        const text = item.postId.content.toLowerCase()
 
         return text.indexOf(search) > -1
       })
+      return (allitems.length >5) ? allitems.slice(0,5) : allitems
+    },
+    searchUser(){
+      const search = this.search.toLowerCase()
+      if(!search || this.ord=='Post') return []
+      
+      const allitems = this.userlist.filter(item => {
+        const text = item.nickname.toLowerCase()
+        return text.indexOf(search) > -1
+      })
+       return (allitems.length >3) ? allitems.slice(0,5) : allitems
     },
   },
   created() {
-    this.$store.dispatch("user/getUserList");
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+    this.$store.dispatch("user/getUserList");
   }
 }
 </script>

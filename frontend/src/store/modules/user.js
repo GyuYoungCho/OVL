@@ -73,10 +73,10 @@ export default {
         state.userlist = payload.sort(function(user1, user2) {
           let x = user1.experience;
           let y = user2.experience;
-          if (x < y) {
+          if (x > y) {
             return -1;
           }
-          if (x > y) {
+          if (x < y) {
             return 1;
           }
           return 0;
@@ -200,19 +200,19 @@ export default {
           console.log(err);
         });
     },
-  },
-  getUserList(store) {
-    let token = localStorage.getItem("access-token");
-    axios({
-      method: "get",
-      url: API.url + userAPI.select_all(),
-      headers: { "access-token": token },
-    })
-      .then((res) => {
-        store.commit("setUserList", res.data);
+    getUserList(store) {
+      let token = localStorage.getItem("access-token");
+      axios({
+        method: "get",
+        url: API.url + userAPI.select_all(),
+        headers: { "access-token": token },
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((res) => {
+          store.commit("setUserList", res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
