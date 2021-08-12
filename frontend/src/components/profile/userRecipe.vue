@@ -4,22 +4,22 @@
         </div>
             <!-- 사진 배열하기 -->
             <section  class="postArea">
-                <div>
-                    <div v-for="(info, idx) in postList" :key="idx" class="wrapper">
+                <v-row>
+                    <div v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
                         
                         <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(idx)" class="box">
-                            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;">  
+                        <div @click="moveDetail(recipe)" class="box">
+                            <img :src="srcPath(recipe)" width=100%  style="border-radius: 7px;">  
 
                         </div>
                     </div>
-                </div>
+                </v-row>
             </section>    
         </v-container>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 
 export default {
   data() {
@@ -27,21 +27,23 @@ export default {
     }
   },
   methods: {
-    postPath(idx){ // 대표 이미지 출력
-      return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
+    ...mapActions(['myrecipes','fetchRecipeDetail', 'fetchRecipeComments', ]),
+    srcPath(recipe){
+      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
     },
-    moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+    moveDetail(recipe) { // 게시글 상세보기
+      this.fetchRecipeDetail(recipe.recipeId)
+      this.fetchRecipeComments(recipe.recipeId)
+      this.$router.push({ name: 'RecipeDetail' })
     },
 
   },
   computed: {
-    ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo"])),
+    ...mapGetters(['recipes', 'myrecipes', ]),
+    ...mapGetters("user", (["userinfo"])),
   },
   created() {
-    this.$store.dispatch("post/getPostList", this.userinfo.userid);
-    this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+      this.myrecipes(this.userinfo.userid)
   },
 }
 </script>

@@ -4,7 +4,7 @@
             <div centered class="container mt-5 d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
-                        <div class="image text-center"> <img src="@/assets/image/gyu.png" class="profile-img" width="100" style="border-radius: 50%;">
+                        <div class="image text-center"><label for="file"><img :src="userPath" class="profile-img" width="100" height="100" style="border-radius: 50%;"></label>
                     <div class="mb-0 mt-0">{{this.otheruserinfo.nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
@@ -26,15 +26,15 @@
                                 </div></div>
                             </div>
                             <div class="d-flex justify-content-center">
-                            <div v-if="this.isFollowing"> 
-                                <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
-                            </div>
-                            <div v-else> 
-                                <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
-                            </div>
-                            <div>
-                                <button class="reportBtn" @click="onClickReport()">신고</button>
-                            </div>
+                                <div v-if="this.isFollowing" width=""> 
+                                    <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
+                                </div>
+                                <div v-else> 
+                                    <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
+                                </div>
+                                <div class="ms-1">
+                                    <button class="reportBtn" @click="onClickReport()">신고</button>
+                                </div>
                             </div>
                             
                         </div>
@@ -63,6 +63,33 @@
                         </v-row>
                         </v-card-text>
                     </v-card>
+                </v-dialog>
+                <!-- 커스텀 모달 -->
+                <v-dialog v-if="isOpenModal" hide-overlay max-width="300">
+                <v-card>
+                    <!-- 모달 타이틀 영역 -->
+                    <v-toolbar dense color="#004627">
+                    <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon dark @click="participation = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </v-toolbar>
+                    <!-- 모달 컨텐츠 영역 -->
+                    <v-container>
+                    <div class="modalContent">
+                    <div class="mb-3">
+                        <span class="modalContentMessage">
+                        이미 참여한 챌린지가 있습니다! <br>
+                        참여 취소를 원하시면 내 프로필에서 취소해 주세요!
+                        </span>
+                    </div>
+                    <div class="modalContentButtonArea">
+                        <button class="modalContentButton" @click="participation = false">확인</button>
+                    </div>
+                    </div>
+                    </v-container>
+                </v-card>
                 </v-dialog>
         </div>
     <div class="text-center">
@@ -143,6 +170,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
         Rank : null,
         isLocked: false,
         isFollowing: false,
+        isOpenModal: false,
         }
     },
     computed :{
@@ -152,8 +180,10 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
         const now = moment(new Date());
         // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
         return now.diff(start, 'days') + 1;
-    }
-
+    },
+    userPath() { // 프로필 사진 이미지 출력
+            return API.url + "/profile/" + this.$route.params.userid + "/"+ this.otheruserinfo.stored_file_path.split('/').reverse()[0]
+        },
     },
     created() {
 
@@ -161,6 +191,9 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
     methods: {
         onClickEditUser(){
             this.$router.push({ name: "ModifyUser" });
+        },
+        onClickReport(){
+            this.isOpenModal = true;
         },
         onClickUnFollowBtn(){
             axios({

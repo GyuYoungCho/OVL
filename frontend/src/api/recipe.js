@@ -31,5 +31,8 @@ export default {
   },
   like (user_id, recipe_id) {
     return `/recipe/like/${user_id}/${recipe_id}`
-  }
+  },
+  search_myrecipe (user_id) {
+    return `/recipe/search_myrecipe/${user_id}`
+  },
 }

@@ -20,6 +20,7 @@ export default {
     recipeCommentReply: {},
     // 내가 좋아요 누른 대댓글
     recipeReplyLikeList: [],
+    myrecipes: [],
   },
   getters: {
     recipe (state) {
@@ -45,6 +46,9 @@ export default {
     },
     recipeReplyLikeList (state) {
       return state.recipeReplyLikeList
+    },
+    myrecipes(state) {
+      return state.myrecipes
     }
   },
   mutations: {
@@ -88,6 +92,9 @@ export default {
     },
     SET_RECIPE_REPLY_LIKE_LIST(state, recipeReplyLikeList) {
       state.recipeReplyLikeList = recipeReplyLikeList
+    },
+    SET_USER_RECIPES(state, myrecipes) {
+      state.myrecipes = myrecipes
     }
   },
   actions: {
@@ -253,6 +260,14 @@ export default {
           dispatch('fetchRecipeComments', recipeId)
         })
         .catch(err => console.error(err))
-    }
+    },
+    myrecipes ({ commit }, userId) {
+      const URL = API.url + recipeAPI.search_myrecipe(userId)
+      axios.get(URL)
+        .then(res => {
+          commit('SET_USER_RECIPES', res.data)
+        })
+        .catch(err => console.error(err))
+    },
   }
 }

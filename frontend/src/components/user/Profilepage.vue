@@ -9,21 +9,30 @@
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
                             <div class="d-flex justify-content-center">
-                                <div style="margin: 10px"><div class="d-flex flex-column"> <span class="rank">rank</span> <span class="number1">{{rank}}</span> </div></div>
+                                <div style="margin: 10px">
+                                    <div class="d-flex flex-column"> 
+                                        <span class="rank">rank</span>
+                                        <span class="number1" style="font-size:medium">{{rank}}</span>
+                                    </div>
+                                </div>
+                                <v-spacer></v-spacer>
                                 <div style="margin: 10px">
                                     <div class="d-flex flex-column"> 
                                         <span class="following">following</span>
                                         <div @click="openDialog(0)">
-                                        <span class="number2">{{following}}</span>
+                                        <span class="number2" style="font-size:medium" >{{following}}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div style="margin: 10px"><div class="d-flex flex-column">
+                                <v-spacer></v-spacer>
+                                <div style="margin: 10px">
+                                    <div class="d-flex flex-column">
                                     <span class="follower">followers</span>
-                                    <div @click="openDialog(1)">
-                                    <span class="number3">{{follower}}</span>
+                                        <div @click="openDialog(1)">
+                                            <span class="number3" style="font-size:medium">{{follower}}</span>
+                                        </div>
                                     </div>
-                                </div></div>
+                                </div>
                             </div>
 
                             <div> 
@@ -33,16 +42,16 @@
                         </div>
                     </div>
                 </div>
-                <v-dialog ref="modal1" v-model="dialog" persistent max-width="900px">
+                <v-dialog ref="modal1" v-model="dialog" persistent max-width="300">
                     <v-card>
-                        <v-card-title>
+                        <v-card-title dense color="#004627">
                         <template>
-                            <v-icon style="margin-right:10px;" large color="#41B883" >List</v-icon> 
+                            <v-toolbar-title class="modalTitle">List</v-toolbar-title>
                             <span class="headline" large>팔로잉 목록</span>
                         </template>
                         <v-spacer></v-spacer>
                         <v-btn icon @click="closeDialog('modal1')"> <!-- closeDialog 클릭 이벤트 -->
-                            <v-icon>x</v-icon>
+                            <v-icon>mdi-close</v-icon>
                         </v-btn>
                         </v-card-title>
                         <v-card-text>
