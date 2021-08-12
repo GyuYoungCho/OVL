@@ -160,20 +160,9 @@ export default {
           this.state.isLogin = true;
         })
         .catch((err) => {
-          console.log(err);
+            console.log(err);
         });
     },
-    // getOtherUserInfo(payload) {
-    //     axios({
-    //         method: "get",
-    //         url: API.url + userAPI.select(payload),
-    //     }).then((res) => {
-    //             console.log(" 다른 유저 : ", res.data);
-    //         })
-    //         .catch((err) => {
-    //         console.log("ohter User 정보 조회 실패");
-    //         console.log(err);
-    //         });
-    //     },
-  },
+        
+},
 };
