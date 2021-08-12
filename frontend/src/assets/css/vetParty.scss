@@ -81,7 +81,8 @@
     }
 
     span {
-      padding-top: 3px;
+      padding-top: 0px;
+      margin-bottom: 10px;
     }
   }
 
@@ -151,6 +152,12 @@
       .v-select__slot {
         margin-bottom: 11px;
         padding-left: 10px;
+      }
+
+      .v-select__slot {
+        i {
+          color: white;
+        }
       }
     }
   }

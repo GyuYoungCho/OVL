@@ -54,7 +54,7 @@ export default {
         cancelAttendModal(){
             this.$emit('openMessageModal', false)
         },
-        potprocess(val) {
+        async potprocess(val) {
           if(val=="attend"){
             if(this.potattendusers.length >= this.selectpot.total_people){
               this.$emit('openSnackBar', true , "not_attend")
@@ -113,8 +113,6 @@ export default {
           
             await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
             await this.$store.dispatch("pot/setPotItems")
-            await this.$store.dispatch("pot/selectPot",[])
-          
         }
     }
 }

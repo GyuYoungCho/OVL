@@ -6,6 +6,7 @@ import restaurantAPI from "@/api/restaurant.js";
 export default {
   namespaced: true,
   state: {
+    count: 0,
     restitems: [],
     potitems: [],
     passpotitems: [],
@@ -15,6 +16,9 @@ export default {
     potattendusers: [],
   },
   getters: {
+    count(state) {
+      return state.count;
+    },
     restitems(state) {
       return state.restitems;
     },
@@ -140,9 +144,6 @@ export default {
       axios
         .get(API.url + potAPI.select(user_id))
         .then((res) => {
-          console.log(user_id);
-          console.log(res.data);
-
           commit("set_User_Pots", res.data);
         })
         .catch((error) => {

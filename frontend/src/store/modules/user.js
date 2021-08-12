@@ -22,9 +22,10 @@ export default {
     isLogin: false,
 
     modalOpen: false,
-    modalContent: '',
-},
-mutations: {
+    modalContent: "",
+    userlist: [],
+  },
+  mutations: {
     setUserInfo(state, payload) {
       state.isLogin = true;
       state.userinfo = payload;
@@ -64,26 +65,43 @@ mutations: {
     },
 
     setModal(state, { modalOpen, modalContent }) {
-        state.modalOpen = modalOpen
-        state.modalContent = modalContent
-    }
-
-},
-getters: {
+      state.modalOpen = modalOpen;
+      state.modalContent = modalContent;
+    },
+    setUserList(state, payload) {
+      if (payload) {
+        state.userlist = payload.sort(function(user1, user2) {
+          let x = user1.experience;
+          let y = user2.experience;
+          if (x < y) {
+            return -1;
+          }
+          if (x > y) {
+            return 1;
+          }
+          return 0;
+        });
+      } else state.userlist = payload;
+    },
+  },
+  getters: {
     userinfo(state) {
       return state.userinfo;
+    },
+    userlist(state) {
+      return state.userlist;
     },
     isLogin(state) {
       return state.isLogin;
     },
     modalOpen(state) {
-        return state.modalOpen
+      return state.modalOpen;
     },
     modalContent(state) {
-        return state.modalContent
-    }
-},
-actions: {
+      return state.modalContent;
+    },
+  },
+  actions: {
     getUserInfo(store) {
       let token = localStorage.getItem("access-token");
       //console.log("jwt 정보" + token);
@@ -107,26 +125,26 @@ actions: {
         });
     },
     login(store, loginObj) {
-        return new Promise(function(resolve) {
-            axios({
-                method: "post",
-                url: API.url + userAPI.login(),
-                data: loginObj,
-            })
-            .then((res) => {
-                localStorage.setItem("access-token", res.headers["access-token"]);
-                resolve();
-                store.commit("setUserInfo", res.data.data);
-            })
-            .catch((err) => {
-                store.commit("setModal", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요."})
-                setTimeout(() => {
-                    store.commit("setModal", { modalOpen: false, modalContent: ""})
-                }, 1000);
-                // alert("이메일과 비밀번호를 확인하세요.");
-                console.log(err);
-            });
-        });
+      return new Promise(function(resolve) {
+        axios({
+          method: "post",
+          url: API.url + userAPI.login(),
+          data: loginObj,
+        })
+          .then((res) => {
+            localStorage.setItem("access-token", res.headers["access-token"]);
+            resolve();
+            store.commit("setUserInfo", res.data.data);
+          })
+          .catch((err) => {
+            store.commit("setModal", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요." });
+            setTimeout(() => {
+              store.commit("setModal", { modalOpen: false, modalContent: "" });
+            }, 1000);
+            // alert("이메일과 비밀번호를 확인하세요.");
+            console.log(err);
+          });
+      });
     },
     logout(store) {
       store.commit("setLogout");
@@ -179,9 +197,22 @@ actions: {
           this.state.isLogin = true;
         })
         .catch((err) => {
-            console.log(err);
+          console.log(err);
         });
     },
-        
-},
+  },
+  getUserList(store) {
+    let token = localStorage.getItem("access-token");
+    axios({
+      method: "get",
+      url: API.url + userAPI.select_all(),
+      headers: { "access-token": token },
+    })
+      .then((res) => {
+        store.commit("setUserList", res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
 };

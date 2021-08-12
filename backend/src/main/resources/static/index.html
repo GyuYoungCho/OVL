@@ -1,1 +1,76 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="shortcut icon" href="pavicon.png"><title>Our Vegan Life</title><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Shadows+Into+Light&display=swap" rel="stylesheet"><link href="/css/app.29bc70f5.css" rel="preload" as="style"><link href="/css/chunk-vendors.97cce110.css" rel="preload" as="style"><link href="/js/app.8d6c3c35.js" rel="preload" as="script"><link href="/js/chunk-vendors.00b3c886.js" rel="preload" as="script"><link href="/css/chunk-vendors.97cce110.css" rel="stylesheet"><link href="/css/app.29bc70f5.css" rel="stylesheet"></head><body><script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script><script src="https://developers.kakao.com/sdk/js/kakao.js"></script><div id="app"></div><script src="/js/chunk-vendors.00b3c886.js"></script><script src="/js/app.8d6c3c35.js"></script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>crud test</title>
+</head>
+
+<body>
+<div id="app">
+	
+	<div v-for="list in lists" v-bind:id="list.email">
+	{{list.email}}
+	{{list.stored_file_path}}
+	<img v-bind:src=filename width="200px" height="200px">
+	<input type="text" v-model=list.nickname><br>
+	<input type="text" v-model=list.phone><br>
+	<input type="file" id="picture" ref="picture" accept="image/png, image/jpeg"><br>
+	<button v-on:click="update(list)">update</button>
+	<hr>
+	</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.2.0/mustache.min.js"></script>
+
+<script type="text/javascript">
+new Vue({
+	el:"#app",
+	data:{
+		file:null,
+		lists:[],
+		path:'',
+	},
+	computed:{
+		filename(){
+			return "profile" + this.lists[0].userid + "/" + this.lists[0].stored_file_path.split('/').reverse()[0]
+		}
+	},
+
+	methods:{
+		update:function(list){
+			
+			console.log(this.filename)
+			console.log(this.$refs.picture[0].files[0])
+			var formData = new FormData();
+			formData.append("picture",this.$refs.picture[0].files[0])
+			formData.append("nickname",list.nickname)
+			formData.append("phone",list.phone)
+			axios.put(
+				'http://localhost:8080/user/modify_user/' + list.userid,
+				formData,
+				{headers:{'Content-Type':'multipart/form-data'}}
+			).then(response=>{
+				console.log(response.data)
+				this.getList();
+			})
+		},
+		
+		getList:function(){
+			axios.get('http://localhost:8080/user/select/'+4).then(response=>{
+				this.lists.push(response.data)
+				console.log(this.lists)
+			})
+			
+		}
+	},
+
+	mounted:function() {
+		this.$nextTick(function(){
+			this.getList()
+		})
+	},
+})
+</script>
+</body>
+</html>

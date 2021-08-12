@@ -1,6 +1,9 @@
 <template>
   <div>
-    <v-container class="px-7 mt-4">
+    
+    <v-container class="px-6 mt-4">
+      <feed-search @searchKeyword="searchKeyword"
+        @selectOrd="selectOrd"></feed-search>
       <!-- 캐러셀 영역 -->
       <!-- <v-carousel hide-delimiters>
         <v-carousel-item
@@ -55,16 +58,33 @@
 </template>
 
 <script>
+import FeedSearch from '@/components/basic/FeedSearch.vue';
 import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapState} from "vuex";
 import moment from 'moment'
 
 
 export default {
+  data(){
+    return{
+      search : '',
+      ord : '',
+      order : [
+        "User", "Post",
+      ],
+    }
+  },
   components: {
+    FeedSearch,
     ProfileName
   },
   methods: {
+    searchKeyword(val){ // 키워드 받아오기
+      this.search = val
+    },
+    selectOrd(val){ //카테고리 받아오기
+      this.ord = val
+    },
     contentReplace(content) { // 줄바꿈
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
@@ -95,9 +115,40 @@ export default {
   },
   computed: {
     ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo"])),
+    ...mapState("user", (["userinfo","userlist"])),
+
+    searchPost() {
+      const search = this.search.toLowerCase()
+      const allitems = this.postList
+      
+      if (!search) return allitems
+      if(this.ord==this.order[1]){
+        return allitems.filter(item => {
+          const text = item.restaurant_name.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      }else{
+        return allitems.filter(item => {
+          const text = item.userid.nickname.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      }
+    },
+    searchUser(){
+      const search = this.search.toLowerCase()
+      if(this.ord=='Post' || search) return []
+      const allitems = this.userlist
+      return allitems.filter(item => {
+        const text = item.restaurant_name.toLowerCase()
+
+        return text.indexOf(search) > -1
+      })
+    },
   },
   created() {
+    this.$store.dispatch("user/getUserList");
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
   }
