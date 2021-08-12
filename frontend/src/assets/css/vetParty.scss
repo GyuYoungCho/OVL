@@ -62,6 +62,13 @@
     padding: 7px 0px;
   }
 
+  .notBtnComp {
+    background-color: $hy-grey;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 7px 0px;
+  }
+
   button:disabled {
     background-color: $hy-grey;
   }
@@ -70,11 +77,28 @@
     font-size: 13px;
 
     i {
-      font-size: 18px;
+      font-size: 17px;
     }
 
     span {
       padding-top: 3px;
+    }
+  }
+
+  .subinfo {
+    font-size: 13px;
+
+    i {
+      font-size: 17px;
+      height: 20pxs;
+    }
+
+    span {
+      padding-top: 3px;
+      padding-right: 0px;
+    }
+    .detail {
+      font-size: 10px;
     }
   }
 
@@ -87,6 +111,10 @@
     width: 17px;
     height: 17px;
     margin-top: 2px;
+
+    .add {
+      margin-top: 0px;
+    }
   }
 
   .search_bar {
@@ -101,5 +129,52 @@
       border-radius: 15px;
       margin-right: 30px;
     }
+
+    .row {
+      height: 35px;
+    }
+    .v-select .dropdown-toggle {
+      border: none;
+    }
+
+    div {
+      .v-input__slot {
+        margin-bottom: 0px;
+        padding-left: 10px;
+        padding-bottom: 0px;
+      }
+
+      .v-input__control {
+        height: 30px;
+      }
+
+      .v-select__slot {
+        margin-bottom: 11px;
+        padding-left: 10px;
+      }
+    }
+  }
+
+  .detext {
+    font-size: 13px;
+  }
+
+  select.v-select-select {
+    background: transparent;
+    border: none;
+  }
+
+  div:disabled {
+    background-color: $hy-grey;
+  }
+
+  .disabledArea {
+    background-color: $hy-grey;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .mouse-over-bgcolor {
+    background-color: $hy-grey;
   }
 }
