@@ -55,6 +55,15 @@ namespaced: true,
                 url: API.url + postAPI.select_all(payload),
             }).then((res)=>{
                 store.commit("GET_POST_LIST", res.data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        },
+        getUserPostList(store, payload) {
+            axios({
+                method:"get",
+                url: API.url + postAPI.select_user(payload),
+            }).then((res)=>{
                 store.commit("SET_USER_POST_LIST", res.data);
                 console.log("확인 데이터", res.data)
             }).catch((err)=>{

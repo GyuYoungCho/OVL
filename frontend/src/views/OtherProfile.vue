@@ -46,9 +46,9 @@
                                 <div v-else-if="!this.isFollowing"> 
                                     <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
                                 </div>
-                                <div v-else-if="this.requestforfollow" style="backgroung-color: purple"> 
+                                <!--<div v-else-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
                                     <button class="requestFollow" @click="onClickRequestBtn()">Follow</button>
-                                </div>
+                                </div>-->
                                 <div v-if="!isReported" class="ms-1">
                                     <button class="reportBtn" @click="onClickReport()">신고</button>
                                 </div>
@@ -185,17 +185,17 @@
             <!-- 게시글  -->
                 <v-tab-item>
                     <LockImg v-if="this.isLocked"/>
-                    <UserPosts v-else/>
+                    <OtherUserPosts v-else/>
                 </v-tab-item>
             <!-- 레시피  -->
                 <v-tab-item>
                     <LockImg v-if="this.isLocked"/>
-                    <UserRecipes v-else/>
+                    <OtherUserRecipes v-else/>
                 </v-tab-item>
             <!-- 챌린지  -->
                 <v-tab-item>
                 <LockImg v-if="this.isLocked"/>
-                <UserChallenges v-else/>
+                <OtherUserChallenges v-else/>
                 </v-tab-item>
         </v-tabs>
     </div> 
@@ -205,10 +205,10 @@
 
 <script>
 import {mapGetters} from "vuex"
-import UserPosts from '@/components/profile/userPost.vue'
+import OtherUserPosts from '@/components/profile/OtheruserPost.vue'
 import LockImg from '@/components/profile/Lockuser.vue'
-import UserRecipes from '@/components/profile/userRecipe.vue'
-import UserChallenges from '@/components/profile/userChallenge.vue'
+import OtherUserRecipes from '@/components/profile/OtheruserRecipe.vue'
+import OtherUserChallenges from '@/components/profile/OtheruserChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment';
 import axios from "axios";
@@ -217,7 +217,7 @@ import followAPI from '@/api/follow.js'
 import userAPI from '@/api/user.js'
 import reportAPI from '@/api/report.js'
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
+components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName, LockImg},
 
     data () {
         
@@ -355,6 +355,8 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, LockImg},
                             console.log("실패");
                             console.log(err);
                         })
+                        //언팔 후 비공개 계정일 경우 아래 잠금 화면 표시
+                        
                 }
             }).catch((err)=>{
                 console.log(err)
