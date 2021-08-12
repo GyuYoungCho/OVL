@@ -1,0 +1,28 @@
+.grid-cell-2 {
+  // 뷰티파이 그리드의 기본 패딩인 12px 에서 줄여야 레이아웃이 맞고,
+  // !important 속성으로 override 해야 제대로 먹습니다.
+  padding: 0px !important;
+  // flex column 의 기본 값은 flex-stretch 이므로 버튼이 이미 길고, 색상만 바꿔주면 됩니다.
+  // 기본 버튼 css
+  &img {
+    width: "90px";
+    height: "90px";
+  }
+  .beginParticipation {
+    background-color: $freditgreen;
+    color: white;
+    border-radius: 4px;
+    width: 100%;
+  }
+
+  // 기본 버튼 css 로부터 background-color를 제외한 모든 css 프로퍼티를 상속 받습니다.
+  .myParticipation {
+    @extend .beginParticipation;
+    background-color: $hy-blue;
+  }
+
+  .alreadyInParticipation {
+    @extend .beginParticipation;
+    background-color: $hy-grey;
+  }
+}

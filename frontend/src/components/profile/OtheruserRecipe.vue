@@ -1,47 +1,59 @@
 <template>
 <v-container>
-        <div class="px-7 mt-4">
+        <div class="mb-4">
+          <div class="recipe-slogan text-center">"live vegan, life together"</div>
         </div>
+        
             <!-- 사진 배열하기 -->
-            <section  class="postArea">
-                <div>
-                    <div v-for="(info, idx) in postList" :key="idx" class="wrapper">
-                        
-                        <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(idx)" class="box">
-                            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;">  
+            <v-container>
+              <v-row>
+                <v-col v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
 
+                        <!-- recipe 대표 사진, 내용-->
+                        <div @click="moveDetail(recipe)" class="box">
+                            <img :src="info.filepath" width=100% > 
                         </div>
-                    </div>
-                </div>
-            </section>    
+
+                </v-col>
+              </v-row>
+            </v-container> 
         </v-container>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import axios from 'axios';
+import {mapGetters, mapActions} from "vuex";
+import API from '@/api/index.js'
+import recipeAPI from '@/api/recipe.js'
 
 export default {
   data() {
     return {
+      myrecipes: [],
     }
   },
   methods: {
-    postPath(idx){ // 대표 이미지 출력
-      return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
-    },
-    moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+    ...mapActions(['fetchRecipeDetail', 'fetchRecipeComments']),
+    moveDetail(recipe) { // 게시글 상세보기
+      this.fetchRecipeDetail(recipe.recipeId)
+      this.fetchRecipeComments(recipe.recipeId)
+      this.$router.push({ name: 'RecipeDetail' })
     },
 
   },
   computed: {
-    ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo"])),
+    ...mapGetters(['recipes']),
+    ...mapGetters("user", (["userinfo"])),
   },
   created() {
-    this.$store.dispatch("post/getPostList", this.userinfo.userid);
-    this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+      axios({
+        method: "get",
+        url: API.url + recipeAPI.search_myrecipe(this.$route.params.userid),
+      }).then((res)=>{
+        this.myrecipes = res.data
+      }).catch((err)=>{
+        console.log(err);
+      })
   },
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
 <v-container>
-        <div class="px-7 mt-4">
+        <div class="mb-4">
+          <div class="recipe-slogan text-center">"live vegan, life together"</div>
         </div>
             <!-- 사진 배열하기 -->
             <v-container>
