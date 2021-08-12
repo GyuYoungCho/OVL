@@ -2,31 +2,62 @@
   <div>
     <v-container>
       <section  class="vetparty">
-      <pot-search :search="search" class="mt-3"></pot-search>
-      <map-view class="mt-6"></map-view>
+      <pot-search class="mt-3" @searchKeyword="searchKeyword"
+        @selectOrd="selectOrd"></pot-search>
+
+        <div class ="mt-7">
+        <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
+          <img src="@/assets/icon/notmeat.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(0)">
+          <img src="@/assets/icon/meat.png" alt="" ></button>
+
+        <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/notfish.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/fish.png" alt=""></button>
+
+        <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/notmilk.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/milk.png" alt=""></button>
+        
+        <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/notegg.png" alt="" ></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/egg.png" alt="" ></button>
+          
+        <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/notvege.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/vege.png" alt="" ></button>
+      </div>
+
+
+      <map-view class="mt-6" :step="step"></map-view>
      
      <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
-        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot">
+        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
+        @openDetailModal="openDetailModal">
           
         </user-pot-list>
       </v-list>
 
-      <v-list v-if="searchpots.length==0">
-        <!-- <all-pot-list v-for="(potitem, index) in potitems" :key="index" :potitem="potitem"
-          @openSnackBarTop="openSnackBarTop">
-        </all-pot-list> -->
-      </v-list>
       
-      <v-list v-else>
+      
+      <v-list>
         <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
-        @openSnackBarTop="openSnackBarTop">
+        @openDetailModal="openDetailModal" @openAttendModal="openAttendModal">
             
         </all-pot-list>
       </v-list>
       <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+      <vet-party-detail :modalDetail="modalDetail"
+          @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
       
+      <message-modal :modalMessage="modalMessage" :sign="sign"
+              @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
-      <v-overlay :value="overlay"></v-overlay>
+      <v-overlay :value="overlay" ></v-overlay>
       
     </v-container>
   </div>
@@ -37,9 +68,11 @@ import { mapGetters, mapActions } from 'vuex';
 import AllPotList from '@/components/pot/AllPotList.vue'
 import UserPotList from '@/components/pot/UserPotList.vue'
 import MapView from '@/components/basic/MapView.vue';
-import PotSearch from '@/components/pot/PotSearch.vue';
+import PotSearch from '@/components/basic/PotSearch.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
-// import AttendModal from '@/components/pot/AttendModal.vue'
+import MessageModal from '@/components/pot/MessageModal.vue'
+import VetPartyDetail from '@/components/pot/VetPartyDetail.vue';
+
 
 export default {
   components: { 
@@ -48,46 +81,92 @@ export default {
     MapView,
     PotSearch,
     ConfirmSnack,
-    // AttendModal,
+    VetPartyDetail,
+    MessageModal,
   },
   data(){
  
     return{
       search : '',
+      ord : '',
       allSteps: [
         "과일채소", "계란","유제품","생선","고기"
       ],
-      searchpots : [],
+      order : [
+        "닉네임", "식당",
+      ],
+      btnActive: {0:false,1:false,2:false,3:false,4:false},
+      step : '',
+      
       overlay : false,
-
+      modalDetail : false,
+      modalMessage : false,
       snackbar : false,
       message : "안녕 난 디폴트야" ,
+      sign : '',
     }
   },
   computed:{
-    ...mapGetters("pot", ['potitems','userpots']),
+    ...mapGetters("pot", ['potitems','passpotitems','userpots','selectpot']),
     ...mapGetters("user", ['userinfo']),
+
+    searchpots() {
+      const search = this.search.toLowerCase()
+      const allitems = [
+        ...this.potitems,
+        ...this.passpotitems
+      ];
+      
+      if (!search) return allitems
+      if(this.ord==this.order[1]){
+        return allitems.filter(item => {
+          const text = item.restaurant_name.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      }else{
+        return allitems.filter(item => {
+          const text = item.userid.nickname.toLowerCase()
+
+          return text.indexOf(search) > -1
+        })
+      }
+    },
   },
   created() {
-      this.$nextTick(function(){
-        this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-        this.$store.dispatch("pot/setPotItems")
-        this.$store.dispatch("pot/selectPot",[])
-      })
-      console.log(this.userpots)
-      this.snackbar = false,
-      this.overlay = false,
-      this.searchpots = this.potitems
+      
+      this.modalDetail = false
+      this.modalMessage = false
+      this.snackbar = false
+      this.overlay = false
+
+      this.updateStore()
   },
   methods:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
-    searchPots(keyword){
-      keyword
+    
+    searchKeyword(val){
+      this.search = val
     },
-    overlayChange(val){
-      this.overlay = val
+
+    selectOrd(val){
+      this.ord = val
     },
-    openSnackBarTop(val, sign){
+
+    openDetailModal(val){
+        this.modalDetail = val
+    },
+    openAttendModal(val){
+        this.sign = "attend"
+        this.modalMessage = val
+    },
+
+    openMessageModal(val,sign){
+        this.sign = sign
+        this.modalMessage = val
+    },
+
+    openSnackBar(val, sign){
       console.log("final")
       if(sign=="attend"){
         this.message = "참여되었습니다."
@@ -97,24 +176,44 @@ export default {
         this.message = "팟이 삭제되었습니다."
       }else if(sign=="not_attend"){
         this.message = "인원이 차서 참여할 수 없어요ㅠㅠ"
+      }else if(sign=="dis_attend"){
+        this.message = "참여할 수 있는 팟 수를 넘었어요!"
       }
 
-      this.$nextTick(function(){
-        this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-        this.$store.dispatch("pot/setPotItems")
-        this.$store.dispatch("pot/selectPot",[])
-      })
-
-      this.searchpots = this.potitems
+      
       this.snackbar = val
       this.overlay = val
       setTimeout(() => {
         
         this.overlay = false
         this.snackbar = false
-      }, 1000)
+      }, 2000)
+
       this.$router.go();
+    },
+
+    selectTypeIcon(num){
+      for (let i = 0; i < num; i++) {
+        this.btnActive[i] = false
+      }
+      console.log("j")
+      this.step = this.allSteps[4-num]
+      
+      for (let i = num; i < 5; i++) {
+        this.btnActive[i] = true
+      }
+    },
+
+
+    async updateStore(){
+      await this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid)
+      console.log(this.userpots)
+      await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+      console.log(this.userpots)
+      await this.$store.dispatch("pot/setPotItems")
+      await this.$store.dispatch("pot/selectPot",[])
     }
+
   },
   
 }
