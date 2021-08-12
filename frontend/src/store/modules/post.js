@@ -86,7 +86,7 @@ namespaced: true,
             }).then((res)=>{
                 if (res.data.job=="success") {
                     store.dispatch("getPostList", payload.userId);
-                    alert("삭제가 완료되었습니다.");
+                    // alert("삭제가 완료되었습니다.");
                     return true;
                 } else {
                     alert("삭제에 실패했습니다.");

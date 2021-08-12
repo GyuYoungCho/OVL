@@ -20,6 +20,9 @@ state: {
     },
     rank:null,
     isLogin: false,
+
+    modalOpen: false,
+    modalContent: '',
 },
 mutations: {
     setUserInfo(state, payload) {
@@ -60,6 +63,11 @@ mutations: {
         state.rank = payload;
     },
 
+    setModal(state, { modalOpen, modalContent }) {
+        state.modalOpen = modalOpen
+        state.modalContent = modalContent
+    }
+
 },
 getters: {
     userinfo(state) {
@@ -68,6 +76,12 @@ getters: {
     isLogin(state) {
     return state.isLogin;
     },
+    modalOpen(state) {
+        return state.modalOpen
+    },
+    modalContent(state) {
+        return state.modalContent
+    }
 },
 actions: {
     getUserInfo(store) {
@@ -105,7 +119,11 @@ actions: {
                 store.commit("setUserInfo", res.data.data);
             })
             .catch((err) => {
-                alert("이메일과 비밀번호를 확인하세요.");
+                store.commit("setModal", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요."})
+                setTimeout(() => {
+                    store.commit("setModal", { modalOpen: false, modalContent: ""})
+                }, 1000);
+                // alert("이메일과 비밀번호를 확인하세요.");
                 console.log(err);
             });
         });
@@ -160,10 +178,6 @@ actions: {
             })
         .catch((err) => {
             console.log(err);
-<<<<<<< HEAD
-        });
-    },
-=======
             });
     },
     // getOtherUserInfo(payload) {
@@ -178,7 +192,6 @@ actions: {
     //         console.log(err);
     //         });
     //     },
->>>>>>> branch 'master' of https://lab.ssafy.com/s05-webmobile2-sub3/S05P13A606.git
         
 },
 };
