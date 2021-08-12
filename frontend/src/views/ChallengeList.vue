@@ -11,7 +11,7 @@
     </div>
 
     <!-- 커스텀 모달 -->
-    <v-dialog v-model="participation" hide-overlay max-width="300">
+    <v-dialog v-model="participation" max-width="300">
       <v-card>
         <!-- 모달 타이틀 영역 -->
         <v-toolbar dense color="#004627">
@@ -286,16 +286,13 @@ export default {
     participateClick (challenge_id) {
       if (this.userinfo.challengeId.challengeId === 1) {
         // 만약 유저가 챌린지에 참여하고 있지 않은 경우라면?
-        const payload = {
-          user_id: this.userinfo.userid,
-          challenge_id
-        }
-        this.challengeAttend(payload)
-      } else {
-        // 커스텀 alert 로직이 들어오게 됩니다.
-        alert("이미 참여한 챌린지가 있습니다")
-      }
-    },
+          const payload = {
+              user_id: this.userinfo.userid,
+              challenge_id
+            }
+          this.challengeAttend(payload)
+        } 
+      },
   },
   computed: {
     // 일단 store.state 에서 4개의 리스트 (챌린지 종류에 따른 배열) 을 가져 옵니다. <위에서 v-for 로 풀어주는 용도>
