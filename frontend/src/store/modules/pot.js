@@ -46,7 +46,7 @@ export default {
       let notdatas = [];
       let user = [];
       let today = new Date().getTime();
-      console.log(today);
+
       if (state.userpots) {
         state.userpots.forEach((item) => {
           user.push(item.potid);
@@ -75,7 +75,7 @@ export default {
           }
           return 0;
         });
-      }
+      } else state.potitems = potdatas;
       if (notdatas) {
         state.passpotitems = notdatas.sort(function(pot1, pot2) {
           let x = pot1.time;
@@ -88,7 +88,7 @@ export default {
           }
           return 0;
         });
-      }
+      } else state.passpotitems = notdatas;
     },
     set_User_Pots(state, payload) {
       if (payload) {
@@ -103,8 +103,7 @@ export default {
           }
           return 0;
         });
-      }
-      console.log(state.userpots);
+      } else state.userpots = payload;
     },
     SELECT_REST(state, payload) {
       state.rest = payload;
@@ -141,8 +140,9 @@ export default {
       axios
         .get(API.url + potAPI.select(user_id))
         .then((res) => {
-          console.log(res.data);
           console.log(user_id);
+          console.log(res.data);
+
           commit("set_User_Pots", res.data);
         })
         .catch((error) => {
