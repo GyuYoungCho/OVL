@@ -167,7 +167,6 @@ export default {
     },
 
     openSnackBar(val, sign){
-      console.log("final")
       if(sign=="attend"){
         this.message = "참여되었습니다."
       }else if(sign=="cancel"){
@@ -206,10 +205,7 @@ export default {
 
 
     async updateStore(){
-      await this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid)
-      console.log(this.userpots)
       await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-      console.log(this.userpots)
       await this.$store.dispatch("pot/setPotItems")
       await this.$store.dispatch("pot/selectPot",[])
     }

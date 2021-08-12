@@ -1,6 +1,14 @@
 <template>
   <div>
-    <v-container class="px-7 mt-4">
+    
+    <v-container class="px-6 mt-4">
+      <feed-search @searchKeyword="searchKeyword"
+        @selectOrd="selectOrd"></feed-search>
+      <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
+        <v-col class="mt-5 pl-3">
+            <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
+        </v-col> 
+      </v-card>
       <!-- 캐러셀 영역 -->
       <!-- <v-carousel hide-delimiters>
         <v-carousel-item
@@ -10,7 +18,7 @@
         ></v-carousel-item>
       </v-carousel> -->
 
-      <div v-for="(info, idx) in postList" :key="idx" class="mt-9">
+      <div v-for="(info, idx) in searchPost" :key="idx" class="mt-9">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
@@ -55,16 +63,33 @@
 </template>
 
 <script>
+import FeedSearch from '@/components/basic/FeedSearch.vue';
 import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapState} from "vuex";
 import moment from 'moment'
 
 
 export default {
+  data(){
+    return{
+      search : '',
+      ord : '',
+      order : [
+        "User", "Post",
+      ],
+    }
+  },
   components: {
+    FeedSearch,
     ProfileName
   },
   methods: {
+    searchKeyword(val){ // 키워드 받아오기
+      this.search = val
+    },
+    selectOrd(val){ //카테고리 받아오기
+      this.ord = val
+    },
     contentReplace(content) { // 줄바꿈
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
@@ -95,11 +120,36 @@ export default {
   },
   computed: {
     ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo"])),
+    ...mapState("user", (["userinfo","userlist"])),
+
+    searchPost() {
+      console.log(this.ord)
+      const search = this.search.toLowerCase()
+      
+      if (!search || this.ord == 'User') return this.postList
+      
+      const allitems = this.postList.filter(item => {
+        const text = item.postId.content.toLowerCase()
+
+        return text.indexOf(search) > -1
+      })
+      return (allitems.length >5) ? allitems.slice(0,5) : allitems
+    },
+    searchUser(){
+      const search = this.search.toLowerCase()
+      if(!search || this.ord=='Post') return []
+      
+      const allitems = this.userlist.filter(item => {
+        const text = item.nickname.toLowerCase()
+        return text.indexOf(search) > -1
+      })
+       return (allitems.length >3) ? allitems.slice(0,5) : allitems
+    },
   },
   created() {
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+    this.$store.dispatch("user/getUserList");
   }
 }
 </script>

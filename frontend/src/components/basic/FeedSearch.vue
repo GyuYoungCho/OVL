@@ -1,12 +1,11 @@
 <template>
   <div>
-    
       <v-card
       rounded="pill" class="search_bar">
         <v-row height="20">
-          <v-col class="pa-0 ma-0" cols="4">
+          <v-col class="pa-0 ma-0">
             <v-select class="pa-0 ma-0 ml-3" v-model="ord"
-              height="1px" width="8px"
+              justify-content="end"
               flat solo rounded justify="start" :items="order"
               background-color="rgba(255,255,255,0)" item-color="#004627"
               color="white" append-icon="mdi-menu-down-outline"
@@ -31,9 +30,9 @@ export default {
       return{
         search : '',
         order : [
-        "닉네임", "식당",
+          "User", "Post",
         ],
-        ord : '닉네임',
+        ord : 'User',
       }
     },
     

@@ -208,9 +208,6 @@ export default {
         }
       }
 
-
-      console.log(this.pot.time)
-
       this.message = "내 팟이 수정되었어요!"
     }else{
       this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"

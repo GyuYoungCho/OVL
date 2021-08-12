@@ -40,7 +40,7 @@
             <v-divider vertical class="mx-2"></v-divider>
             <v-col cols="auto" class="pa-0">
             <v-icon>mdi-account-outline</v-icon>
-            <span>{{this.rows}}명/</span>
+            <span>{{this.potitem.pot_count}}명/</span>
             <span>{{this.potitem.total_people}}명</span>
             </v-col>
             <v-divider vertical class="mx-2"></v-divider>
@@ -66,9 +66,6 @@
 </template>
 
 <script>
-import axios from "axios";
-import API from '@/api/index.js'
-import potAPI from '@/api/pot.js'
 import moment from 'moment';
 import { mapGetters, mapActions} from 'vuex';
 import ProfileName from '@/components/basic/ProfileName.vue';
@@ -87,7 +84,6 @@ export default {
             
             btnActive: {0:false,1:false,2:false,3:false,4:false},
             
-            potattendusers : [],
             snackbar : false,
         };
     },
@@ -95,12 +91,8 @@ export default {
         potitem: Object,
         
     },
-    mounted: function(){
-
-        this.$nextTick(function(){
-            this.potUsers(this.potitem.potid)
-            this.stepToIcon(this.potitem.step)
-        })
+    created(){
+        this.stepToIcon(this.potitem.step)
     },
     computed: {
         
@@ -112,28 +104,15 @@ export default {
         meet_time(){
             return moment(this.potitem.time).format("HH:mm")
         },
-        rows() {
-            console.log(this.potattendusers.length)
-            return this.potattendusers.length
-        },
         avail(){
             
-            return (this.potitem.total_people <= this.potattendusers.length) || 
+            return (this.potitem.total_people <= this.potitem.pot_count) || 
                     ((new Date(this.potitem.time)).getTime() < (new Date()).getTime())
         }
         
     },
     methods: {
         ...mapActions('pot', ['selectPot','potAttendUsers']),
-        potUsers(pot_id) {
-            axios.get(API.url + potAPI.attendcount(pot_id))
-                .then((res) => {
-                this.potattendusers = res.data
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        },
         openDetailModal(val){
             this.selectPot(this.potitem)
             this.potAttendUsers(this.potitem.potid)
@@ -145,7 +124,6 @@ export default {
             this.$emit('openAttendModal', val)
         },
         
-
         stepToIcon(item) {
             for (let i=0;i<5;i++){
                 if(this.allSteps[i]==item){
