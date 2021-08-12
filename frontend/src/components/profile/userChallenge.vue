@@ -1,6 +1,6 @@
 <template>
 <v-container class="mb-4">
-        <div class="icon mt-4">
+        <div class="icon mb-4">
             <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)">
             <img src="@/assets/icon/recipe.png" alt="" class="icon-btn-img"></button>
             <button class="icon-btn" v-else @click="selectTypeIcon(0)">
@@ -59,9 +59,8 @@
                     </div>
                     <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
-                      <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                      <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" class="myParticipation" style="background-color: #CF5555">참여중</button>
+                      <button v-else @click="challengeEnd(challenge.challengeId)" class="myParticipation" style="background-color: #CF5555">참여종료</button>
                     </div>
                   </article>
                 </v-container>
@@ -206,7 +205,10 @@
 </template>
 
 <script>
+import axios from 'axios';
 import {mapGetters, mapState, mapActions} from "vuex";
+import API from '@/api/index.js'
+import challengeAPI from '@/api/challenge.js'
 
 export default {
 data() {
@@ -218,8 +220,8 @@ data() {
         // allSteps: [
         // "화장품", "레시피", "옷",
         // ],
-    showAll: false,
-    btnActive: {0:true,1:false,2:false},
+    showAll: true,
+    btnActive: {0:false,1:false,2:false},
     }
 },
 methods: {
@@ -246,6 +248,23 @@ methods: {
             console.log("btn",this.btnActive)
             console.log("show",this.showAll)
         }
+    },
+    challengeEnd(){
+      if(this.userinfo.challengeId.challengeId === 1){
+        console.log("기본 참여 챌린지 입니다.")
+      }else{
+        axios({
+          method: "get",
+          url: API.url + challengeAPI.delete(this.userinfo.userid),
+        }).then((res)=>{
+          if(res.data === "success"){
+            console.log("챌린지 중단")
+          }
+        }).catch((err)=>{
+          console.log(err)
+        })
+      }
+
     },
 },
 computed: {

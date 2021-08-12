@@ -23,7 +23,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
-                        <img :src="postPath(idx)" width=90px;>  
+                        <img :src="info.filepath" width=80px;>   
 
                     </div>
 
@@ -36,7 +36,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
-                        <img :src="postPath(idx)" width=90px;>  
+                        <img :src="info.filepath" width=80px;>    
 
                     </div>
 
@@ -49,7 +49,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
-                        <img :src="postPath(idx)" width=90px;>  
+                        <img :src="info.filepath" width=80px;>  
 
                     </div>
 
@@ -62,7 +62,6 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
-                        <img :src="postPath(idx)" width=90px;>  
                         <img :src="info.filepath" width=80px;>  
 
                     </div>
@@ -80,8 +79,8 @@ export default {
   data() {
     return {
 
-      showAll: false,
-      btnActive: {0:true,1:false,2:false},
+      showAll: true,
+      btnActive: {0:false,1:false,2:false},
     }
   },
   methods: {

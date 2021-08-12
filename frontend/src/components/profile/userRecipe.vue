@@ -3,18 +3,18 @@
         <div class="px-7 mt-4">
         </div>
             <!-- 사진 배열하기 -->
-            <section  class="postArea">
-                <v-row>
-                    <div v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
-                        
-                        <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(recipe)" class="box">
-                            <img :src="srcPath(recipe)" width=100%  style="border-radius: 7px;">  
+            <v-container>
+              <v-row>
+                <v-col v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
 
+                        <!-- recipe 대표 사진, 내용-->
+                        <div @click="moveDetail(recipe)" class="box">
+                            <img :src="info.filepath" width=100% > 
                         </div>
-                    </div>
-                </v-row>
-            </section>    
+
+                </v-col>
+              </v-row>
+            </v-container> 
         </v-container>
 </template>
 
@@ -27,8 +27,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['myrecipes','fetchRecipeDetail', 'fetchRecipeComments', ]),
-
+    ...mapActions(['search_myrecipe','fetchRecipeDetail', 'fetchRecipeComments']),
     moveDetail(recipe) { // 게시글 상세보기
       this.fetchRecipeDetail(recipe.recipeId)
       this.fetchRecipeComments(recipe.recipeId)
@@ -37,11 +36,11 @@ export default {
 
   },
   computed: {
-    ...mapGetters(['recipes', 'myrecipes', ]),
+    ...mapGetters(['recipes', 'myrecipes']),
     ...mapGetters("user", (["userinfo"])),
   },
   created() {
-      this.myrecipes(this.userinfo.userid)
+      this.search_myrecipe(this.userinfo.userid)
   },
 }
 </script>
