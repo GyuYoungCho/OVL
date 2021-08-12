@@ -7,47 +7,56 @@
                         <div class="image text-center">
                             <button class="imgChange" >
                             <!--<img :src="previewItem.src" class="profile-img2" width="100" height="100" v-if="isChanged">-->
-                            <label for="file"><img :src="!!picture ? picture.previewURL : userPath" class="profile-img2" width="100" height="100"></label>
-                            <input id="file" type="file" ref="files" multiple @input="fileUpload">
+                                <label for="file"><img :src="!!picture ? picture.previewURL : userPath" class="profile-img2" width="100" height="100"></label>
+                                <input id="file" type="file" ref="files" multiple @input="fileUpload">
                             </button>
-                    <div class="mb-0 mt-0">{{nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
-                        </div>
-                        <div class="rankingbox" style="font-size:xx-small; margin: 30px">
-                            <div class="d-flex justify-content-center">
-                                <div style="margin: 10px"><div class="d-flex flex-column"> <span class="rank">rank</span> <span class="number1">{{rank}}</span> </div></div>
-                                <div style="margin: 10px">
-                                    <div class="d-flex flex-column"> 
-                                        <span class="following">following</span>
-                                        <div @click="openDialog(0)">
-                                        <span class="number2">{{following}}</span>
+                                <div class="mb-0 mt-0">{{nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
+                                    </div>
+                                    <div class="rankingbox" style="font-size:xx-small; margin: 30px">
+                                        <div class="d-flex justify-content-center">
+                                            <div style="margin: 10px">
+                                                <div class="d-flex flex-column"> 
+                                                    <span class="rank">rank</span>
+                                                    <span class="number1" style="font-size:medium">{{rank}}</span> 
+                                                </div>
+                                            </div>
+                                            <v-spacer></v-spacer>
+                                            <div style="margin: 10px">
+                                                <div class="d-flex flex-column"> 
+                                                    <span class="following">following</span>
+                                                    <div @click="openDialog(0)">
+                                                    <span class="number2" style="font-size:medium">{{following}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <v-spacer></v-spacer>
+                                            <div style="margin: 10px">
+                                                <div class="d-flex flex-column">
+                                                    <span class="follower">followers</span>
+                                                    <div @click="openDialog(1)">
+                                                    <span class="number3" style="font-size:medium">{{follower}}</span>
+                                                </div>
+                                            </div>
+                                            </div>
                                         </div>
+
+                                        <div> 
+                                            <button class="bg-freditgreen" @click="onClickEditUser()">회원 정보 수정</button>
+                                        </div>
+                                        
                                     </div>
                                 </div>
-                                <div style="margin: 10px"><div class="d-flex flex-column">
-                                    <span class="follower">followers</span>
-                                    <div @click="openDialog(1)">
-                                    <span class="number3">{{follower}}</span>
-                                    </div>
-                                </div></div>
-                            </div>
-
-                            <div> 
-                                <button class="bg-freditgreen" @click="onClickEditUser()">회원 정보 수정</button>
-                            </div>
-                            
-                        </div>
-                    </div>
                 </div>
-                <v-dialog ref="modal1" v-model="dialog" persistent max-width="900px">
+                <v-dialog ref="modal1" v-model="dialog" persistent max-width="300px">
                     <v-card>
                         <v-card-title>
                         <template>
-                            <v-icon style="margin-right:10px;" large color="#004627" >List</v-icon>  <!--"#41B883" -->
+                            <v-icon style="margin-right:10px;" large color="#41B883"  >List</v-icon>  <!--"#41B883" -->
                             <!--<span class="headline" large>팔로우 목록</span>-->
                         </template>
                         <v-spacer></v-spacer>
                         <v-btn icon @click="closeDialog('modal1')"> <!-- closeDialog 클릭 이벤트 -->
-                            <v-icon>x</v-icon>
+                            <v-icon>mdi-close</v-icon>
                         </v-btn>
                         </v-card-title>
                         <v-card-text>

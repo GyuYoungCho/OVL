@@ -3,23 +3,23 @@
         <div class="px-7 mt-4">
         </div>
             <!-- 사진 배열하기 -->
-            <section  class="postArea">
-                <div>
-                    <div v-for="(info, idx) in postList" :key="idx" class="wrapper">
-                        
-                        <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(idx)" class="box">
-                            <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
+            <v-container>
+              <v-row>
+                <v-col v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
 
+                        <!-- recipe 대표 사진, 내용-->
+                        <div @click="moveDetail(recipe)" class="box">
+                            <img :src="info.filepath" width=100% > 
                         </div>
-                    </div>
-                </div>
-            </section>    
+
+                </v-col>
+              </v-row>
+            </v-container> 
         </v-container>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 
 export default {
   data() {
@@ -27,18 +27,20 @@ export default {
     }
   },
   methods: {
-    moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+    ...mapActions(['search_myrecipe','fetchRecipeDetail', 'fetchRecipeComments']),
+    moveDetail(recipe) { // 게시글 상세보기
+      this.fetchRecipeDetail(recipe.recipeId)
+      this.fetchRecipeComments(recipe.recipeId)
+      this.$router.push({ name: 'RecipeDetail' })
     },
 
   },
   computed: {
-    ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo"])),
+    ...mapGetters(['recipes', 'myrecipes']),
+    ...mapGetters("user", (["userinfo"])),
   },
   created() {
-    this.$store.dispatch("post/getPostList", this.userinfo.userid);
-    this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+      this.search_myrecipe(this.userinfo.userid)
   },
 }
 </script>

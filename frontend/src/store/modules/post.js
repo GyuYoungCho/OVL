@@ -9,8 +9,25 @@ namespaced: true,
         postList:[],
         postLikeList:[],
         post:{},
-        postPhotoList:[],
-	},
+        postPhotoList: [],
+        foodPostList: [],
+        clothPostList: [],
+        cosmeticPostList: [],
+    },
+    getters: {
+        postList(state) {
+            return state.postList
+        },
+        foodPostList(state) {
+            return state.foodPostList
+        },
+        clothPostList(state) {
+            return state.clothPostList
+        },
+        cosmeticPostList(state) {
+            return state.cosmeticPostList
+        },
+    },
 	mutations: {
         GET_POST_LIST(state, payload) {
             state.postList = payload;
@@ -23,7 +40,13 @@ namespaced: true,
         }, 
         GET_PHOTO_LIST(state, payload) {
             state.postPhotoList = payload
-        }
+        },
+        SET_USER_POST_LIST (state, payload) {
+            state.postList = payload
+            state.foodPostList = payload.filter((eachList)=> eachList.postId.category===1)
+            state.clothPostList = payload.filter((eachList)=> eachList.postId.category===2)
+            state.cosmeticPostList = payload.filter((eachList)=> eachList.postId.category===3)
+        },
 	},
 	actions: {
         getPostList(store, payload) {
@@ -32,6 +55,8 @@ namespaced: true,
                 url: API.url + postAPI.select_all(payload),
             }).then((res)=>{
                 store.commit("GET_POST_LIST", res.data);
+                store.commit("SET_USER_POST_LIST", res.data);
+                console.log("확인 데이터", res.data)
             }).catch((err)=>{
                 console.log(err);
             })

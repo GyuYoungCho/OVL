@@ -29,16 +29,16 @@ export default {
       return state.cosmeticChallengeList
     },
     userchallengeList (state) {
-      return state.challengeList
+      return state.userchallengeList
     },
     userfoodChallengeList (state) {
-      return state.foodChallengeList
+      return state.userfoodChallengeList
     },
     userclothChallengeList (state) {
-      return state.clothChallengeList
+      return state.userclothChallengeList
     },
     usercosmeticChallengeList (state) {
-      return state.cosmeticChallengeList
+      return state.usercosmeticChallengeList
     },
   },
   mutations: {
@@ -51,9 +51,9 @@ export default {
     },
     SET_USER_CHALLENGE_LISTS (state, userchallengeList) {
       state.userchallengeList = userchallengeList
-      state.userChallengeList = userchallengeList.filter((eachList)=> eachList.category===1)
+      state.userfoodChallengeList = userchallengeList.filter((eachList)=> eachList.category===1)
       state.userclothChallengeList = userchallengeList.filter((eachList)=> eachList.category===2)
-      state.userfoodChallengeList = userchallengeList.filter((eachList)=> eachList.category===3)
+      state.usercosmeticChallengeList = userchallengeList.filter((eachList)=> eachList.category===3)
     },
 
   },
