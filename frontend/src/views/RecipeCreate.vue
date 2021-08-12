@@ -161,11 +161,11 @@ export default {
 
       axios.post(URL, params)
       .then((response) => {
-        alert("보냈슴!");
+        // alert("보냈슴!");
         if (response.data.job=="success") this.$router.push({name:"RecipeSearch"});
       })
       .catch((error) => {
-        alert("못보냈슴!");
+        // alert("못보냈슴!");
         console.log(error);
       })
     }

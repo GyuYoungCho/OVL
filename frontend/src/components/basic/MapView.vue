@@ -17,6 +17,9 @@ export default {
             poti : null,
         }
     },
+    props:{
+        step : String
+    },
     computed: {
         ...mapGetters('pot',['potitems']),
     },

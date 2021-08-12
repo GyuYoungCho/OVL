@@ -82,7 +82,7 @@ namespaced: true,
             }).then((res)=>{
                 if (res.data=="success") {
                     // 성공하면 댓글 리스트 다시 불러오기
-                    alert("수정 되었습니다!");
+                    // alert("수정 되었습니다!");
                     store.dispatch("getCommentList", payload.postId); 
                 }
             }).catch((err)=>{

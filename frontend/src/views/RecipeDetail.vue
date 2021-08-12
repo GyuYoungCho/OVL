@@ -22,7 +22,9 @@
         <div class="modalContentButtonArea">
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="onDeleteConfirmClick">확인</button>
+          <button class="modalContentButton" @click="onDeleteReplyModalClick" v-if="deletingReply">확인</button>
+          <button class="modalContentButton" @click="onDeleteCommentModalClick" v-else-if="deletingComment">확인</button>
+          <button class="modalContentButton" @click="onDeleteConfirmClick" v-else>확인</button>
           <v-spacer></v-spacer>
           <button class="modalContentButton" @click="deleteModal = false">취소</button>
           <v-spacer></v-spacer>
@@ -246,6 +248,11 @@ export default {
     modifyReplyId: -1,
 
     deleteModal: false,
+    deletingComment: false,
+    deletingCommentId: 0,
+    deletingReply: false,
+    deletingReplyId: 0,
+
     updateModal: false,
   }),
   methods: {
@@ -322,11 +329,19 @@ export default {
       this.modifyCommentId = -1
     },
     onDeleteCommentClick (recipeCommentId) {
+      this.deletingComment = true
+      this.deleteModal = true
+      this.deletingCommentId = recipeCommentId
+    },
+    onDeleteCommentModalClick () {
       const data = {
         recipeId: this.recipe.recipeId,
-        recipeCommentId,
+        recipeCommentId: this.deletingCommentId,
       }
       this.deleteRecipeComment(data)
+      this.deleteModal = false
+      this.deletingComment = false
+      this.deletingCommentId = 0
     },
     onReplyLikeClick(reply) {
       const data = {
@@ -364,14 +379,23 @@ export default {
       this.modifyCommentId = -1
     },
     onDeleteReplyClick (reply) {
+      this.deletingReply = true
+      this.deleteModal = true
+      this.deletingCommentId = reply.recipeCommentId.recipeCommentId
+      this.deletingReplyId = reply.recipeReplyId
+    },
+    onDeleteReplyModalClick () {
       const data ={
-        recipeCommentId: reply.recipeCommentId.recipeCommentId,
-        recipeReplyId: reply.recipeReplyId,
+        recipeCommentId: this.deletingCommentId,
+        recipeReplyId: this.deletingReplyId,
         recipeId: this.recipe.recipeId,
       }
       this.deleteRecipeReply(data)
+      this.deleteModal = false
+      this.deletingReply = false
+      this.deletingCommentId = 0
+      this.deletingReplyId = 0
     },
-
     onRegistCommentBtnClick () {
       this.registComment(this.comment)
       this.content = ""

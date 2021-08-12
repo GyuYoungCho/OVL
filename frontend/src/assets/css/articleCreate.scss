@@ -77,6 +77,15 @@
     text-align: center;
   }
 
+  .disabledBtnDiv {
+    background-color: $hy-grey;
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 7px 0px;
+    color: white;
+    text-align: center;
+  }
+
   .photoClick {
     color: $freditgreen;
     border-radius: 50%;

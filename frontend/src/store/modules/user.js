@@ -20,8 +20,11 @@ export default {
     },
     rank: null,
     isLogin: false,
-  },
-  mutations: {
+
+    modalOpen: false,
+    modalContent: '',
+},
+mutations: {
     setUserInfo(state, payload) {
       state.isLogin = true;
       state.userinfo = payload;
@@ -59,16 +62,28 @@ export default {
     setUserRank(state, payload) {
       state.rank = payload;
     },
-  },
-  getters: {
+
+    setModal(state, { modalOpen, modalContent }) {
+        state.modalOpen = modalOpen
+        state.modalContent = modalContent
+    }
+
+},
+getters: {
     userinfo(state) {
       return state.userinfo;
     },
     isLogin(state) {
       return state.isLogin;
     },
-  },
-  actions: {
+    modalOpen(state) {
+        return state.modalOpen
+    },
+    modalContent(state) {
+        return state.modalContent
+    }
+},
+actions: {
     getUserInfo(store) {
       let token = localStorage.getItem("access-token");
       //console.log("jwt 정보" + token);
@@ -92,22 +107,26 @@ export default {
         });
     },
     login(store, loginObj) {
-      return new Promise(function(resolve) {
-        axios({
-          method: "post",
-          url: API.url + userAPI.login(),
-          data: loginObj,
-        })
-          .then((res) => {
-            localStorage.setItem("access-token", res.headers["access-token"]);
-            resolve();
-            store.commit("setUserInfo", res.data.data);
-          })
-          .catch((err) => {
-            alert("이메일과 비밀번호를 확인하세요.");
-            console.log(err);
-          });
-      });
+        return new Promise(function(resolve) {
+            axios({
+                method: "post",
+                url: API.url + userAPI.login(),
+                data: loginObj,
+            })
+            .then((res) => {
+                localStorage.setItem("access-token", res.headers["access-token"]);
+                resolve();
+                store.commit("setUserInfo", res.data.data);
+            })
+            .catch((err) => {
+                store.commit("setModal", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요."})
+                setTimeout(() => {
+                    store.commit("setModal", { modalOpen: false, modalContent: ""})
+                }, 1000);
+                // alert("이메일과 비밀번호를 확인하세요.");
+                console.log(err);
+            });
+        });
     },
     logout(store) {
       store.commit("setLogout");
@@ -160,20 +179,9 @@ export default {
           this.state.isLogin = true;
         })
         .catch((err) => {
-          console.log(err);
+            console.log(err);
         });
     },
-    // getOtherUserInfo(payload) {
-    //     axios({
-    //         method: "get",
-    //         url: API.url + userAPI.select(payload),
-    //     }).then((res) => {
-    //             console.log(" 다른 유저 : ", res.data);
-    //         })
-    //         .catch((err) => {
-    //         console.log("ohter User 정보 조회 실패");
-    //         console.log(err);
-    //         });
-    //     },
-  },
+        
+},
 };

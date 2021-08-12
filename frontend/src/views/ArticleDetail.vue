@@ -23,7 +23,9 @@
             <div class="modalContentButtonArea">
               <v-spacer></v-spacer>
               <v-spacer></v-spacer>
-              <button class="modalContentButton" @click="postModify('삭제')">확인</button>
+              <button class="modalContentButton" @click="replyDelete" v-if="deletingReply">확인</button>
+              <button class="modalContentButton" @click="commentDelete" v-else-if="deletingComment">확인</button>
+              <button class="modalContentButton" @click="postModify('삭제')" v-else>확인</button>
               <v-spacer></v-spacer>
               <button class="modalContentButton" @click="deleteModal = false">취소</button>
               <v-spacer></v-spacer>
@@ -130,7 +132,7 @@
             </div>
             <div class="inline" v-if="isCommentUser(info)">
               <button @click="commentModify(info)">수정</button> | 
-              <button @click="commentDelete(info)">삭제</button>
+              <button @click="deleteModalPopup('comment', info)">삭제</button>
             </div>
           </div>
 
@@ -167,7 +169,7 @@
                   좋아요 {{replyInfo.like_count}}개 &nbsp;
                   <div class="inline" v-if="isReplyUser(replyInfo)">
                     <button @click="replyModify(replyInfo)">수정</button> | 
-                    <button @click="replyDelete(replyInfo)">삭제</button>
+                    <button @click="deleteModalPopup('reply', replyInfo)">삭제</button>
                   </div>
                 </div>
 
@@ -203,8 +205,12 @@ export default {
       inputBtn:"게시", // 댓글 입력 창 게시 or 수정
       replyBtnClickId:0,
 
+      // 모달 관련 변수
       deleteModal: false,
-      updateModal: false,
+      // deletingArticle: false,
+      deletingComment: false,
+      deletingReply: false,
+      deletingInfo: null,
     }
   },
   methods: {
@@ -233,23 +239,40 @@ export default {
       this.commentInput = replyInfo.content;
       this.replyId = replyInfo.postReplyId;
     },
-    commentDelete(info) { // 댓글 삭제
-      if (confirm("정말 삭제하시겠습니까?")) {
+    deleteModalPopup(type, info) {
+      if (type==='comment') {
+        this.deletingComment = true
+      } else {
+        this.deletingReply = true
+      }
+      this.deleteModal = true
+      this.deletingInfo = info
+    },
+    // @@@@@@@@@@@ 댓글 삭제 로직 @@@@@@@@@@@
+    commentDelete() { // 댓글 삭제
+      const info = this.deletingInfo
+      // if (confirm("정말 삭제하시겠습니까?")) {
         let paylaod = {
           "commentId" : info.postCommentId,
           "postId" : this.post.postId
         }
+        this.deletingComment = false
+        this.deleteModal = false
         this.$store.dispatch("postComment/commentDelete", paylaod);
-      }
+      // }
     },
-    replyDelete(replyInfo) { // 답글 삭제
-      if (this.alertDeleteConfirm()) {
+    // @@@@@@@@@@@ 답글 삭제 로직 @@@@@@@@@@@
+    replyDelete() { // 답글 삭제
+      const replyInfo = this.deletingInfo
+      // if (this.alertDeleteConfirm()) {
         let paylaod = {
           "replyId" : replyInfo.postReplyId,
           "postId" : this.post.postId
         }
+        this.deletingReply = false
+        this.deleteModal = false
         this.$store.dispatch("postReply/replyDelete", paylaod);
-      }
+      // }
     },
     isUser() { // 유저가 맞다면 수정, 삭제 버튼 생기기
       if (this.post.userId.userid == this.userinfo.userid) return true;
