@@ -261,7 +261,8 @@ export default {
         })
         .catch(err => console.error(err))
     },
-    myrecipes ({ commit }, userId) {
+    //이름이 겹치면 안된다!!! 알겠니?
+    search_myrecipe({ commit }, userId) {
       const URL = API.url + recipeAPI.search_myrecipe(userId)
       axios.get(URL)
         .then(res => {
