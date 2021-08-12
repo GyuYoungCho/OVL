@@ -63,6 +63,7 @@
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="box">
                         <img :src="postPath(idx)" width=90px;>  
+                        <img :src="info.filepath" width=80px;>  
 
                     </div>
 
@@ -85,9 +86,6 @@ export default {
   },
   methods: {
         ...mapActions("post", ["getPostList", ]),
-    postPath(idx){ // 대표 이미지 출력
-      return "http://localhost:8080/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
-    },
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
     },

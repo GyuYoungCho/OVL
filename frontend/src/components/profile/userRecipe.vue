@@ -8,8 +8,8 @@
                     <div v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
                         
                         <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(recipe)" class="box">
-                            <img :src="srcPath(recipe)" width=100%  style="border-radius: 7px;">  
+                        <div @click="moveDetail(idx)" class="box">
+                            <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
 
                         </div>
                     </div>

@@ -223,6 +223,9 @@ data() {
     }
 },
 methods: {
+    moveDetail(idx) { // 게시글 상세보기
+    this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+    },
       ...mapActions("challenge", ["fetchUserChallengeList", "challengeAttend"]),
     selectTypeIcon(num){
         if(this.btnActive[num] === true){

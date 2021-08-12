@@ -16,10 +16,7 @@
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
           <v-row>
             <v-col cols="6" md="1">
-              <div class="postProfile">
-                <img :src="userPath(idx)" width=17% style="border-radius: 50%;">
-                <div class="ml-1 inline" style="font-size:large">{{info.postId.userId.nickname}}</div>
-              </div>
+              <ProfileName :user="info.postId.userId"></ProfileName>
             </v-col>
             <v-col cols="6" md="1" style="text-align:right">
               <img :src="iconPath(idx)" width=15%>
@@ -28,7 +25,7 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-            <img :src="postPath(idx)" width=100%  style="border-radius: 7px;" class="my-1">
+            <img :src="postList[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
             <div class="contentAndTime">
               <div v-html="contentReplace(info.postId.content)"></div>
               <span>{{ calTime(info.postId.time) }}</span>
@@ -58,32 +55,24 @@
 </template>
 
 <script>
+import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapState} from "vuex";
-import API from '@/api/index.js'
 import moment from 'moment'
 
 
 export default {
-  data() {
-    return {
-
-    }
+  components: {
+    ProfileName
   },
   methods: {
     contentReplace(content) { // 줄바꿈
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
-    },
-    postPath(idx){ // 대표 이미지 출력
-      return API.url+"/post/"+this.postList[idx].postId.postId+"/"+this.postList[idx].filepath.split('/').reverse()[0];
     },
     iconPath(idx) { // 카테고리 이미지 출력
       var category = this.postList[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
-    },
-    userPath(idx) { // 프로필 사진 이미지 출력
-      return API.url+"/profile/"+this.postList[idx].postId.userId.userid+"/"+this.postList[idx].postId.userId.stored_file_path.split('/').reverse()[0];
     },
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});

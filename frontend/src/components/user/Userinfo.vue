@@ -78,16 +78,8 @@ export default {
         passwordCheckFormValid () {
             return !this.passwordCheck || (this.password===this.passwordCheck)
         },
-        // modifyFormValid () {
-        //     const allExist = !!this.nickname && !!this.phone
-        //     const allValid = this.nicknameValid
-        //     return allExist && allValid
-        // }
     },
     methods: {
-        // onClickModify(){
-        //     this.$router.push({ name : "ModifyUser"})
-        // },
         onClickNicknameValidate () {
         const URL = API.url + userAPI.nickname_check(this.nickname)
             axios.get(URL)
@@ -122,11 +114,7 @@ export default {
                 "password": pw,
                 "phone": this.phone,
                 "name": '',
-                "account_open": 0,
-                "challenge_id": 0,
                 "email": "string",
-                "experience": 0,
-                "warning": 0
             }
 
             axios.put(URL, payload).then(res => {

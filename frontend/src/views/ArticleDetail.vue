@@ -1,16 +1,47 @@
 <template>
   <div>
     <v-container class="px-7 mt-4">
+      <!-- 게시물 삭제 모달 -->
+      <v-dialog v-model="deleteModal" hide-overlay max-width="300">
+        <v-card>
+          <!-- 모달 타이틀 영역 -->
+          <v-toolbar dense color="#004627">
+            <v-toolbar-title class="modalTitle">{{ post.title }}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon dark @click="deleteModal = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <!-- 모달 컨텐츠 영역 -->
+          <v-container>
+          <div class="modalContent">
+            <div class="mb-3">
+              <span class="modalContentMessage">
+                정말로 삭제하시겠습니까?
+              </span>
+            </div>
+            <div class="modalContentButtonArea">
+              <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
+              <button class="modalContentButton" @click="postModify('삭제')">확인</button>
+              <v-spacer></v-spacer>
+              <button class="modalContentButton" @click="deleteModal = false">취소</button>
+              <v-spacer></v-spacer>
+              <v-spacer></v-spacer>
+            </div>
+          </div>
+          </v-container>
+        </v-card>
+      </v-dialog>
+
+
       <!-- 게시글 시작 -->
       <div>
         <!-- post header - 프로필 사진, 유저 닉네임, 좋아요, 댓글 -->
         <v-row>
 
           <v-col cols="6" md="1">
-            <div class="postProfile">
-              <img :src="userPath()" width=17% style="border-radius: 50%;">
-              <div class="ml-1 inline" style="font-size:large">{{post.userId.nickname}}</div>
-            </div>
+            <ProfileName :user="post.userId"></ProfileName>
           </v-col>
 
           <!-- 게시글 좋아요, 댓글 -->
@@ -35,7 +66,8 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)">
+                <!-- <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)"> -->
+                <v-list-item v-for="(item, index) in items" :key="index" @click="onDeleteUpdateClick(item.title)">
                   <v-list-item-title>{{ item.title }}</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -47,7 +79,7 @@
         <!-- 사진 캐러셀 -->
         <v-carousel class="carouselBorder my-1" hide-delimiters height="30vh" style="border-radius: 8px;">
           <v-carousel-item
-            v-for="(info,idx) in postPhotoList" :key="idx" :src="photoPath(idx)"
+            v-for="(info,idx) in postPhotoList" :key="idx" :src="postPhotoList[idx].filepath"
           ></v-carousel-item>
         </v-carousel>
 
@@ -71,7 +103,8 @@
           <!-- 댓글 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
           <v-row>
             <v-col cols="10" md="1">
-              <img :src="commentUserPath(info)" width=10% style="border-radius: 50%;">
+              
+              <img :src="info.userId.filepath" width=10% style="border-radius: 50%;">
               {{info.userId.nickname}} &nbsp;
               {{info.content}}
             </v-col>
@@ -114,7 +147,7 @@
                 <!-- 답글 프로필, 유저 닉네임, 답글 내용, 하트 -->
                 <v-row>
                   <v-col cols="10" md="1">
-                    <img :src="replyUserPath(replyInfo)" width=10% style="border-radius: 50%;">
+                    <img :src="replyInfo.postCommentId.userId.filepath" width=10% style="border-radius: 50%;">
                     {{replyInfo.userId.nickname}} &nbsp;
                     {{replyInfo.content}}
                   </v-col>
@@ -149,9 +182,12 @@
 </template>
 
 <script>
+import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapState} from "vuex";
-import API from '@/api/index.js'
 export default {
+  components: {
+    ProfileName
+  },
   data() {
     return {
       commentInput:"", // 댓글 입력 창
@@ -166,12 +202,23 @@ export default {
       ],
       inputBtn:"게시", // 댓글 입력 창 게시 or 수정
       replyBtnClickId:0,
+
+      deleteModal: false,
+      updateModal: false,
     }
   },
   methods: {
     alertDeleteConfirm() { // 삭제 alert
       var result = confirm("정말 삭제하시겠습니까?");
       return result;
+    },
+    onDeleteUpdateClick(title) {
+      console.log(title)
+      if (title==="삭제") {
+        this.deleteModal = true
+      } else {
+        this.postModify(title)
+      }
     },
     commentModify(info) { // 댓글 수정 
       this.isComment = true;
@@ -187,7 +234,7 @@ export default {
       this.replyId = replyInfo.postReplyId;
     },
     commentDelete(info) { // 댓글 삭제
-      if (this.alertDeleteConfirm()) {
+      if (confirm("정말 삭제하시겠습니까?")) {
         let paylaod = {
           "commentId" : info.postCommentId,
           "postId" : this.post.postId
@@ -219,14 +266,14 @@ export default {
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
       if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
       else { // 삭제
-        if (this.alertDeleteConfirm()) {
-          var payload = {
-            "userId" : this.userinfo.userid,
-            "postId" : this.post.postId
-          }
-          var move = this.$store.dispatch("post/postDelete", payload);
-          if (move) this.$router.push({path:"/"});
+        // if (this.alertDeleteConfirm()) {
+        var payload = {
+          "userId" : this.userinfo.userid,
+          "postId" : this.post.postId
         }
+        var move = this.$store.dispatch("post/postDelete", payload);
+        if (move) this.$router.push({path:"/"});
+        // }
       }
     },
     replyClick(info) { // 답글 보기 or 숨기기
@@ -244,18 +291,6 @@ export default {
       if (this.showReply.includes(postCommentId)) return true;
       else return false;
     },  
-    userPath() { // 프로필 사진 이미지 출력
-      return API.url+"/profile/"+this.post.userId.userid+"/"+this.post.userId.stored_file_path.split('/').reverse()[0];
-    },
-    commentUserPath(info) { // 댓글 프로필 사진 이미지 출력
-      return API.url+"/profile/"+info.postId.userId.userid+"/"+info.postId.userId.stored_file_path.split('/').reverse()[0];
-    },
-    replyUserPath(info) { // 답글 프로필 사진 이미지 출력
-      return API.url+"/profile/"+info.postCommentId.postId.userId.userid+"/"+info.postCommentId.postId.userId.stored_file_path.split('/').reverse()[0];
-    },
-    photoPath(idx){ // 대표 이미지 출력
-      return API.url+"/post/"+this.post.postId+"/"+this.postPhotoList[idx].filepath.split('/').reverse()[0];
-    },
     isPostLike() { // 게시글 좋아요 눌렀는지 확인
       if (this.postLikeList.includes(this.post.postId)) return true;
       else return false;
