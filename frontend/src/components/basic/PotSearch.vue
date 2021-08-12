@@ -3,7 +3,7 @@
     
       <v-card
       rounded="pill" class="search_bar">
-        <v-row height="20px">
+        <v-row height="20">
           <v-col class="pa-0 ma-0">
             <v-select class="pa-0 ma-0 ml-3" v-model="ord"
               height="1px" width="8px"

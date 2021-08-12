@@ -334,6 +334,18 @@ public class UserController {
         }
 	}
 	
+	@ApiOperation(value = "모든 회원 조회")
+	@GetMapping("/select_all")
+	public ResponseEntity<List<User>> select_all() {
+		List<User> users = userDao.findAll();
+		
+		if (users!=null) {
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
+        }
+	}
+	
 	@ApiOperation(value = "회원 조회", response = User.class)
 	@GetMapping("/select/{user_id}")
 	public ResponseEntity<User> select(@PathVariable int user_id) {

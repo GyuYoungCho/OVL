@@ -4,7 +4,36 @@
       <section  class="vetparty">
       <pot-search class="mt-3" @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></pot-search>
-      <map-view class="mt-6"></map-view>
+
+        <div class ="mt-7">
+        <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
+          <img src="@/assets/icon/notmeat.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(0)">
+          <img src="@/assets/icon/meat.png" alt="" ></button>
+
+        <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/notfish.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+          <img src="@/assets/icon/fish.png" alt=""></button>
+
+        <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/notmilk.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(2)">
+          <img src="@/assets/icon/milk.png" alt=""></button>
+        
+        <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/notegg.png" alt="" ></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(3)">
+          <img src="@/assets/icon/egg.png" alt="" ></button>
+          
+        <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/notvege.png" alt=""></button>
+        <button class="icon-btn" v-else @click="selectTypeIcon(4)">
+          <img src="@/assets/icon/vege.png" alt="" ></button>
+      </div>
+
+
+      <map-view class="mt-6" :step="step"></map-view>
      
      <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
         <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
@@ -66,6 +95,8 @@ export default {
       order : [
         "닉네임", "식당",
       ],
+      btnActive: {0:false,1:false,2:false,3:false,4:false},
+      step : '',
       
       overlay : false,
       modalDetail : false,
@@ -108,6 +139,8 @@ export default {
       this.modalMessage = false
       this.snackbar = false
       this.overlay = false
+
+      this.updateStore()
   },
   methods:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
@@ -156,16 +189,33 @@ export default {
         this.snackbar = false
       }, 2000)
 
-      // this.$router.go();
+      this.$router.go();
+    },
+
+    selectTypeIcon(num){
+      for (let i = 0; i < num; i++) {
+        this.btnActive[i] = false
+      }
+      console.log("j")
+      this.step = this.allSteps[4-num]
+      
+      for (let i = num; i < 5; i++) {
+        this.btnActive[i] = true
+      }
+    },
+
+
+    async updateStore(){
+      await this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid)
+      console.log(this.userpots)
+      await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+      console.log(this.userpots)
+      await this.$store.dispatch("pot/setPotItems")
+      await this.$store.dispatch("pot/selectPot",[])
     }
+
   },
-  mounted: function(){
-    this.$nextTick(function(){
-      this.$store.dispatch("pot/setPotItems")
-      this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
-      this.$store.dispatch("pot/selectPot",[])
-    })
-  }
+  
 }
 </script>
 
