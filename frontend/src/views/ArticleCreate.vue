@@ -1,6 +1,41 @@
 <template>
   <div>
     <v-container>
+      <!-- 잠깐 보이는 모달 -->
+      <v-dialog v-model="modalOpen" max-width="300" persistent @click:outside="nothing">
+        <v-card>
+          <!-- 모달 타이틀 영역 -->
+          <v-toolbar dense color="#004627">
+            <v-toolbar-title class="modalTitle">
+              <!-- {{ modaltitle }} -->
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            
+          </v-toolbar>
+          <!-- 모달 컨텐츠 영역 -->
+          <v-container>
+          <div class="modalContent">
+            <div class="mb-3">
+              <span class="modalContentMessage">
+                {{ modalContent }}
+              </span>
+            </div>
+          </div>
+          <div class="modalContentButtonArea" v-if="modalConfirm">
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+            <button class="modalContentButton" @click="photoDelete(deletePhotoIdx)">확인</button>
+            <v-spacer></v-spacer>
+            <button class="modalContentButton" @click="modalOpen = false">취소</button>
+            <v-spacer></v-spacer>
+            <v-spacer></v-spacer>
+          </div>
+          </v-container>
+        </v-card>
+      </v-dialog>
+
+
+
       <section class="article">
         <div v-if="type==0">
           <h4>게시글 작성</h4>
@@ -29,7 +64,8 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <span @click="photoDelete(idx, 0)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <!-- <span @click="photoDelete(idx, 0)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>   -->
+              <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
@@ -48,7 +84,8 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUpload" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <span @click="photoDelete(idx, 1)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <!-- <span @click="photoDelete(idx, 1)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>   -->
+              <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
@@ -61,7 +98,9 @@
         <!-- 게시글 컨텐츠 입력 영역 -->
         <textarea v-model="content" placeholder="게시글 입력..."></textarea>
         
-        <div v-if="type==0" class=buttonDiv><button @click="send">등록</button></div>
+        <div v-if="type==0" :class="{'buttonDiv': articleCreateFormValid, 'disabledBtnDiv': !articleCreateFormValid}">
+          <button @click="send" :disabled="!articleCreateFormValid">등록</button>
+        </div>
         <div v-else class=buttonDiv><button @click="modify">수정</button></div>
       </section>
     </v-container>
@@ -97,6 +136,12 @@
         modifyIdList: [0], // 수정하는 사진 아이디 저장할 리스트
         plusPhotoList: [], // 새로 추가하는 사진 저장할 리스트
         tempIdx:0, // 임시 저장
+
+        // 모달 관련 변수
+        modalOpen: false,
+        modalContent: '',
+        modalConfirm: false,
+        deletePhotoIdx: 0,
       }
     },
     computed: {
@@ -105,6 +150,9 @@
       typeTrans() { // 수정에서 바로 등록하기 누를 때 전환하기 위함
         return this.$route.params.type;
       },
+      articleCreateFormValid () {
+        return !!this.category && !!this.content && !!this.sendList.length
+      }
     },
     watch: {
       typeTrans(val) {
@@ -116,6 +164,9 @@
       },
     },
     methods: {
+      nothing () {
+        console.log('nothing')
+      },
       foodClick () {
         // css 토글용
         this.foodSelected = true
@@ -168,12 +219,13 @@
 
         axios.post(API.url+'/post/regist', params)
         .then((response) => {
-          alert("보냈슴!");
+          // alert("보냈슴!");
           console.log(response.data);
+          this.$router.push({ name: 'Main' })
         })
         .catch((error) => {
-          alert("못보냈슴!");
-          console.log(error);
+          // alert("못보냈슴!");
+          console.error(error);
         })
       },
       async modify() { // 게시글 수정
@@ -245,19 +297,32 @@
           }
         }
       },
-      photoDelete(idx, type) { // 사진 삭제 
-        var result = confirm("정말 삭제하시겠습니까?");
-        if (result) {
-          if (type==1) { // 게시글 수정일 때
-            this.deleteIdList.push(this.photoList[idx].postPhotoId);
-            this.photoList.splice(idx, 1);
-          } else { // 게시글 등록일 때
-            this.sendList.splice(idx, 1);
-            this.previewItems.splice(idx, 1); 
-          }
-          
-          alert("삭제 되었습니다.");
+      phtoDeleteModalPopup(idx) {
+        this.modalConfirm = true
+        this.modalContent = "정말 삭제하시겠습니까?"
+        this.modalOpen = true
+        this.deletePhotoIdx = idx
+      },
+      photoDelete(idx) { // 사진 삭제
+        const type = this.type
+        // var result = confirm("정말 삭제하시겠습니까?");
+        // if (result) {
+        // if (this.modalConfirmClicked) {
+        if (type!=0) { // 게시글 수정일 때
+          this.deleteIdList.push(this.photoList[idx].postPhotoId);
+          this.photoList.splice(idx, 1);
+        } else { // 게시글 등록일 때
+          this.sendList.splice(idx, 1);
+          this.previewItems.splice(idx, 1); 
         }
+        this.modalConfirm = false
+        this.modalContent = "삭제 되었습니다."
+        setTimeout(() => {
+          this.modalOpen = false
+          this.modalContent = ""
+        }, 500);
+          // alert("삭제 되었습니다.");
+        // }
       }
     },
     created() {

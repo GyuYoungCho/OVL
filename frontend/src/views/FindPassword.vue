@@ -1,5 +1,30 @@
 <template>
   <v-container>
+    <!-- 비번찾기 관련 모달 -->
+    <v-dialog v-model="modalOpen" max-width="300" persistent @click:outside="nothing">
+      <v-card>
+        <!-- 모달 타이틀 영역 -->
+        <v-toolbar dense color="#004627">
+          <v-toolbar-title class="modalTitle">
+            <!-- {{ modaltitle }} -->
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          
+        </v-toolbar>
+        <!-- 모달 컨텐츠 영역 -->
+        <v-container>
+        <div class="modalContent">
+          <div class="mb-3">
+            <span class="modalContentMessage">
+              {{ modalContent }}
+            </span>
+          </div>
+        </div>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+
     <section class="findPassword">
       <img src="@/assets/image/OVL_logo.png" alt="">
       <!-- 이메일 -->
@@ -59,31 +84,54 @@ export default {
     authNumberValid: false,
     newPassword: '',
     newPasswordCheck: '',
+
+    modalOpen: false,
+    modalContent: '',
   }),
   methods: {
+    nothing () {
+      console.log('nothing')
+    },
     onEmailBtnClick () {
+      this.modalContent = '이메일을 확인하는 중입니다. 잠시만 기다려주세요.'
+      this.modalOpen = true
       const URL = API.url + userAPI.email_auth('password', this.email)
       axios.get(URL)
         .then(res => {
           if (res.data==="success") {
-            alert("인증번호가 이메일로 발송되었습니다.")
+            this.modalContent = "인증번호가 이메일로 발송되었습니다."
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
             this.emailValid = true
           } else {
-            alert("등록 정보가 없는 이메일입니다.")
+            this.modalContent = "등록 정보가 없는 이메일입니다."
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
           }
         })
         .catch(err => console.error(err))
     },
 
     onEmailAuthBtnClick () {
+      this.modalContent = '이메일을 확인하는 중입니다. 잠시만 기다려주세요.'
+      this.modalOpen = true
       const URL = API.url + userAPI.email_auth_check(this.email, this.authNumber)
       axios.get(URL)
         .then(res => {
           if (res.data==="success") {
-            alert('이메일 인증이 완료되었습니다.')
+            this.modalContent = "이메일 인증이 완료되었습니다."
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
             this.authNumberValid = true
           } else {
-            alert('인증번호가 틀렸습니다. 다시 인증번호 발송을 해주세요.')
+            this.modalContent = '인증번호가 틀렸습니다. 다시 인증번호 발송을 해주세요.'
+            setTimeout(() => {
+              this.modalOpen = false
+              this.emailValid = false
+            }, 1000);
             this.authNumber = ''
           }
         })
@@ -97,9 +145,13 @@ export default {
         }
       })
         .then(res => {
+          this.modalContent = '비밀번호가 무사히 변경되었습니다.'
+          this.modalOpen = true
+          setTimeout(() => {
+            this.modalOpen = false
+            this.$router.push({ name: "Login" })
+          }, 1000);
           console.log(res)
-          alert('비밀번호가 무사히 변경되었습니다.')
-          this.$router.push({ name : "Login" })
         })
         .catch(err => console.error(err))
     }

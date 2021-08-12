@@ -82,7 +82,7 @@ namespaced: true,
             }).then((res)=>{
                 if (res.data=="success") {
                     // 성공하면 답글 리스트 다시 불러오기
-                    alert("수정 되었습니다!");
+                    // alert("수정 되었습니다!");
                     store.dispatch("getReplyList", payload.postId); 
                     store.dispatch("postComment/getCommentList", payload.postId, { root: true });
                     store.dispatch("post/getPost", payload.postId, { root: true });
