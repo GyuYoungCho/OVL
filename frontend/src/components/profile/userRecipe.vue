@@ -8,11 +8,8 @@
                     <div v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
                         
                         <!-- post 대표 사진, 내용-->
-                        <div @click="moveDetail(idx)" class="box">
-                            <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
-
-                        <div @click="moveDetail(idx)" class="box">
-                            <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
+                        <div @click="moveDetail(recipe)" class="box">
+                            <img :src="srcPath(recipe)" width=100%  style="border-radius: 7px;">  
 
                         </div>
                     </div>
@@ -31,9 +28,7 @@ export default {
   },
   methods: {
     ...mapActions(['myrecipes','fetchRecipeDetail', 'fetchRecipeComments', ]),
-    srcPath(recipe){
-      return "http://localhost:8080/recipe/" + recipe.recipeId+ "/" + recipe.stored_file_path.split('/').reverse()[0];
-    },
+
     moveDetail(recipe) { // 게시글 상세보기
       this.fetchRecipeDetail(recipe.recipeId)
       this.fetchRecipeComments(recipe.recipeId)
