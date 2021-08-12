@@ -11,6 +11,9 @@
                         <div @click="moveDetail(idx)" class="box">
                             <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
 
+                        <div @click="moveDetail(idx)" class="box">
+                            <img :src="info.filepath" width=100%  style="border-radius: 7px;">  
+
                         </div>
                     </div>
                 </v-row>
