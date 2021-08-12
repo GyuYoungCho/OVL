@@ -22,8 +22,8 @@
                 <v-col v-for="(info, idx) in otherpostList" :key="idx" cols="4" class="grid-cell">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>   
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">   
 
                     </div>
 
@@ -35,8 +35,8 @@
                 <v-col v-for="(info, idx) in otherfoodPostList" :key="idx" cols="4" class="grid-cell">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>    
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">    
 
                     </div>
 
@@ -48,8 +48,8 @@
                 <v-col v-for="(info, idx) in otherclothPostList" :key="idx" cols="4" class="grid-cell">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>  
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 
@@ -61,8 +61,8 @@
                 <v-col v-for="(info, idx) in othercosmeticPostList" :key="idx" cols="4" class="grid-cell">
 
                     <!-- post 대표 사진, 내용-->
-                    <div @click="moveDetail(idx)" class="box">
-                        <img :src="info.filepath" width=80px;>  
+                    <div @click="moveDetail(idx)" class="postImg">
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 

@@ -36,7 +36,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="postImg">
-                        <img :src="info.filepath">    
+                        <img :src="info.filepath" width="90px" height="90px">    
 
                     </div>
 
@@ -49,7 +49,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="postImg">
-                        <img :src="info.filepath">  
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 
@@ -62,7 +62,7 @@
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="postImg">
-                        <img :src="info.filepath">  
+                        <img :src="info.filepath" width="90px" height="90px">  
 
                     </div>
 

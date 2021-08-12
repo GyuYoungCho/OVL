@@ -10,8 +10,8 @@
                 <v-col v-for="(info, recipe) in myrecipes" :key="recipe" cols="4" class="grid-cell">
 
                         <!-- recipe 대표 사진, 내용-->
-                        <div @click="moveDetail(recipe)" class="box">
-                            <img :src="info.filepath" width=100% > 
+                        <div @click="moveDetail(recipe)" class="postImg">
+                            <img :src="info.filepath" width="90px" height="90px"> 
                         </div>
 
                 </v-col>
