@@ -26,7 +26,7 @@
 
 .search_bar {
   input {
-    margin-top: 10px;
+    margin-top: 5px;
     background-color: transparent;
     border: none;
   }
@@ -45,18 +45,46 @@
   }
 
   div {
+    .v-text-field--rounded > .v-input__control > .v-input__slot {
+      padding: 0 5px;
+      input {
+        margin-top: 10px;
+      }
+    }
+
     .v-input__slot {
+      margin-left: 0px;
       margin-bottom: 0px;
-      padding: 0px;
-      margin-right: 10px;
+      padding-right: 10px;
+    }
+
+    .v-input__control {
+      height: 30px;
+      input {
+        margin-left: 10px;
+      }
     }
 
     .v-select__slot {
       margin-bottom: 11px;
-      padding-left: 10px;
+
       i {
+        margin-left: 0px;
         color: white;
+        margin-right: 20px;
+      }
+
+      .v-input__control {
+        padding: 0px;
+      }
+
+      .v-select__selections {
+        margin-left: 20px;
       }
     }
   }
+}
+
+.detext {
+  font-size: 13px;
 }

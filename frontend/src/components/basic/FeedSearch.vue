@@ -2,14 +2,12 @@
   <div>
       <v-card
       rounded="pill" class="search_bar">
-        <v-row height="20">
-          <v-col class="pa-0 ma-0">
-            <v-select class="pa-0 ma-0 ml-3" v-model="ord"
-              justify-content="end"
+        <v-row >
+          <v-col class="pa-0 ma-0" cols="4"> 
+            <v-select class="pa-0 ma-0 ml-2" v-model="ord"
               flat solo rounded justify="start" :items="order"
               background-color="rgba(255,255,255,0)" item-color="#004627"
               color="white" append-icon="mdi-menu-down-outline"
-              style="text-align=center;"
             ></v-select>
           </v-col>
           <v-col class="pa-0 ma-0">
@@ -38,6 +36,7 @@ export default {
     
     watch:{
       search : function(val){
+          if(val==null) val=''
           this.$emit('searchKeyword', val)
       },
       ord : function(val){

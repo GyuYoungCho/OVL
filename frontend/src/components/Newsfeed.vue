@@ -9,6 +9,7 @@
             <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
         </v-col> 
       </v-card>
+      
       <!-- 캐러셀 영역 -->
       <!-- <v-carousel hide-delimiters>
         <v-carousel-item
@@ -77,6 +78,21 @@ export default {
       order : [
         "User", "Post",
       ],
+      colors: [
+        'green',
+        'secondary',
+        'yellow darken-4',
+        'red lighten-2',
+        'orange darken-1',
+      ],
+      cycle: false,
+      slides: [
+        'First',
+        'Second',
+        'Third',
+        'Fourth',
+        'Fifth',
+      ],
     }
   },
   components: {
@@ -123,10 +139,9 @@ export default {
     ...mapState("user", (["userinfo","userlist"])),
 
     searchPost() {
-      console.log(this.ord)
       const search = this.search.toLowerCase()
       
-      if (!search || this.ord == 'User') return this.postList
+      if (this.ord == 'User' || !search) return this.postList
       
       const allitems = this.postList.filter(item => {
         const text = item.postId.content.toLowerCase()
