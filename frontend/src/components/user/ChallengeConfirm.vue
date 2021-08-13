@@ -10,12 +10,12 @@
           max-width="1000px">
         <v-card tile>
           <v-toolbar color="#004627" dark>
-          <!-- <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
-            <profile-name :user="selectpot.userid" class="ml-3 mt-1"></profile-name>
+          <v-toolbar-title >{{this.userinfo.challengeId.title}}</v-toolbar-title>
+            <profile-name :user="userinfo" class="ml-3 mt-1"></profile-name>
             <v-spacer></v-spacer>
-            <v-btn icon dark @click="cancelDetail()" justify="end">
+            <v-btn icon dark @click="cancelCert()" justify="end">
               <v-icon>mdi-close</v-icon>
-            </v-btn> -->
+            </v-btn>
           </v-toolbar>
             <!-- <v-col>
               <v-row class="pl-3">
@@ -124,9 +124,9 @@ export default {
   },
   methods:{
 
-    // cancelDetail() {
-    //   this.$emit('openDetailModal', false)
-    // },
+    cancelCert() {
+      this.$emit('openCertModal', false)
+    },
 
     // openMessageModal(sign){
     //     this.$emit('openMessageModal', true, sign)
