@@ -53,7 +53,7 @@
       <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
       <vet-party-detail :modalDetail="modalDetail"
           @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
-      
+      <challenge-confirm :mo="mo"></challenge-confirm>
       <message-modal :modalMessage="modalMessage" :sign="sign"
               @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
@@ -72,7 +72,7 @@ import PotSearch from '@/components/basic/PotSearch.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import MessageModal from '@/components/pot/MessageModal.vue'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue';
-
+import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue';
 
 export default {
   components: { 
@@ -83,6 +83,7 @@ export default {
     ConfirmSnack,
     VetPartyDetail,
     MessageModal,
+    ChallengeConfirm
   },
   data(){
  
@@ -104,6 +105,7 @@ export default {
       snackbar : false,
       message : "안녕 난 디폴트야" ,
       sign : '',
+      mo:true,
     }
   },
   computed:{
