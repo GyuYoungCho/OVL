@@ -143,13 +143,22 @@
         margin-bottom: 0px;
         padding: 0px;
         margin-right: 10px;
+        input {
+          margin-top: 10px;
+        }
+      }
+
+      .v-input__control {
+        height: 30px;
       }
 
       .v-select__slot {
         margin-bottom: 11px;
-        padding-left: 10px;
+
         i {
+          margin-left: 10px;
           color: white;
+          margin-right: 20px;
         }
       }
     }
