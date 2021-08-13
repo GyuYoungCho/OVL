@@ -14,12 +14,14 @@
                                 <span class="ingdate">{{time}} </span> 일째 챌린지 중
                             </div>
                         </div>
-                        <div class="rankingbox" style="font-size:xx-small; margin: 20px">
+                        <div class="rankingbox" style="font-size:xx-small; margin: 30px">
                             <div class="d-flex justify-content-center">
                                 <div style="margin: 10px">
                                     <div class="d-flex flex-column"> 
-                                        <span class="rank">rank</span> 
-                                        <span class="number1" style="font-size:medium;" @click="rankOpen = true">{{Rank}}</span> 
+                                        <span class="rank">rank</span>
+                                        <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                        <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                        <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
                                     </div>
                                 </div>
                                 <v-spacer></v-spacer>
@@ -105,7 +107,20 @@
                     <div class="modalContent">
                     <div class="mb-3">
                         <span class="modalContentMessage">
-                            랭크
+                            <div>
+                                <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-if="this.step===3" > 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요!</span>
+                                <span v-if="this.step===2" > 머리에 새싹이 너무 귀여워요! 조금만 더 노력하면 꽃을 피울거에요!</span>
+                                <span v-if="this.step===1" > 최고의 비건 생활을 영위하고 있어요! 대박! </span>
+                            </div>
+                            <br/>
+                            <div class="text-center">
+                                <span style="color: #49784B; font-size: Large">"{{this.otheruserinfo.nickname}}" 님의 </span>
+                                <div> Rank는 <span style="font-size: large; color:  #49784B;">"{{this.Rank}}"</span> 등!! </div>
+                                <div> Vegan Score 는 <span style="font-size: large; color:  #49784B;">"{{experience}}"</span>  점 입니다!</div>
+                            </div>
                         </span>
                     </div>
                     <div class="modalContentButtonArea">
@@ -222,41 +237,43 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
     data () {
         
         return{
-        file: "",
-		lists: [],
-		path:'',
-        isModalFollower: false,
-        isModalFollowing: false,
-        start_date: 0,
-        dialog: false,
-        otheruserinfo: {
-            userid: "",
-            email: "",
-            password: "",
-            name: "",
-            nickname: "",
-            phone: "",
-            filepath: "",
-            challengeId: {
-			start_date: null,
+            file: "",
+            lists: [],
+            path:'',
+            isModalFollower: false,
+            isModalFollowing: false,
+            start_date: 0,
+            dialog: false,
+            otheruserinfo: {
+                userid: "",
+                email: "",
+                password: "",
+                name: "",
+                nickname: "",
+                phone: "",
+                filepath: "",
+                challengeId: {
+                start_date: null,
+                },
             },
-        },
-        followingList:[],
-        followerList: [],
-        UserfollowingList: [],
-        detailFollowUser: [],
-        follower: '',
-        following: '',
-        Rank : null,
-        isLocked: false,
-        isFollowing: false,
-        rankOpen: false,
-        isReporting: false,
-        isReported: false,
-        isCancelReporting: false,
-        isNotChallenging: false,
-        reason: "",
-        requestforfollow : false,
+            followingList:[],
+            followerList: [],
+            UserfollowingList: [],
+            detailFollowUser: [],
+            follower: '',
+            following: '',
+            Rank : null,
+            isLocked: false,
+            isFollowing: false,
+            rankOpen: false,
+            isReporting: false,
+            isReported: false,
+            isCancelReporting: false,
+            isNotChallenging: false,
+            reason: "",
+            requestforfollow : false,
+            experience:'',
+            step:'',
         }
     },
     computed :{
@@ -269,11 +286,6 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
         },
     },
     created() {
-        if(this.userinfo.challengeId.challengeId ===1){
-            this.isNotChallenging = true;
-        }else{
-            this.isNotChallenging = false;
-        }
         axios({
                 method: "get",
                 url: API.url + reportAPI.select(this.userinfo.userid),
@@ -290,6 +302,16 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
             }).catch((err)=> {
                 console.log(err)
             })
+
+                    //쿵야 셋팅
+        console.log(this.percent)
+        if(this.percent < 31 ){
+            this.step = 1;
+        }else if( this.percent > 30 && this.percent < 61){
+            this.step = 2;
+        }else{
+            this.step = 3;
+        }
     },
     methods: {
         //신고 모달창 열기
@@ -320,6 +342,23 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
             })
             this.isReported = true;
             this.isReporting = false;
+        },
+         //랭크 클릭시 보이는 모달
+        onClickRank() {
+            
+            axios({
+                method: "get",
+                url: API.url + userAPI.select(this.$route.params.userid)
+            }).then((res)=>{
+                if(res.data !== null){
+                    console.log("유저 경험점수" , res.data)
+                    this.experience = res.data.experience;
+                }
+            }).catch((err)=>{
+                console.log(err)
+            })
+
+            this.rankOpen = true;
         },
         //계정 신고 취소 
         onClickisCancelReporting(){
@@ -394,7 +433,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
                     url: API.url + followAPI.select_detail(),
                     data: this.followingList,
                 }).then((res) => {
-                    console.log("Detail: " + res.data);
+                    //console.log("Detail: " + res.data);
                     this.detailFollowUser = res.data;
                 }).catch((err) => {
                     console.log("실패");
@@ -429,7 +468,7 @@ mounted(){
             method: "get",
             url: API.url + userAPI.select(userid),
         }).then((res) => {
-                console.log(" 다른 유저 정보 : ", res.data);
+                //console.log(" 다른 유저 정보 : ", res.data);
                 this.otheruserinfo = res.data;
                 if(this.otheruserinfo.challengeId.challengeId === 1){
                     this.isNotChallenging = true;
@@ -437,6 +476,14 @@ mounted(){
                     this.isNotChallenging = false;
                 }
                 this.start_date = this.otheruserinfo.challengeId.start_date;
+                //쿵야 설정
+                if(res.data.percent < 31 ){
+                        this.step = 1;
+                    }else if( res.data.percent > 30 && res.data.percent < 61){
+                        this.step = 2;
+                    }else{
+                        this.step = 3;
+                    }
                 //비공개 확인 용도
                 this.isOpened = this.otheruserinfo.account_open;
                 axios({
@@ -452,7 +499,7 @@ mounted(){
                                 if(this.UserfollowingList[i] == this.$route.params.userid){
                                     this.isFollowing = true;
 
-                                    console.log("팔로잉중 볼 수 있어", this.UserfollowingList)
+                                    //console.log("팔로잉중 볼 수 있어", this.UserfollowingList)
                                     break;
                                 }
                             }

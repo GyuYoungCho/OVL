@@ -19,6 +19,7 @@ export default {
       },
     },
     rank: null,
+    percent: null,
     isLogin: false,
 
     modalOpen: false,
@@ -42,7 +43,10 @@ export default {
         phone: "",
         filepath: "",
       };
+      state.rank = '',
+        state.percent = '',
       localStorage.removeItem("access-token");
+      localStorage.removeItem("vuex");
     },
     setReset(state) {
       state.userinfo = {
@@ -57,11 +61,16 @@ export default {
           start_date: null,
         },
         rank: null,
+        percent: null,
       };
     },
 
     setUserRank(state, payload) {
       state.rank = payload;
+    },
+
+    setUserPercent(state, payload) {
+      state.percent = payload;
     },
 
     setModal(state, { modalOpen, modalContent }) {
@@ -173,9 +182,12 @@ export default {
       })
         .then((res) => {
           if (res) {
-            // console.log(res.data.rank);
+            console.log(res.data.rank);
+            console.log("percent", res.data.percent);
             store.commit("setUserRank", res.data.rank);
+            store.commit("setUserPercent", res.data.percent);
             this.state.rank = res.rank;
+            this.state.percent = res.percent;
           } else console.log("랭크 가져오기 실패.");
         })
         .catch((err) => {
@@ -184,7 +196,6 @@ export default {
     },
     getUpdateUserInfo(store, payload) {
       let token = localStorage.getItem("access-token");
-      console.log("token : ", token);
       axios({
         method: "get",
         url: API.url + userAPI.tokenUpdate(payload),

@@ -1,23 +1,31 @@
 <template>
 <v-container>
     <section  class="profilepage">
-            <div centered class="container mt-5 d-flex justify-content-center">
+            <div centered class="container d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
                         <div class="image text-center">
                             <button class="imgChange" >
                             <!--<img :src="previewItem.src" class="profile-img2" width="100" height="100" v-if="isChanged">-->
-                                <label for="file"><img :src="!!picture ? picture.previewURL : userPath" class="profile-img2" width="100" height="100"></label>
+                                <label for="file"><img :src="!!picture ? picture.previewURL : userinfo.filepath" class="profile-img2" width="100" height="100"></label>
                                 <input id="file" type="file" ref="files" multiple @input="fileUpload">
                             </button>
-                                <div class="mb-0 mt-0">{{nickname}}</div><div style="font-size:x-small"> <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
-                                    </div>
+                                <div class="mb-0 mt-0">{{nickname}}</div>
+                                        <div v-if="isNotChallenging" style="font-size:x-small"> 
+                                            <span class="ingdate">&nbsp;</span>
+                                        </div>
+                                        <div v-else style="font-size:x-small"> 
+                                            <span class="ingdate">{{time}} </span> 일째 챌린지 중
+                                        </div>
+                                </div>
                                     <div class="rankingbox" style="font-size:xx-small; margin: 30px">
                                         <div class="d-flex justify-content-center">
                                             <div style="margin: 10px">
                                                 <div class="d-flex flex-column"> 
                                                     <span class="rank">rank</span>
-                                                    <span class="number1" style="font-size:medium">{{rank}}</span> 
+                                                    <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                                    <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                                    <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
                                                 </div>
                                             </div>
                                             <v-spacer></v-spacer>
@@ -32,7 +40,7 @@
                                             <v-spacer></v-spacer>
                                             <div style="margin: 10px">
                                                 <div class="d-flex flex-column">
-                                                    <span class="follower">followers</span>
+                                                    <span class="follower">follower</span>
                                                     <div @click="openDialog(1)">
                                                     <span class="number3" style="font-size:medium">{{follower}}</span>
                                                 </div>
@@ -47,29 +55,72 @@
                                     </div>
                                 </div>
                 </div>
-                <v-dialog ref="modal1" v-model="dialog" persistent max-width="300px">
-                    <v-card>
-                        <v-card-title>
-                        <template>
-                            <v-icon style="margin-right:10px;" large color="#41B883"  >List</v-icon>  <!--"#41B883" -->
-                            <!--<span class="headline" large>팔로우 목록</span>-->
-                        </template>
-                        <v-spacer></v-spacer>
-                        <v-btn icon @click="closeDialog('modal1')"> <!-- closeDialog 클릭 이벤트 -->
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                        </v-card-title>
-                        <v-card-text>
-                        <v-row>
-                            <v-col cols="12" sm="12" md="12" style="position: relative; border:1px solid #004627; border-style:dashed; ">
+                <!-- 커스텀 모달 -->
+                <v-dialog v-model="rankOpen" max-width="300" @click:outside="rankOpen = false">
+                <v-card>
+                    <!-- 모달 타이틀 영역 -->
+                    <v-toolbar dense color="#49784B">
+                    <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon dark @click="rankOpen = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </v-toolbar>
+                    <!-- 모달 컨텐츠 영역 -->
+                    <v-container>
+                    <div class="modalContent">
+                    <div class="mb-3">
+                        <span class="modalContentMessage">
+                            <div>
+                                <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span > 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요!</span>
+                            </div>
+                            <br/>
+                            <div class="text-center">
+                                <span style="color: #49784B; font-size: Large">"{{nickname}}" 님의 </span>
+                                <div> Rank는 <span style="font-size: large; color:  #49784B;">"{{rank}}"</span> 등!! </div>
+                                <div> Vegan Score 는 <span style="font-size: large; color:  #49784B;">"{{experience}}"</span>  점 입니다!</div>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="modalContentButtonArea">
+                        <button class="modalContentButton" @click="rankOpen = false">확인</button>
+                    </div>
+                    </div>
+                    </v-container>
+                </v-card>
+                </v-dialog>
+                                <!-- 커스텀 모달 -->
+                <v-dialog v-model="dialog" max-width="300" @click:outside="dialog = false">
+                <v-card>
+                    <!-- 모달 타이틀 영역 -->
+                    <v-toolbar dense color="#49784B">
+                    <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon dark @click="dialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </v-toolbar>
+                    <!-- 모달 컨텐츠 영역 -->
+                    <v-container>
+                    <div class="modalContent">
+                    <div class="mb-3">
+                        <span class="modalContentMessage">
                             <!-- 업로드 컴포넌트 -->
                             <ProfileName
                                 v-for="(auser, index) in detailFollowUser" :key="index" :user="auser">
                             </ProfileName>
-                            </v-col>
-                        </v-row>
-                        </v-card-text>
-                    </v-card>
+
+                        </span>
+                    </div>
+                    <div class="modalContentButtonArea">
+                        <button class="modalContentButton" @click="dialog = false">확인</button>
+                    </div>
+                    </div>
+                    </v-container>
+                </v-card>
                 </v-dialog>
         </div>
     <div class="text-center">
@@ -127,13 +178,17 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         dialog: false,
         profileImg : '',
         picture: null,
+        rankOpen: false,
+        isNotChallenging: false,
+        experience:'',
+        step:'',
         }
     },
     computed:{
         ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
         ...mapGetters("user",(["userinfo", "challenge"])),
         ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
-        ...mapState("user", (["isLogin", "rank"])),
+        ...mapState("user", (["isLogin", "rank",  "percent"])),
         time() {
             const start = moment(this.start_date);
             const now = moment(new Date());
@@ -155,15 +210,46 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         //console.log(this.followerList)
         this.follower = this.followerList.length;
         this.following = this.followingList.length;
-        
+        //00일째 챌린지 계산
+        if(this.userinfo.challengeId.challengeId ===1){
+            this.isNotChallenging = true;
+        }else{
+            this.isNotChallenging = false;
+        }
         this.start_date = this.userinfo.challengeId.start_date;
-        
+        //쿵야 셋팅
+        console.log(this.percent)
+        if(this.percent < 31 ){
+            this.step = 1;
+        }else if( this.percent > 30 && this.percent < 61){
+            this.step = 2;
+        }else{
+            this.step = 3;
+        }
         
     },
     methods: {
             ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
+        //회원 정보 수정
         onClickEditUser(){
             this.$router.push({ name: "ModifyUser" });
+        },
+        //랭크 클릭시 보이는 모달
+        onClickRank() {
+            
+            axios({
+                method: "get",
+                url: API.url + userAPI.select(this.userinfo.userid)
+            }).then((res)=>{
+                if(res.data !== null){
+                    console.log("유저 경험점수" , res.data)
+                    this.experience = res.data.experience;
+                }
+            }).catch((err)=>{
+                console.log(err)
+            })
+
+            this.rankOpen = true;
         },
         fileUpload(){
             console.log("files : ", this.$refs.files.files[0]);
