@@ -19,7 +19,7 @@
             <!-- 사진 배열하기 -->
             <v-container v-if="showAll">
               <v-row>
-                <v-col v-for="(info, idx) in postList" :key="idx" cols="4" class="grid-cell-2">
+                <v-col v-for="(info, idx) in postMyList" :key="idx" cols="4" class="grid-cell-2">
 
                     <!-- post 대표 사진, 내용-->
                     <div @click="moveDetail(idx)" class="postImg">
@@ -84,9 +84,9 @@ export default {
     }
   },
   methods: {
-        ...mapActions("post", ["getPostList", ]),
+        ...mapActions("post", ["getUserPostList", ]),
     moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+      this.$router.push({path:"/article_detail/"+this.postMyList[idx].postId.postId});
     },
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
@@ -110,12 +110,11 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("post", ["postList", "foodPostList", "clothPostList", "cosmeticPostList"]),
+    ...mapGetters("post", ["postMyList", "foodPostList", "clothPostList", "cosmeticPostList"]),
     ...mapGetters("user", ["userinfo"]),
   },
   created() {
     this.$store.dispatch("post/getUserPostList", this.userinfo.userid);
-    console.log("foodlist :",this.foodPostList)
     //this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
   },
 }
