@@ -143,21 +143,36 @@ export default {
       
       if (this.ord == 'User' || !search) return this.postList
       
-      const allitems = this.postList.filter(item => {
+      let allitems = this.postList.filter(item => {
         const text = item.postId.content.toLowerCase()
 
         return text.indexOf(search) > -1
       })
+      allitems = allitems.sort(function(a, b) {
+          let x = a.indexOf(search);
+          let y = b.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+      });
       return (allitems.length >5) ? allitems.slice(0,5) : allitems
     },
     searchUser(){
       const search = this.search.toLowerCase()
       if(!search || this.ord=='Post') return []
       
-      const allitems = this.userlist.filter(item => {
+      let allitems = this.userlist.filter(item => {
         const text = item.nickname.toLowerCase()
         return text.indexOf(search) > -1
       })
+      console.log(allitems)
+      allitems = allitems.sort(function(a, b) {
+          let x = a.nickname.indexOf(search);
+          let y = b.nickname.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+      });
        return (allitems.length >3) ? allitems.slice(0,5) : allitems
     },
   },

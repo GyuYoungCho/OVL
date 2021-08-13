@@ -105,7 +105,7 @@ export default {
       snackbar : false,
       message : "안녕 난 디폴트야" ,
       sign : '',
-      mo:false,
+      mo:true,
     }
   },
   computed:{
