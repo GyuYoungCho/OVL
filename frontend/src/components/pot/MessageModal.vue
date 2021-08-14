@@ -30,7 +30,7 @@ import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
 import { mapGetters} from 'vuex';
 export default {
-
+    // 참여 취소 삭제에 대한 내용을 받아옴
     props:{
         sign : String,
         modalMessage : Boolean,
@@ -50,15 +50,17 @@ export default {
         }
     },
     methods:{
-        
+        // 현재 모달을 닫게 함
         cancelAttendModal(){
             this.$emit('openMessageModal', false)
         },
         async potprocess(val) {
           if(val=="attend"){
+
             if(this.potattendusers.length >= this.selectpot.total_people){
               this.$emit('openSnackBar', true , "not_attend")
             }
+            // 3개까지 참여 가능하게
             else if(this.userpots.length >=3){
               this.$emit('openSnackBar', true , "dis_attend")
             }

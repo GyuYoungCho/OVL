@@ -1,69 +1,52 @@
 <template>
   <div>
     <v-dialog
-          v-model="mo"
+          v-model="certdialog"
           height="500"
-          @click:outside="cancelDetail()"
+          @click:outside="closeCertDialog()"
           transition="dialog-bottom-transition"
           scrollable
           max-height="500px"
           max-width="1000px">
-        <v-card tile>
-          <v-toolbar color="#004627" dark>
-          <!-- <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
-            <profile-name :user="selectpot.userid" class="ml-3 mt-1"></profile-name>
+        <v-card tile flat>
+          <v-toolbar color="#49784B" dark>
+          <v-toolbar-title >{{this.certList[0].challengeId.title}}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon dark @click="cancelDetail()" justify="end">
+            <v-btn icon dark @click="closeCertDialog()" justify="end">
               <v-icon>mdi-close</v-icon>
-            </v-btn> -->
+            </v-btn>
           </v-toolbar>
-            <!-- <v-col>
-              <v-row class="pl-3">
-                <v-col class="mt-3">
-                  <v-row>
-                    <v-icon>mdi-map-marker</v-icon>
-                    <span>{{this.selectpot.restaurant_name}}</span>
-                  </v-row >
-                  <v-row class="mt-7">
-                    <v-icon>mdi-calendar-month</v-icon>
-                    <span>{{this.meet_date}}</span> 
-                  </v-row>
-                  <v-row class="mt-7">
-                    <v-icon>mdi-clock-time-nine-outline</v-icon>
-                    <span>{{this.meet_time}}</span>
-                  </v-row>
+            <v-container>
+                <div class="text-center">
+                    <div><span style="font-size: large; color:  #49784B;">"{{this.letday}}"</span> 일 달성!</div>
+                </div>
+                <div class="text-center" >
+                    
+                    <v-progress-circular
+                        :rotate="360"
+                        :width="15"
+                        :size="80"
+                        :value="percent"
+                        color="teal"
+                    >
+                    {{this.percent}}%
+                    </v-progress-circular>
+                </div>
+            <v-divider class="mt-6"></v-divider>
+            <v-row  justify="center">
+                <v-col v-for="(cert,index) in certList" :key="index" cols="auto" class="px-1">
+                    <v-card  height="45" width="45" class="mt-1">
+                    
+                    <v-img class="ml-3 mt-3" max-height="20" max-width="20" v-if="cert.certification==1" 
+                    src="@/assets/image/OVLoong.png"></v-img>
+                    <v-img v-else class="ml-3 mt-3" max-height="20" max-width="20" 
+                    src="@/assets/image/OVLblackoong.png"></v-img>
+                    <span class="ml-1 mt-1" style="font-size:11px">~{{cert_date(cert.certification_date, cert.challengeId.cycle-1)}}</span>
+                    </v-card>
                 </v-col>
-                
-              </v-row>
-              <v-row class="pl-3">
-                <v-col cols="7">
-                  <span>{{this.selectpot.content}}</span>
-                </v-col>
-                <v-col v-if="mypot" justify="end" class="pa-0">
-                  <v-btn dark @click="potModify()"  width="10">
-                    <span>수정</span>
-                  </v-btn>
-                  <v-btn dark @click="openMessageModal('delete')" justify="end" width="10">
-                    <span>삭제</span>
-                  </v-btn>
-                </v-col>
-                <v-col v-else>
-                  <v-btn v-if="attendme" dark @click="openMessageModal('attend')" justify="end">
-                    <span>참여하기</span>
-                  </v-btn>
-                  <v-btn v-else dark @click="openMessageModal('cancel')" justify="end">
-                    <span>참여취소</span>
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-divider class="mt-4" ></v-divider>
-              <v-row class="mt-5 pl-3">
-                <v-icon>mdi-account-outline</v-icon>
-              </v-row>
-              <v-col class="mt-5 pl-3">
-                <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
-              </v-col>  
-            </v-col> -->
+            </v-row>
+            </v-container>
+            
           </v-card>
     </v-dialog>
     
@@ -71,7 +54,7 @@
 </template>
 
 <script>
-// import moment from "moment"
+import moment from "moment"
 import { mapGetters} from 'vuex';
 // import ProfileName from '@/components/basic/ProfileName.vue';
 
@@ -81,61 +64,34 @@ export default {
       modals : true,
     }
   },
-//   components: { 
-//     ProfileName,
-//   },
   props:{
-    mo : Boolean,
+    certdialog : Boolean,
   },
   computed:{
-    ...mapGetters("user", ["userinfo"]),
-    // ...mapGetters("pot", ["selectpot","potattendusers"]),
-    // meet_date(){
-    //     return moment(this.selectpot.time).format("ddd MM/DD")
-    // },
-    // meet_time(){
-    //     return moment(this.selectpot.time).format("HH:mm")
-    // },
-    // rows() {
-    //     return this.potattendusers.length
-    // },
-    // detailable(){
-    //   return this.modals && this.modalDetail
-    // },
-    // attendme(){
-    //     let flag = true;
-    //     if(this.potattendusers.length!=0){
-    //       this.potattendusers.forEach((item) => {
-    //         if (item.userid == this.userinfo.userid) {
-    //           flag = false
-    //         }
-    //       });
-    //     }
-    //     return flag
-    // },
-    // mypot(){
-     
-    //   if(this.selectpot.length!=0 && this.userinfo.userid == this.selectpot.userid.userid) {
-    //     return true
-    //   }else{
-    //     return false
-    //   }
-    // }
+    ...mapGetters("challenge", ["certList"]),
+    letday(){
+        let count = 0
+        this.certList.forEach(item => {
+            if(item.certification==1) count+=1
+        });
+        return count;
+    },
+    percent(){
+        return Math.round((this.letday /this.certList.length) * 100)
+    }
+  },
+  mounted(){
+    this.$store.dispatch('challenge/getCertList', this.$route.params.userid);
   },
   methods:{
 
-    // cancelDetail() {
-    //   this.$emit('openDetailModal', false)
-    // },
-
-    // openMessageModal(sign){
-    //     this.$emit('openMessageModal', true, sign)
-    // },
-    // potModify(){
-    //     // this.selectPot(this.potitem)
-    //     this.$router.push({path:"/vetparty_create/1"});
-    // },
-
+    closeCertDialog() {
+      this.$emit('openCertDialog', false)
+    },
+    cert_date(day, cycle){
+        let dday = new Date(day)
+        return moment(dday.setDate(dday.getDate() + cycle)).format("MM/DD")
+    },
   },
 
 }

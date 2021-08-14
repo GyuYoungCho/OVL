@@ -9,7 +9,8 @@
                             <div class="mb-0 mt-0">{{nickname}}</div>
                             <div v-if="isNotChallenging" style="font-size:x-small">
                             <span class="ingdate">&nbsp;</span></div>
-                            <div v-else style="font-size:x-small">
+                            <div v-else style="font-size:x-small"
+                            @click="openCertDialog(true)">
                             <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
