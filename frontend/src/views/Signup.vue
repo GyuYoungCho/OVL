@@ -34,12 +34,17 @@
       <!-- 닉네임 -->
       <div class="inputBtnDiv">
         <input type="text" placeholder="닉네임" v-model="nickname">
-        <button class="bg-freditgreen" @click="onNicknameBtnClick">확인</button>
+        <button :class="{'bg-freditgreen': nicknameFormValid && !!this.nickname, 'disabledBtn': !nicknameFormValid || !this.nickname }" 
+        @click="onNicknameBtnClick" :disabled="!nicknameFormValid || !this.nickname">확인</button>
       </div>
+      <p class="invalidTxt" v-if="!nicknameFormValid">
+        닉네임은 영어와 숫자만 포함하여 10글자 이내로 적어주세요.
+      </p>
       <!-- 이메일 -->
       <div class="inputBtnDiv"  >
         <input type="text" placeholder="이메일" v-model="email">
-        <button class="bg-freditgreen" @click="onEmailBtnClick">인증</button>
+        <button :class="{'bg-freditgreen': emailFormValid && !!this.email, 'disabledBtn': !emailFormValid || !this.email}" 
+        @click="onEmailBtnClick" :disabled="!emailFormValid || !this.email">인증</button>
       </div>
       <p class="invalidTxt" v-if="!emailFormValid">
         이메일 양식을 확인해주세요.
@@ -47,12 +52,16 @@
       <!-- 이메일 인증 -->
       <div class="inputBtnDiv" v-if="emailAuthNumberSent">
         <input type="text" placeholder="인증번호" v-model="emailAuthNumber">
-        <button class="bg-freditgreen" @click="onEmailAuthBtnClick">확인</button>
+        <button :class="{'bg-freditgreen': !!this.emailAuthNumber, 'disabledBtn': !this.emailAuthNumber}" 
+        @click="onEmailAuthBtnClick" :disabled="!this.emailAuthNumber">확인</button>
       </div>
       <!-- 전화번호 -->
       <div>
-        <input type="text" placeholder="전화번호" v-model="phone">
+        <input type="tel" placeholder="전화번호" v-model="phone" maxlength="11">
       </div>
+      <p class="invalidTxt" v-if="!phoneFormValid">
+        "-" 없이 숫자로만 적어주세요. 예) 01012345678
+      </p>
       <!-- 비밀번호 -->
       <div>
         <input type="password" placeholder="비밀번호" v-model="password">
@@ -177,7 +186,14 @@ export default {
 
       axios.post(url, data)
         .then((res)=>{
-            if (res.data=="success") this.$router.push({name:'Login'}) 
+          if (res.data=="success") {
+              this.modalContent = "회원가입이 완료되었습니다."
+              this.modalOpen = true
+              setTimeout(() => {
+                this.modalOpen = false
+                this.$router.push({name:'Login'})
+              }, 1000);
+            }
         }).catch((err)=> {
             console.log(err);
         })
@@ -185,8 +201,14 @@ export default {
 
   },
   computed: {
+    nicknameFormValid () {
+      return !this.nickname || (this.nickname.length < 10 && /^[a-zA-Z0-9]*$/.test(this.nickname))
+    }, 
     emailFormValid () {
       return !this.email || /.+@.+\..+/.test(this.email)
+    },
+    phoneFormValid () {
+      return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
     },
     passwordFormValid () {
       return !this.password || ((this.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.password))
@@ -196,7 +218,7 @@ export default {
     },
     signupFormValid () {
       const allExist = !!this.name && !!this.nickname && !!this.email && !!this.phone && !!this.password && !!this.passwordCheck
-      const allValid = this.nicknameValid && this.emailValid  && this.emailFormValid && this.passwordFormValid && this.passwordCheckFormValid
+      const allValid = this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormValid
       return allExist && allValid
     },
   }

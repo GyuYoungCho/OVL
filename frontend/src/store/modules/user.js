@@ -117,7 +117,6 @@ export default {
           if (res.data) {
             store.commit("setUserInfo", res.data.UserDto);
             this.state.isLogin = true;
-            //console.log(this.state);
           } else console.log("실패.");
         })
         .catch((err) => {
@@ -141,7 +140,6 @@ export default {
             setTimeout(() => {
               store.commit("setModal", { modalOpen: false, modalContent: "" });
             }, 1000);
-            // alert("이메일과 비밀번호를 확인하세요.");
             console.log(err);
           });
       });
@@ -173,7 +171,6 @@ export default {
       })
         .then((res) => {
           if (res) {
-            // console.log(res.data.rank);
             store.commit("setUserRank", res.data.rank);
             this.state.rank = res.rank;
           } else console.log("랭크 가져오기 실패.");
