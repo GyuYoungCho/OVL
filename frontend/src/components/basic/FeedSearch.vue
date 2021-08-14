@@ -34,6 +34,7 @@ export default {
       }
     },
     
+    // serach의 변화를 감지해 newfeed search로 보냅니다
     watch:{
       search : function(val){
           if(val==null) val=''

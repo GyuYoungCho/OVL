@@ -34,7 +34,7 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-            <img :src="postList[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
+            <img :src="searchPost[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
             <div class="contentAndTime">
               <div v-html="contentReplace(info.postId.content)"></div>
               <span>{{ calTime(info.postId.time) }}</span>
@@ -74,7 +74,7 @@ export default {
   data(){
     return{
       search : '',
-      ord : '',
+      ord : 'User',
       order : [
         "User", "Post",
       ],
@@ -110,22 +110,22 @@ export default {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      var category = this.postList[idx].postId.category;
+      var category = this.searchPost[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
     },
     moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+      this.$router.push({path:"/article_detail/"+this.searchPost[idx].postId.postId});
     },
     isLike(idx) { // 좋아요 눌렀는지 확인
-      if (this.postLikeList.includes(this.postList[idx].postId.postId)) return true;
+      if (this.postLikeList.includes(this.searchPost[idx].postId.postId)) return true;
       else return false;
     }, 
     like(idx) { // 좋아요 버튼 눌렀슴
       var payload = {
         "userId" : this.userinfo.userid,
-        "postId" : this.postList[idx].postId.postId,
+        "postId" : this.searchPost[idx].postId.postId,
         "type": 1 // 뉴스피드
       }
       this.$store.dispatch("post/postLike", payload);
@@ -139,25 +139,43 @@ export default {
     ...mapState("user", (["userinfo","userlist"])),
 
     searchPost() {
+      // 대소문자 구분 x
       const search = this.search.toLowerCase()
-      
       if (this.ord == 'User' || !search) return this.postList
       
-      const allitems = this.postList.filter(item => {
+      // 포함된 단어 거르기
+      let allitems = this.postList.filter(item => {
         const text = item.postId.content.toLowerCase()
 
         return text.indexOf(search) > -1
       })
+
+      // 포함된 단어 위치 인덱스 기준 정렬
+      allitems = allitems.sort(function(a, b) {
+          let x = a.postId.content.indexOf(search);
+          let y = b.postId.content.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+      });
       return (allitems.length >5) ? allitems.slice(0,5) : allitems
     },
-    searchUser(){
+    searchUser(){ // 위와 같은 원리
       const search = this.search.toLowerCase()
       if(!search || this.ord=='Post') return []
       
-      const allitems = this.userlist.filter(item => {
+      let allitems = this.userlist.filter(item => {
         const text = item.nickname.toLowerCase()
         return text.indexOf(search) > -1
       })
+      
+      allitems = allitems.sort(function(a, b) {
+          let x = a.nickname.indexOf(search);
+          let y = b.nickname.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+      });
        return (allitems.length >3) ? allitems.slice(0,5) : allitems
     },
   },

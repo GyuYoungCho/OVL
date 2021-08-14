@@ -96,14 +96,8 @@ export default {
     meet_time(){
         return moment(this.selectpot.time).format("HH:mm")
     },
-    rows() {
-        return this.potattendusers.length
-    },
-    detailable(){
-      return this.modals && this.modalDetail
-    },
     attendme(){
-        let flag = true;
+        let flag = true;  // 내가 참여 중인지 확인
         if(this.potattendusers.length!=0){
           this.potattendusers.forEach((item) => {
             if (item.userid == this.userinfo.userid) {
@@ -113,7 +107,7 @@ export default {
         }
         return flag
     },
-    mypot(){
+    mypot(){ // 내가 만든 것인지 확인
      
       if(this.selectpot.length!=0 && this.userinfo.userid == this.selectpot.userid.userid) {
         return true
@@ -128,10 +122,10 @@ export default {
       this.$emit('openDetailModal', false)
     },
 
-    openMessageModal(sign){
+    openMessageModal(sign){ // 참여 삭제 취소에 대한 sign을 보냄
         this.$emit('openMessageModal', true, sign)
     },
-    potModify(){
+    potModify(){ //팟 수정 화면 이동!
         // this.selectPot(this.potitem)
         this.$router.push({path:"/vetparty_create/1"});
     },
