@@ -5,11 +5,8 @@ import challengeAPI from "@/api/challenge.js";
 export default {
   namespaced: true,
   state: {
-    // 모든 챌린지 + 카테고리별 챌린지 더미데이터 리스트가 들어 옵니다.
+    // 모든 챌린지 리스트가 들어 옵니다.
     challengeList: [],
-    foodChallengeList: [],
-    clothChallengeList: [],
-    cosmeticChallengeList: [],
     userchallengeList: [],
     userfoodChallengeList: [],
     userclothChallengeList: [],
@@ -19,15 +16,6 @@ export default {
   getters: {
     challengeList(state) {
       return state.challengeList;
-    },
-    foodChallengeList(state) {
-      return state.foodChallengeList;
-    },
-    clothChallengeList(state) {
-      return state.clothChallengeList;
-    },
-    cosmeticChallengeList(state) {
-      return state.cosmeticChallengeList;
     },
     userchallengeList(state) {
       return state.userchallengeList;
@@ -46,12 +34,9 @@ export default {
     },
   },
   mutations: {
-    // 일단 모든 챌린지 리스트를 받고, filter로 카테고리별로 뽑아낸 리스트를 만들어 줍니다.
+    // 일단 모든 챌린지 리스트를 받습니다.
     SET_CHALLENGE_LISTS(state, challengeList) {
       state.challengeList = challengeList;
-      state.foodChallengeList = challengeList.filter((eachList) => eachList.category === 1);
-      state.clothChallengeList = challengeList.filter((eachList) => eachList.category === 2);
-      state.cosmeticChallengeList = challengeList.filter((eachList) => eachList.category === 3);
     },
     SET_USER_CHALLENGE_LISTS(state, userchallengeList) {
       state.userchallengeList = userchallengeList;
