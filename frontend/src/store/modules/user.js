@@ -180,11 +180,8 @@ export default {
       })
         .then((res) => {
           if (res) {
-<<<<<<< HEAD
-=======
             console.log(res.data.rank);
             console.log("percent", res.data.percent);
->>>>>>> f14b89c0e3c612534c675510a16bf34e2f41d553
             store.commit("setUserRank", res.data.rank);
             store.commit("setUserPercent", res.data.percent);
             this.state.rank = res.rank;
