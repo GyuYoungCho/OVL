@@ -248,32 +248,6 @@ methods: {
             }
         }
     }
-    // challengeEnd(){
-    //     let user_id = this.$route.params.userid;
-    //     axios({
-    //         method: "get",
-    //         url: API.url + userAPI.select(user_id),
-    //     }).then((res) => {
-    //         this.otheruserinfo = res.data;
-    //     }).catch((err)=>{
-    //         console.log(err)
-    //     })
-    //     if(this.otheruserinfo.challengeId.challengeId === 1){
-    //         console.log("기본 참여 챌린지 입니다.")
-    //     }else{
-    //         axios({
-    //         method: "get",
-    //         url: API.url + challengeAPI.delete(this.otheruserinfo.userid),
-    //         }).then((res)=>{
-    //         if(res.data === "success"){
-    //             console.log("챌린지 중단")
-    //         }
-    //         }).catch((err)=>{
-    //         console.log(err)
-    //         })
-    //     }
-
-   // },
 },
 computed: {
     ...mapState("user", (["userinfo"])),

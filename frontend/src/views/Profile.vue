@@ -45,10 +45,10 @@ export default {
     .then((res)=>{
       console.log(res)
         if(res.data == ""){
-            console.log("다른사람이고 회원가입 안했음")
+            //console.log("다른사람이고 회원가입 안했음")
             this.isUser = false;
         }else{
-            console.log("가입은 했네")
+            //console.log("가입은 했네")
             this.$router.push({name: 'OtherProfile', params: {userid: this.$route.params.userid}})
         }
     }).catch((err)=>{

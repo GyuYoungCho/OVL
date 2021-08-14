@@ -28,7 +28,10 @@
                                 <div style="margin: 10px">
                                     <div class="d-flex flex-column"> 
                                         <span class="following">following</span>
-                                        <div @click="openDialog(0)">
+                                        <div v-if="this.requestforfollow" >
+                                            <span class="number2" style="font-size:medium">{{following}}</span>
+                                        </div>
+                                        <div v-else @click="openDialog(0)">
                                         <span class="number2" style="font-size:medium">{{following}}</span>
                                         </div>
                                     </div>
@@ -36,21 +39,28 @@
                                 <v-spacer></v-spacer>
                                 <div style="margin: 10px"><div class="d-flex flex-column">
                                     <span class="follower">follower</span>
-                                    <div @click="openDialog(1)">
+                                        <div v-if="this.requestforfollow" >
+                                            <span class="number2" style="font-size:medium">{{follower}}</span>
+                                        </div>
+                                    <div v-else @click="openDialog(1)">
                                     <span class="number3" style="font-size:medium">{{follower}}</span>
                                     </div>
                                 </div></div>
                             </div>
                             <div class="d-flex justify-content-center">
-                                <div v-if="this.isFollowing" width=""> 
-                                    <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
+                                
+                                <div v-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
+                                    <button class="requestFollow" @click="onClickRequestBtn()">비공개 계정</button>
                                 </div>
-                                <div v-else-if="!this.isFollowing"> 
-                                    <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
+                                <div v-else>                                
+                                    <div v-if="this.isFollowing" width=""> 
+                                        <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
+                                    </div>
+                                    <div v-else-if="!this.isFollowing"> 
+                                        <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
+                                    </div>
                                 </div>
-                                <!--<div v-else-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
-                                    <button class="requestFollow" @click="onClickRequestBtn()">Follow</button>
-                                </div>-->
+
                                 <div v-if="!isReported" class="ms-1">
                                     <button class="reportBtn" @click="onClickReport()">신고</button>
                                 </div>
@@ -209,8 +219,9 @@
                 </v-tab-item>
             <!-- 챌린지  -->
                 <v-tab-item>
-                <LockImg v-if="this.isLocked"/>
-                <OtherUserChallenges v-else/>
+                    <LockImg v-if="this.isLocked"/>
+                    <NoneChallenging v-if="this.isNotChallenging"/>
+                    <OtherUserChallenges v-else/>
                 </v-tab-item>
         </v-tabs>
     </div> 
@@ -225,6 +236,7 @@ import LockImg from '@/components/profile/Lockuser.vue'
 import OtherUserRecipes from '@/components/profile/OtheruserRecipe.vue'
 import OtherUserChallenges from '@/components/profile/OtheruserChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
+import NoneChallenging from '@/components/profile/NoneChallenging.vue'
 import moment from 'moment';
 import axios from "axios";
 import API from '@/api/index.js'
@@ -232,7 +244,7 @@ import followAPI from '@/api/follow.js'
 import userAPI from '@/api/user.js'
 import reportAPI from '@/api/report.js'
 export default {
-components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName, LockImg},
+components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName, LockImg, NoneChallenging},
 
     data () {
         
@@ -252,6 +264,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
                 nickname: "",
                 phone: "",
                 filepath: "",
+                account_open: '',
                 challengeId: {
                 start_date: null,
                 },
@@ -271,7 +284,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
             isCancelReporting: false,
             isNotChallenging: false,
             reason: "",
-            requestforfollow : false,
+            requestforfollow : false, //비공개 여부 확인 true : 비공개  / false: 공개
             experience:'',
             step:'',
         }
@@ -314,14 +327,17 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
         }
     },
     methods: {
+        onClickRequestBtn(){
+            alert("팔로우 요청이 완료 되었습니다.")
+        },
         //신고 모달창 열기
         onClickReport(){
-            this.isReported = true;
+            //this.isReported = true;
             this.isReporting = true;
         },
         //신고취소 모달창 열기
         onClickNotReport(){
-            this.isReported = false;
+
             this.isCancelReporting = true;
         },
         //신고 모달창 나가기
@@ -371,7 +387,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
             }).catch((err)=>{
                 console.log(err)
             }),
-
+            this.isReported = false;
             this.isCancelReporting = false;
         },
         onClickUnFollowBtn(){
@@ -470,6 +486,9 @@ mounted(){
         }).then((res) => {
                 //console.log(" 다른 유저 정보 : ", res.data);
                 this.otheruserinfo = res.data;
+                if(this.otheruserinfo.account_open === 1) {
+                    this.requestforfollow = true;
+                }
                 if(this.otheruserinfo.challengeId.challengeId === 1){
                     this.isNotChallenging = true;
                 }else{
@@ -484,8 +503,7 @@ mounted(){
                     }else{
                         this.step = 3;
                     }
-                //비공개 확인 용도
-                this.isOpened = this.otheruserinfo.account_open;
+
                 axios({
                         method: "get",
                         url: API.url + followAPI.select_following(this.userinfo.userid),
@@ -503,13 +521,12 @@ mounted(){
                                     break;
                                 }
                             }
-                            if(!this.isFollowing){
-                                this.isFollowing = false;
-                                    if(this.isOpened == 0){
-                                        this.isLocked = false;
+                            if(this.isFollowing === false){
+                                    if(this.requestforfollow){
+                                        this.isLocked = true;
                                     }
                                     else{
-                                        this.isLocked = true;
+                                        this.isLocked = false;
                                     }
                             }
                         }
