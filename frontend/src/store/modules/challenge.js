@@ -59,7 +59,7 @@ export default {
       state.userclothChallengeList = userchallengeList.filter((eachList) => eachList.category === 2);
       state.usercosmeticChallengeList = userchallengeList.filter((eachList) => eachList.category === 3);
     },
-    setCertList(state, payload) {
+    SET_CERT_LIST(state, payload) {
       state.certList = payload;
     },
   },
@@ -113,10 +113,11 @@ export default {
     },
 
     getCertList({ commit }, payload) {
+      console.log(payload);
       axios
         .get(API.url + challengeAPI.search_cert_list(payload))
         .then((res) => {
-          commit("setCertList", res.data);
+          commit("SET_CERT_LIST", res.data);
         })
         .catch((error) => {
           console.log(error);

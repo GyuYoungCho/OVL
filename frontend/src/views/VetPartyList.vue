@@ -53,7 +53,6 @@
       <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
       <vet-party-detail :modalDetail="modalDetail"
           @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
-      <challenge-confirm :mo="mo"></challenge-confirm>
       <message-modal :modalMessage="modalMessage" :sign="sign"
               @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
@@ -72,7 +71,6 @@ import PotSearch from '@/components/basic/PotSearch.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import MessageModal from '@/components/pot/MessageModal.vue'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue';
-import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue';
 
 export default {
   components: { 
@@ -83,7 +81,6 @@ export default {
     ConfirmSnack,
     VetPartyDetail,
     MessageModal,
-    ChallengeConfirm
   },
   data(){
  
@@ -105,7 +102,6 @@ export default {
       snackbar : false,
       message : "안녕 난 디폴트야" ,
       sign : '',
-      mo:true,
     }
   },
   computed:{
@@ -121,17 +117,35 @@ export default {
       
       if (!search) return allitems
       if(this.ord==this.order[1]){
-        return allitems.filter(item => {
+        let subitems = allitems.filter(item => {
           const text = item.restaurant_name.toLowerCase()
 
           return text.indexOf(search) > -1
         })
+
+        return subitems.sort(function(a, b) {
+          let x = a.restaurant_name.indexOf(search);
+          let y = b.restaurant_name.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+        });
+
+
       }else{
-        return allitems.filter(item => {
+        let subitems = allitems.filter(item => {
           const text = item.userid.nickname.toLowerCase()
 
           return text.indexOf(search) > -1
         })
+
+        return subitems.sort(function(a, b) {
+          let x = a.userid.nickname.indexOf(search);
+          let y = b.userid.nickname.indexOf(search);
+          if (x < y)  return -1;
+          if (x > y) return 1;
+          return 0;
+        });
       }
     },
   },
@@ -167,7 +181,7 @@ export default {
         this.sign = sign
         this.modalMessage = val
     },
-
+    // 받은  sign에 따라 다른 snackbar
     openSnackBar(val, sign){
       if(sign=="attend"){
         this.message = "참여되었습니다."
@@ -189,7 +203,7 @@ export default {
         this.overlay = false
         this.snackbar = false
       }, 2000)
-
+      // 현재 페이지 redirect
       this.$router.go();
     },
 

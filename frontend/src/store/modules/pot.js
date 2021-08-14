@@ -42,9 +42,11 @@ export default {
     },
   },
   mutations: {
+    // 레스토랑 리스트
     set_Rest_Items(state, payload) {
       state.restitems = payload;
     },
+    // 팟 item
     set_Pot_Items(state, payload) {
       let potdatas = [];
       let notdatas = [];
@@ -56,11 +58,12 @@ export default {
           user.push(item.potid);
         });
       }
+      // 기간 지나고 내가 참여한 팟 제외
       if (payload) {
         payload.forEach((item) => {
           if (today < new Date(item.time).getTime()) {
             if (user.length == 0 || !user.includes(item.potid)) {
-              console.log(item);
+              // 사람이 다 찬 경우 따로 마감 표시를 하기 위함
               if (item.pot_count < item.total_peole) {
                 potdatas.push(item);
               } else {
@@ -70,7 +73,8 @@ export default {
           }
         });
       } else potdatas = payload;
-      console.log(potdatas);
+
+      // 시간 순으로 sorting
       if (potdatas) {
         state.potitems = potdatas.sort(function(pot1, pot2) {
           let x = pot1.time;
@@ -98,6 +102,7 @@ export default {
         });
       } else state.passpotitems = notdatas;
     },
+    // 내가 참여한 팟 가져오기
     set_User_Pots(state, payload) {
       let today = new Date().getTime();
       let datas = [];
@@ -109,6 +114,7 @@ export default {
         });
       }
 
+      // 시간 순 sorting
       if (datas) {
         state.userpots = datas.sort(function(pot1, pot2) {
           let x = pot1.time;
@@ -123,12 +129,15 @@ export default {
         });
       } else state.userpots = datas;
     },
+    // 하나의 식당 선택
     SELECT_REST(state, payload) {
       state.rest = payload;
     },
+    // 상세보기 때 하나의 팟 저장
     SELECT_POT(state, payload) {
       state.selectpot = payload;
     },
+    // 팟에 참여한 유저
     set_Attend_User(state, payload) {
       state.potattendusers = payload;
     },
@@ -172,7 +181,7 @@ export default {
     selectPot({ commit }, pot) {
       commit("SELECT_POT", pot);
     },
-
+    // 팟에 참여한 유저
     potAttendUsers({ commit }, pot_id) {
       axios
         .get(API.url + potAPI.attendcount(pot_id))

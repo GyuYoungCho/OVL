@@ -112,6 +112,7 @@ import {mapActions, mapGetters} from "vuex";
       onClickLogout(){
         alert("로그아웃 되었습니다.");
         this.$store.dispatch("user/logout");
+        this.$router.push("/")
       }
     },
   }
