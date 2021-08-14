@@ -23,6 +23,8 @@ export default {
     computed: {
         ...mapGetters('pot',['potitems']),
     },
+
+    // 카카오맵을 가져옵니다
     mounted() { 
         if (window.kakao && window.kakao.maps) {
             this.initMap();
@@ -33,13 +35,11 @@ export default {
             script.src =
             'http://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=09778f1fe1acff44feef56aa1e949d9b&libraries=services,clusterer';
             document.head.appendChild(script);
-        }
-
-        
+        } 
     }, 
     
     methods : { 
-        
+        // 맵을 초기화합니다
         initMap() {
             var container = document.getElementById('map');
             var options = { 
@@ -51,37 +51,38 @@ export default {
             this.addMarkers(this.potitems)
         }, 
         
-        
+        // 마커를 추가합니다
         addMarkers(datas){
-            this.deleteMarkers()
+            this.deleteMarkers() // 이전꺼 지우고 시작
             
             if(!datas) return;
             var imageSrc = require('@/assets/image/marker.png'),
             imageSize = new kakao.maps.Size(30, 40), // 마커이미지의 크기입니다
             imageOption = { offset: new kakao.maps.Point(30, 40) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
-            var geocoder = new kakao.maps.services.Geocoder();
             var map = this.map
             // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
             var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
             var coords = null
+            
+            var geocoder = new kakao.maps.services.Geocoder(); //주소를 좌표로 변환하기 위한 것
             datas.forEach(pos=> {
                 let addr = pos.place.split(' ')
-                let address = addr[0]+" " +addr[1]+" " +addr[2] +" " +addr[3]
+                let address = addr[0]+" " +addr[1]+" " +addr[2] +" " +addr[3] //건물번호까지만 씁니다
                
                 geocoder.addressSearch(address, function(result, status) {
                     if (status === kakao.maps.services.Status.OK) {
 
-                        coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        coords = new kakao.maps.LatLng(result[0].y, result[0].x); // 좌표값
                     } 
 
-                    var marker = new kakao.maps.Marker({
+                    var marker = new kakao.maps.Marker({ // 마커의 속성 정의
                         clickable:true,
                         position: coords,
                         image: markerImage,
 
                     });
                     
-                    marker.setMap(map);
+                    marker.setMap(map); // map에 마커 적용
                     
                     // this.markers.push(marker);
 

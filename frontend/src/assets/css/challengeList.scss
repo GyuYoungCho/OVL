@@ -52,28 +52,3 @@
     background-color: $hy-grey;
   }
 }
-
-// 모달 관련 css
-.modalTitle {
-  color: white;
-}
-
-.modalContent {
-
-  &Message {
-    font-size: 15px;
-  }
-
-  &Button {
-    background-color: $freditgreen;
-    color: white;
-    width: 20%;
-    padding-top: 2px;
-    padding-bottom: 2px;
-  }
-}
-
-.modalContentButtonArea {
-  display: flex !important;
-  justify-content: flex-end;
-}

@@ -10,7 +10,8 @@
                             <div v-if="isNotChallenging" style="font-size:x-small">
                                 <span class="ingdate">&nbsp;</span>
                             </div>
-                            <div v-else style="font-size:x-small"> 
+                            <div v-else style="font-size:x-small"
+                            @click="openCertDialog(true)"> 
                                 <span class="ingdate">{{time}} </span> 일째 챌린지 중
                             </div>
                         </div>
@@ -214,12 +215,14 @@
                 </v-tab-item>
         </v-tabs>
     </div> 
+    <ChallengeConfirm :certdialog="certdialog" @openCertDialog="openCertDialog"/>
     </section>
 </v-container>  
 </template>
 
 <script>
 import {mapGetters} from "vuex"
+import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 import OtherUserPosts from '@/components/profile/OtheruserPost.vue'
 import LockImg from '@/components/profile/Lockuser.vue'
 import OtherUserRecipes from '@/components/profile/OtheruserRecipe.vue'
@@ -232,7 +235,7 @@ import followAPI from '@/api/follow.js'
 import userAPI from '@/api/user.js'
 import reportAPI from '@/api/report.js'
 export default {
-components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName, LockImg},
+components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeConfirm, ProfileName, LockImg},
 
     data () {
         
@@ -244,6 +247,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
             isModalFollowing: false,
             start_date: 0,
             dialog: false,
+            certdialog:false,
             otheruserinfo: {
                 userid: "",
                 email: "",
@@ -458,8 +462,11 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName
         closeDialog() { //Dialog 닫히는 동작
             this.dialog = false;
         },
+        openCertDialog(val){
+            this.certdialog = val
+        }
     },
-mounted(){
+    mounted(){
             //url userid 체크
         let userid = this.$route.params.userid;
         let isOpened = 0;
