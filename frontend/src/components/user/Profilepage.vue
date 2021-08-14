@@ -1,6 +1,7 @@
 <template>
 <v-container>
     <section  class="profilepage">
+        <ChallengeConfirm :user="userinfo" :certdialog="certdialog" @openCertDialog="openCertDialog"/>
             <div centered class="container d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
@@ -155,6 +156,7 @@ import {mapGetters, mapState} from "vuex"
 import UserPosts from '@/components/profile/userPost.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
+import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import NoneChallenging from '@/components/profile/NoneChallenging.vue'
 import moment from 'moment'
@@ -163,7 +165,7 @@ import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ProfileName, NoneChallenging},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileName, NoneChallenging},
 
     data () {
         
@@ -175,6 +177,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, NoneChallengi
             isModalFollowing: false,
             start_date: 0,
             dialog: false,
+            certdialog: false,
             rankOpen: false,
             isNotChallenging: false,
             experience:'',
@@ -259,6 +262,10 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName, NoneChallengi
         closeDialog() { //Dialog 닫히는 동작
             this.dialog = false;
         },
+        openCertDialog(val){
+            if(this.userinfo.challengeId.challengeId!=1)
+                this.certdialog = val
+        }
     },
 
 }
