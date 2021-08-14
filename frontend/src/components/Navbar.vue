@@ -1,5 +1,6 @@
 <template>
   <div>
+    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
     <!-- dense 하면 좀더 좁은 nav bar (48px 이 가능함) -->
       <v-app-bar color="white" dense class="navBar">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -86,8 +87,13 @@
 
 <script>
 import {mapActions, mapGetters} from "vuex";
+import FlashModal from '@/components/signup/FlashModal.vue'
+
 
   export default {
+    components: {
+      FlashModal,
+    },
     data: () => ({
       drawer: false,
       group: null,
@@ -96,6 +102,8 @@ import {mapActions, mapGetters} from "vuex";
         { title: '레시피 생성', routerName: 'RecipeCreate' },
         { title: '채식팟 생성', routerName: 'VetPartyCreate' },
       ],
+      modalOpen: false,
+      modalContent: '',
     }),
 
     watch: {
@@ -110,9 +118,12 @@ import {mapActions, mapGetters} from "vuex";
       ...mapActions ("user", ["getTokenUserInfo", "logout"]),
 
       onClickLogout(){
-        alert("로그아웃 되었습니다.");
-        this.$store.dispatch("user/logout");
-        this.$router.push("/")
+        this.modalContent = "로그아웃 되었습니다."
+        this.modalOpen = true
+        setTimeout(() => {
+          this.modalOpen = false
+          this.logout()
+        }, 1000);
       }
     },
   }
