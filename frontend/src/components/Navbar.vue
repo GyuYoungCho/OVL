@@ -118,7 +118,6 @@ import FlashModal from '@/components/signup/FlashModal.vue'
       ...mapActions ("user", ["getTokenUserInfo", "logout"]),
 
       onClickLogout(){
-        // alert("로그아웃 되었습니다.");
         this.modalContent = "로그아웃 되었습니다."
         this.modalOpen = true
         setTimeout(() => {

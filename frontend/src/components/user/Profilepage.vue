@@ -1,6 +1,7 @@
 <template>
 <v-container>
     <section  class="profilepage">
+        <ChallengeConfirm :user="userinfo" :certdialog="certdialog" @openCertDialog="openCertDialog"/>
             <div centered class="container d-flex justify-content-center">
                 <div class="card p-3">
                     <div class="d-flex align-items-center">
@@ -9,7 +10,8 @@
                             <div class="mb-0 mt-0">{{nickname}}</div>
                             <div v-if="isNotChallenging" style="font-size:x-small">
                             <span class="ingdate">&nbsp;</span></div>
-                            <div v-else style="font-size:x-small">
+                            <div v-else style="font-size:x-small"
+                            @click="openCertDialog(true)">
                             <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
                         <div class="rankingbox" style="font-size:xx-small; margin: 30px">
@@ -143,6 +145,7 @@
                 </v-tab-item>
         </v-tabs>
     </div> 
+    
     </section>
 </v-container>  
 </template>
@@ -152,6 +155,7 @@ import {mapGetters, mapState} from "vuex"
 import UserPosts from '@/components/profile/userPost.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
+import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
 import moment from 'moment'
 import axios from 'axios'
@@ -159,7 +163,7 @@ import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileName},
 
     data () {
         
@@ -171,6 +175,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
             isModalFollowing: false,
             start_date: 0,
             dialog: false,
+            certdialog: false,
             rankOpen: false,
             isNotChallenging: false,
             experience:'',
@@ -255,6 +260,10 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         closeDialog() { //Dialog 닫히는 동작
             this.dialog = false;
         },
+        openCertDialog(val){
+            if(this.userinfo.challengeId.challengeId!=1)
+                this.certdialog = val
+        }
     },
 
 }

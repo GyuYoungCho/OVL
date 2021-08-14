@@ -73,23 +73,20 @@ import ProfileName from '@/components/basic/ProfileName.vue';
 export default {
     components:{
         ProfileName,
-        
     },
     data() {
         return {
-            isColor: false,
+            // 아이콘 표현을 위한 것들
             allSteps: [
                 "과일채소", "계란","유제품","생선","고기"
             ],
-            
             btnActive: {0:false,1:false,2:false,3:false,4:false},
             
             snackbar : false,
         };
     },
-    props: {
+    props: {  // listt 화면에서 pot을 받아옴
         potitem: Object,
-        
     },
     created(){
         this.stepToIcon(this.potitem.step)
@@ -98,13 +95,13 @@ export default {
         
         ...mapGetters("user", ["userinfo"]),
         
-        meet_date(){
+        meet_date(){//날짜 출력
             return moment(this.potitem.time).format("ddd MM/DD")
         },
-        meet_time(){
+        meet_time(){ // 시간출력
             return moment(this.potitem.time).format("HH:mm")
         },
-        avail(){
+        avail(){ // 팟의 인원, 날짜에 따라 참여 가능을 결정할 변수
             
             return (this.potitem.total_people <= this.potitem.pot_count) || 
                     ((new Date(this.potitem.time)).getTime() < (new Date()).getTime())
@@ -113,17 +110,20 @@ export default {
     },
     methods: {
         ...mapActions('pot', ['selectPot','potAttendUsers']),
+        // pot과 참여목록을 store에 넣고 vetPartyDetail 모달이 열림
         openDetailModal(val){
             this.selectPot(this.potitem)
             this.potAttendUsers(this.potitem.potid)
             this.$emit('openDetailModal', val)
         },
+        // 바로 참여할거냐 물어봄(list화면의 openAtttendMoal Method를 열어 message modal을 띄운다)
         openAttendModal(val){
             this.selectPot(this.potitem)
             this.potAttendUsers(this.potitem.potid)
             this.$emit('openAttendModal', val)
         },
         
+        // step을 icon 변환
         stepToIcon(item) {
             for (let i=0;i<5;i++){
                 if(this.allSteps[i]==item){
