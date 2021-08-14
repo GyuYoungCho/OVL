@@ -10,6 +10,7 @@ namespaced: true,
         postLikeList:[],
         post:{},
         postPhotoList: [],
+        postMyList:[],
         foodPostList: [],
         clothPostList: [],
         cosmeticPostList: [],
@@ -17,6 +18,9 @@ namespaced: true,
     getters: {
         postList(state) {
             return state.postList
+        },
+        postMyList(state) {
+            return state.postMyList
         },
         foodPostList(state) {
             return state.foodPostList
@@ -42,7 +46,7 @@ namespaced: true,
             state.postPhotoList = payload
         },
         SET_USER_POST_LIST (state, payload) {
-            state.postList = payload
+            state.postMyList = payload
             state.foodPostList = payload.filter((eachList)=> eachList.postId.category===1)
             state.clothPostList = payload.filter((eachList)=> eachList.postId.category===2)
             state.cosmeticPostList = payload.filter((eachList)=> eachList.postId.category===3)
@@ -65,7 +69,7 @@ namespaced: true,
                 url: API.url + postAPI.select_user(payload),
             }).then((res)=>{
                 store.commit("SET_USER_POST_LIST", res.data);
-                console.log("확인 데이터", res.data)
+                //console.log("확인 데이터", res.data)
             }).catch((err)=>{
                 console.log(err);
             })

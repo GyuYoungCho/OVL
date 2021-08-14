@@ -12,20 +12,22 @@
                             <div v-else style="font-size:x-small">
                             <span class="ingdate">{{time}} </span> 일째 챌린지 중</div>
                         </div>
-                        <div class="rankingbox" style="font-size:xx-small; margin: 20px">
+                        <div class="rankingbox" style="font-size:xx-small; margin: 30px">
                             <div class="d-flex justify-content-center">
                                 <div style="margin: 10px">
                                     <div class="d-flex flex-column"> 
                                         <span class="rank">rank</span>
-                                        <span class="number1" style="font-size:medium" @click="rankOpen = true">{{rank}}</span>
+                                        <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                        <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                        <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
                                     </div>
                                 </div>
                                 <v-spacer></v-spacer>
-                                <div style="margin: 10px">
+                                <div style="margin: 10px" class="justify-content-center" >
                                     <div class="d-flex flex-column"> 
                                         <span class="following">following</span>
                                         <div @click="openDialog(0)">
-                                        <span class="number2" style="font-size:medium" >{{following}}</span>
+                                        <span class="number2" style="font-size:medium" width="40px">{{following}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -34,7 +36,7 @@
                                     <div class="d-flex flex-column">
                                     <span class="follower">follower</span>
                                         <div @click="openDialog(1)">
-                                            <span class="number3" style="font-size:medium">{{follower}}</span>
+                                            <span class="number3" style="font-size:medium" width="40px" >{{follower}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +65,18 @@
                     <div class="modalContent">
                     <div class="mb-3">
                         <span class="modalContentMessage">
-                            랭크
+                            <div>
+                                <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
+                                <span > 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요!</span>
+                            </div>
+                            <br/>
+                            <div class="text-center">
+                                <span style="color: #49784B; font-size: Large">"{{nickname}}" 님의 </span>
+                                <div> Rank는 <span style="font-size: large; color:  #49784B;">"{{rank}}"</span> 등!! </div>
+                                <div> Vegan Score 는 <span style="font-size: large; color:  #49784B;">"{{experience}}"</span>  점 입니다!</div>
+                            </div>
                         </span>
                     </div>
                     <div class="modalContentButtonArea">
@@ -140,8 +153,10 @@ import UserPosts from '@/components/profile/userPost.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
-import moment from 'moment';
+import moment from 'moment'
+import axios from 'axios'
 import API from '@/api/index.js'
+import userAPI from '@/api/user.js'
 
 export default {
 components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
@@ -149,29 +164,28 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     data () {
         
         return{
-        file: "",
-		lists: [],
-		path:'',
-        isModalFollower: false,
-        isModalFollowing: false,
-        start_date: 0,
-        dialog: false,
-        rankOpen: false,
-        isNotChallenging: false,
+            file: "",
+            lists: [],
+            path:'',
+            isModalFollower: false,
+            isModalFollowing: false,
+            start_date: 0,
+            dialog: false,
+            rankOpen: false,
+            isNotChallenging: false,
+            experience:'',
+            step:'',
         }
     },
     computed:{
-    ...mapGetters("user",(["userinfo","isLogin", "challenge"])),
-    ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
-    ...mapState("user", (["isLogin", "rank"])),
-    time() {
-        const start = moment(this.start_date);
-        const now = moment(new Date());
-        // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-        return now.diff(start, 'days') + 1;
-    },
-        userPath() { // 프로필 사진 이미지 출력
-            return API.url + "/profile/" + this.userinfo.userid + "/"+ this.userinfo.stored_file_path.split('/').reverse()[0]
+        ...mapGetters("user",(["userinfo","isLogin", "challenge"])),
+        ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
+        ...mapState("user", (["isLogin", "rank", "percent"])),
+        time() {
+            const start = moment(this.start_date);
+            const now = moment(new Date());
+            // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
+            return now.diff(start, 'days') + 1;
         },
 
     },
@@ -197,24 +211,50 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
     
         this.start_date = this.userinfo.challengeId.start_date;
 
-
+        //쿵야 셋팅
+        console.log(this.percent)
+        if(this.percent < 31 ){
+            this.step = 1;
+        }else if( this.percent > 30 && this.percent < 61){
+            this.step = 2;
+        }else{
+            this.step = 3;
+        }
     },
+
     methods: {
         onClickEditUser(){
             this.$router.push({ name: "ModifyPic" });
         },
-    openDialog(num) { //Dialog 열리는 동작
-    if(num == 0){
-        this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
-    }else{
-        this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
-    }
-    this.dialog = true;
+        //랭크 클릭시 보이는 모달
+        onClickRank() {
+            
+            axios({
+                method: "get",
+                url: API.url + userAPI.select(this.userinfo.userid)
+            }).then((res)=>{
+                if(res.data !== null){
+                    console.log("유저 경험점수" , res.data)
+                    this.experience = res.data.experience;
+                }
+            }).catch((err)=>{
+                console.log(err)
+            })
 
-    },
-    closeDialog() { //Dialog 닫히는 동작
-        this.dialog = false;
-    },
+            this.rankOpen = true;
+        },
+        openDialog(num) { //Dialog 열리는 동작
+        if(num == 0){
+            this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
+        }else{
+            this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
+        }
+        this.dialog = true;
+
+        },
+        closeDialog() { //Dialog 닫히는 동작
+            this.dialog = false;
+        },
     },
 
 }
