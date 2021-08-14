@@ -247,11 +247,7 @@ import followAPI from '@/api/follow.js'
 import userAPI from '@/api/user.js'
 import reportAPI from '@/api/report.js'
 export default {
-<<<<<<< HEAD
-components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ProfileName, LockImg, NoneChallenging},
-=======
-components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeConfirm, ProfileName, LockImg},
->>>>>>> branch 'master' of https://lab.ssafy.com/s05-webmobile2-sub3/S05P13A606.git
+components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeConfirm, ProfileName, LockImg, NoneChallenging},
 
     data () {
         
