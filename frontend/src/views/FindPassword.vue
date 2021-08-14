@@ -1,30 +1,8 @@
 <template>
   <v-container>
-    <!-- 비번찾기 관련 모달 -->
-    <v-dialog v-model="modalOpen" max-width="300" persistent @click:outside="nothing">
-      <v-card>
-        <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
-          <v-toolbar-title class="modalTitle">
-            <!-- {{ modaltitle }} -->
-          </v-toolbar-title>
-          <v-spacer></v-spacer>
-          
-        </v-toolbar>
-        <!-- 모달 컨텐츠 영역 -->
-        <v-container>
-        <div class="modalContent">
-          <div class="mb-3">
-            <span class="modalContentMessage">
-              {{ modalContent }}
-            </span>
-          </div>
-        </div>
-        </v-container>
-      </v-card>
-    </v-dialog>
-
-
+    <!-- 모달 -->
+    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+    
     <section class="findPassword">
       <img src="@/assets/image/OVL_logo.png" alt="">
       <!-- 이메일 -->
@@ -75,8 +53,12 @@
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+  components: {
+    FlashModal,
+  },
   data: () => ({
     email: '',
     emailValid: false,
@@ -111,7 +93,13 @@ export default {
             }, 1000);
           }
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          console.error(err)
+          this.modalContent = "등록 정보가 없는 이메일입니다."
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
+        })
     },
 
     onEmailAuthBtnClick () {
