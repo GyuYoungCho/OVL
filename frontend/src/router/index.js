@@ -94,7 +94,7 @@ const routes = [
     component: RecipeCreate,
   },
   {
-    path: "/recipe_detail",
+    path: "/recipe_detail/:recipeId",
     name: "RecipeDetail",
     component: RecipeDetail,
   },

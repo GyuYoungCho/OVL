@@ -1,54 +1,19 @@
 <template>
   <div>
     <v-container class="px-7 mt-4">
-      <!-- 게시물 삭제 모달 -->
-      <v-dialog v-model="deleteModal" hide-overlay max-width="300">
-        <v-card>
-          <!-- 모달 타이틀 영역 -->
-          <v-toolbar dense color="#004627">
-            <v-toolbar-title class="modalTitle">{{ post.title }}</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon dark @click="deleteModal = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-          <!-- 모달 컨텐츠 영역 -->
-          <v-container>
-          <div class="modalContent">
-            <div class="mb-3">
-              <span class="modalContentMessage">
-                정말로 삭제하시겠습니까?
-              </span>
-            </div>
-            <div class="modalContentButtonArea">
-              <v-spacer></v-spacer>
-              <v-spacer></v-spacer>
-              <button class="modalContentButton" @click="replyDelete" v-if="deletingReply">확인</button>
-              <button class="modalContentButton" @click="commentDelete" v-else-if="deletingComment">확인</button>
-              <button class="modalContentButton" @click="postModify('삭제')" v-else>확인</button>
-              <v-spacer></v-spacer>
-              <button class="modalContentButton" @click="deleteModal = false">취소</button>
-              <v-spacer></v-spacer>
-              <v-spacer></v-spacer>
-            </div>
-          </div>
-          </v-container>
-        </v-card>
-      </v-dialog>
-
-
+      <!-- 삭제 관련 모달 -->
+      <ArticleDetailModal :modalOpen="modalOpen" @confirmBtnClick="confirmBtnClick" @cancelBtnClick="cancelBtnClick" />
+      
       <!-- 게시글 시작 -->
       <div>
         <!-- post header - 프로필 사진, 유저 닉네임, 좋아요, 댓글 -->
         <v-row>
-
           <v-col cols="6" md="1">
             <ProfileName :user="post.userId"></ProfileName>
           </v-col>
-
           <!-- 게시글 좋아요, 댓글 -->
           <v-col cols="6" md="1" style="text-align:right">
-            <div v-if="isPostLike()" class="inline" @click="postLike">
+            <div v-if="postLikeList.includes(post.postId)" class="inline" @click="postLike">
               <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
             </div>
             <div v-else class="inline" @click="postLike">
@@ -112,7 +77,7 @@
             </v-col>
             <v-col cols="2" md="1" style="text-align:right">
               <!-- 댓글 하트 확인-->
-              <div v-if="isCommentLike(info.postCommentId)" class="inline" @click="commentLike(info.postCommentId)">
+              <div v-if="commentLikeList.includes(info.postCommentId)" class="inline" @click="commentLike(info.postCommentId)">
                 <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
               </div>
               <div v-else class="inline" @click="commentLike(info.postCommentId)">
@@ -142,7 +107,7 @@
           </div>
 
           <!-- 답글 가져오기 -->
-          <div v-if="isShowReply(info.postCommentId)" class="ml-5">
+          <div v-if="showReply.includes(info.postCommentId)" class="ml-5">
             <div v-for="(replyInfo, replyIdx) in replyList" :key="replyIdx">
               <!-- 게시글의 모든 답글 중 현재 댓글에 해당하는 답글만 출력해야함 -->
               <div v-if="replyInfo.postCommentId.postCommentId==info.postCommentId">
@@ -155,7 +120,7 @@
                   </v-col>
                   <v-col cols="2" md="1" style="text-align:right">
                     <!-- 답글 하트 확인-->
-                    <div v-if="isReplyLike(replyInfo.postReplyId)" class="inline" @click="replyLike(replyInfo.postReplyId)">
+                    <div v-if="replyLikeList.includes(replyInfo.postReplyId)" class="inline" @click="replyLike(replyInfo.postReplyId)">
                       <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
                     </div>
                     <div v-else class="inline" @click="replyLike(replyInfo.postReplyId)">
@@ -185,10 +150,11 @@
 
 <script>
 import ProfileName from '@/components/basic/ProfileName.vue'
-import {mapState} from "vuex";
+import ArticleDetailModal from '@/components/article/ArticleDetailModal.vue'
+import {mapGetters, mapActions} from "vuex";
 export default {
   components: {
-    ProfileName
+    ProfileName, ArticleDetailModal,
   },
   data() {
     return {
@@ -206,7 +172,7 @@ export default {
       replyBtnClickId:0,
 
       // 모달 관련 변수
-      deleteModal: false,
+      modalOpen: false,
       // deletingArticle: false,
       deletingComment: false,
       deletingReply: false,
@@ -214,14 +180,26 @@ export default {
     }
   },
   methods: {
-    alertDeleteConfirm() { // 삭제 alert
-      var result = confirm("정말 삭제하시겠습니까?");
-      return result;
+    ...mapActions('post', ['getPost',]),
+    ...mapActions('postComment', ['getCommentList', 'getCommentLikeList']),
+    ...mapActions('postReply', ['getReplyList', 'getReplyLikeList',]),
+    // 모달에서 '확인' 버튼 클릭
+    confirmBtnClick () {
+      if (this.deletingReply) {
+        this.replyDelete()
+      } else if (this.deletingComment) {
+        this.commentDelete()
+      } else {
+        this.postModify('삭제')
+      }
+    },
+    // 모달에서 '취소' 버튼 클릭
+    cancelBtnClick () {
+      this.modalOpen = false
     },
     onDeleteUpdateClick(title) {
-      console.log(title)
       if (title==="삭제") {
-        this.deleteModal = true
+        this.modalOpen = true
       } else {
         this.postModify(title)
       }
@@ -245,7 +223,7 @@ export default {
       } else {
         this.deletingReply = true
       }
-      this.deleteModal = true
+      this.modalOpen = true
       this.deletingInfo = info
     },
     // @@@@@@@@@@@ 댓글 삭제 로직 @@@@@@@@@@@
@@ -257,22 +235,20 @@ export default {
           "postId" : this.post.postId
         }
         this.deletingComment = false
-        this.deleteModal = false
+        this.modalOpen = false
         this.$store.dispatch("postComment/commentDelete", paylaod);
       // }
     },
     // @@@@@@@@@@@ 답글 삭제 로직 @@@@@@@@@@@
     replyDelete() { // 답글 삭제
       const replyInfo = this.deletingInfo
-      // if (this.alertDeleteConfirm()) {
-        let paylaod = {
-          "replyId" : replyInfo.postReplyId,
-          "postId" : this.post.postId
-        }
-        this.deletingReply = false
-        this.deleteModal = false
-        this.$store.dispatch("postReply/replyDelete", paylaod);
-      // }
+      let paylaod = {
+        "replyId" : replyInfo.postReplyId,
+        "postId" : this.post.postId
+      }
+      this.deletingReply = false
+      this.modalOpen = false
+      this.$store.dispatch("postReply/replyDelete", paylaod);
     },
     isUser() { // 유저가 맞다면 수정, 삭제 버튼 생기기
       if (this.post.userId.userid == this.userinfo.userid) return true;
@@ -289,14 +265,12 @@ export default {
     postModify(title) { // 게시글 수정, 삭제 버튼 클릭
       if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
       else { // 삭제
-        // if (this.alertDeleteConfirm()) {
-        var payload = {
-          "userId" : this.userinfo.userid,
-          "postId" : this.post.postId
-        }
-        var move = this.$store.dispatch("post/postDelete", payload);
-        if (move) this.$router.push({path:"/"});
-        // }
+      var payload = {
+        "userId" : this.userinfo.userid,
+        "postId" : this.post.postId
+      }
+      var move = this.$store.dispatch("post/postDelete", payload);
+      if (move) this.$router.push({path:"/"});
       }
     },
     replyClick(info) { // 답글 보기 or 숨기기
@@ -309,22 +283,6 @@ export default {
     replyReturn(info) { // 답글 N개 보기 vs 답글 숨기기
       if (this.showReply.includes(info.postCommentId)) return "답글 숨기기";
       else return "답글 "+info.reply_count+"개 보기";
-    },
-    isShowReply(postCommentId) { // 답글을 보여줘야 할지 안보여줘도 될지 확인
-      if (this.showReply.includes(postCommentId)) return true;
-      else return false;
-    },  
-    isPostLike() { // 게시글 좋아요 눌렀는지 확인
-      if (this.postLikeList.includes(this.post.postId)) return true;
-      else return false;
-    }, 
-    isCommentLike(commentId) { // 댓글 좋아요 눌렀는지 확인
-      if(this.commentLikeList.includes(commentId)) return true;
-      else return false;
-    },
-    isReplyLike(replyId) {
-      if(this.replyLikeList.includes(replyId)) return true;
-      else return false;
     },
     postLike() { // 게시글 좋아요 버튼 눌렀슴
       var payload = {
@@ -408,27 +366,24 @@ export default {
     }
   },
   computed: {
-    ...mapState("post", (["postLikeList", "post", "postPhotoList"])),
-    ...mapState("user", (["userinfo"])),
-    ...mapState("postComment", (["commentList", "commentLikeList"])),
-    ...mapState("postReply", (["replyList", "replyLikeList"]))
+    ...mapGetters("post", (["postLikeList", "post", "postPhotoList"])),
+    ...mapGetters("user", (["userinfo"])),
+    ...mapGetters("postComment", (["commentList", "commentLikeList"])),
+    ...mapGetters("postReply", (["replyList", "replyLikeList"]))
   },
   created() {
-    this.isComment = true;
+    const postId = this.$route.params.postId
+    const userId = this.userinfo.userid
     // 게시글 가져오기
-    this.$store.dispatch("post/getPost", this.$route.params.postId); 
+    this.getPost(postId)
     // 댓글 가져오기
-    this.$store.dispatch("postComment/getCommentList", this.$route.params.postId); 
+    this.getCommentList(postId)
     // 댓글 좋아요 리스트 가져오기
-    let payload = {
-      "userId" : this.userinfo.userid,
-      "postId" : this.$route.params.postId,
-    }
-    this.$store.dispatch("postComment/getCommentLikeList", payload); 
+    this.getCommentLikeList({userId, postId})
     // 해당 게시글에 대한 모든 답글 가져오기
-    this.$store.dispatch("postReply/getReplyList", this.$route.params.postId); 
+    this.getReplyList(postId)
     // 답글 좋아요 리스트 가져오기
-    this.$store.dispatch("postReply/getReplyLikeList", this.userinfo.userid);
+    this.getReplyLikeList(userId)
   }
 }
 </script>

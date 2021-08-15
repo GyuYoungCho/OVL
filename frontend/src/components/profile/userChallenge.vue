@@ -213,15 +213,8 @@ import challengeAPI from '@/api/challenge.js'
 export default {
 data() {
     return {
-        // post : {
-        // type : "포스트",
-        // step : "화장품",
-        // },
-        // allSteps: [
-        // "화장품", "레시피", "옷",
-        // ],
-    showAll: true,
-    btnActive: {0:false,1:false,2:false},
+      showAll: true,
+      btnActive: {0:false,1:false,2:false},
     }
 },
 methods: {
@@ -233,9 +226,9 @@ methods: {
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
             this.showAll = true;
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
+            // console.log(num)
+            // console.log("btn",this.btnActive)
+            // console.log("show",this.showAll)
         }else if(this.btnActive[num] ===false){
             this.btnActive[num] = true;
             this.showAll = false;
@@ -244,9 +237,6 @@ methods: {
                 this.btnActive[i] = false;
               }
             }
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
         }
     },
     challengeEnd(){

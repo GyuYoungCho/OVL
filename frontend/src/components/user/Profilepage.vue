@@ -141,11 +141,12 @@
                 </v-tab-item>
             <!-- 챌린지  -->
                 <v-tab-item>
-                        <UserChallenges/>
+                    <NoneChallenging v-if="isNotChallenging"/>
+                    <UserChallenges v-else/>
+
                 </v-tab-item>
         </v-tabs>
     </div> 
-    
     </section>
 </v-container>  
 </template>
@@ -157,13 +158,14 @@ import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 import ProfileName from '@/components/basic/ProfileName.vue'
+import NoneChallenging from '@/components/profile/NoneChallenging.vue'
 import moment from 'moment'
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileName},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileName, NoneChallenging},
 
     data () {
         

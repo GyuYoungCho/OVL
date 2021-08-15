@@ -5,7 +5,7 @@ import recipeCommentAPI from '@/api/recipe_comment.js'
 import recipeReplyAPI from '@/api/recipe_reply.js'
 
 export default {
-  // namspaced: true,
+  namespaced: true,
   state: {
     recipe: {},
     recipes: [],

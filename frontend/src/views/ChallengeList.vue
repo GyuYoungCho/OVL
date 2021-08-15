@@ -38,16 +38,17 @@
       </v-card>
     </v-dialog>
 
-    <!-- 컨테이너 1: 카테고리가 딱히 정해지지 않으면 챌린지 리스트 전체를 렌더링 합니다 -->
-    <v-container v-if="!nowSelectedCategory.trim()">
+    <!-- 그리드 영역 -->
+    <v-container>
       <v-row>
-        <v-col v-for="(challenge, idx) in challengeList" :key="idx" cols="4" class="grid-cell">
+        <v-col v-for="(challenge, idx) in filteredChallengeList" :key="idx" cols="4" class="grid-cell">
           <!-- 개별 card 영역 : 카드들이 위의 v-for 태그로 인해 그리드로 들어가게 됩니다 -->
           <v-container class="card">
             <article class="cardContent">
               <!-- (1) 개별 카드에서의 더미 이미지 영역 -->
               <div class="cardContentArea">
-                <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
+                <img v-if="challenge.type === 2" src="@/assets/image/challenge_recipe.png" class='cardImage'>
+                <img v-else :src="require(`@/assets/image/challenge${challenge.category}.png`)" class='cardImage'>
               </div>
               <!-- (2) 제목 -->
               <div class="cardContentArea cardContentAreaTitle">
@@ -76,7 +77,10 @@
               <!-- (6) 참여 기간을 나타내는 영역 -->
               <div class="cardContentArea">
                 <v-icon x-small>mdi-calendar-blank</v-icon>
-                ({{challenge.period/7}}주)
+                {{ challenge.start_date.substring(0,10)}} ~
+                <div class="cardContentAreaDate">
+                  {{ recalibratedDate(challenge.start_date, challenge.period) }}  ({{challenge.period/7}}주)
+                </div>
               </div>
               <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
               <div class="cardContentArea">
@@ -90,142 +94,12 @@
       </v-row>
     </v-container>
 
-    <!-- 컨테이너 2: 음식 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
-    <v-container v-else-if="nowSelectedCategory==='1'">
-      <v-row>
-        <v-col v-for="(challenge, idx) in foodChallengeList" :key="idx" cols="4" class="grid-cell">
-          <v-container class="card">
-            <article class="cardContent">
-              <div class="cardContentArea">
-                <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
-              </div>
-              <div class="cardContentArea cardContentAreaTitle">
-                {{challenge.title}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-run</v-icon>
-                <span v-if="challenge.cycle === 1">
-                  매일
-                </span>
-                <span v-else>
-                  {{challenge.cycle}}일마다
-                </span>
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-diamond-stone</v-icon>
-                {{challenge.score}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-account</v-icon>
-                {{challenge.count}}명 참여중
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-calendar-blank</v-icon>
-                ({{challenge.period/7}}주)
-              </div>
-              <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
-              </div>
-            </article>
-          </v-container>
-        </v-col>
-      </v-row>
-    </v-container>    
-
-    <!-- 컨테이너 3: 옷 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
-    <v-container v-else-if="nowSelectedCategory==='2'">
-      <v-row>
-        <v-col v-for="(challenge, idx) in clothChallengeList" :key="idx" cols="4" class="grid-cell">
-          <v-container class="card">
-            <article class="cardContent">
-              <div class="cardContentArea">
-                <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
-              </div>
-              <div class="cardContentArea cardContentAreaTitle">
-                {{challenge.title}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-run</v-icon>
-                <span v-if="challenge.cycle === 1">
-                  매일
-                </span>
-                <span v-else>
-                  {{challenge.cycle}}일마다
-                </span>
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-diamond-stone</v-icon>
-                {{challenge.score}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-account</v-icon>
-                {{challenge.count}}명 참여중
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-calendar-blank</v-icon>
-                ({{challenge.period/7}}주)
-              </div>
-              <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
-              </div>
-            </article>
-          </v-container>
-        </v-col>
-      </v-row>
-    </v-container>   
-
-    <!-- 컨테이너 4: 화장품 카테고리인 경우 음식에 해당하는 리스트를 렌더링 합니다. -->
-    <v-container v-else>
-      <v-row>
-        <v-col v-for="(challenge, idx) in cosmeticChallengeList" :key="idx" cols="4" class="grid-cell">
-          <v-container class="card">
-            <article class="cardContent">
-              <div class="cardContentArea">
-                <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
-              </div>
-              <div class="cardContentArea cardContentAreaTitle">
-                {{challenge.title}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-run</v-icon>
-                <span v-if="challenge.cycle === 1">
-                  매일
-                </span>
-                <span v-else>
-                  {{challenge.cycle}}일마다
-                </span>
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-diamond-stone</v-icon>
-                {{challenge.score}}
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-account</v-icon>
-                {{challenge.count}}명 참여중
-              </div>
-              <div class="cardContentArea">
-                <v-icon x-small>mdi-calendar-blank</v-icon>
-                ({{challenge.period/7}}주)
-              </div>
-              <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
-              </div>
-            </article>
-          </v-container>
-        </v-col>
-      </v-row>
-    </v-container>  
   </v-container>
 </template>
 
 <script>
 import { mapActions, mapGetters} from 'vuex'
+import moment from 'moment'
 
 export default {
   data () {
@@ -293,12 +167,24 @@ export default {
           this.challengeAttend(payload)
         } 
       },
+    recalibratedDate(start_date, period) {
+      return moment(start_date).add(period-2, 'days').format('YYYY-MM-DD')
+    }
   },
   computed: {
     // 일단 store.state 에서 4개의 리스트 (챌린지 종류에 따른 배열) 을 가져 옵니다. <위에서 v-for 로 풀어주는 용도>
     ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
     // userinfo.challengeId.challengeId 가 1 이라면 아직 아무런 챌린지도 하고 있지 않은 상태고, 나머지라면 어떤 챌린지에 참여중인 상태입니다.
-    ...mapGetters("user", ["userinfo",])
+    ...mapGetters("user", ["userinfo",]),
+    // 스토어엔 전체 챌린지 리스트만 두고, computed를 활용해 필터링 로직을 넣어 줍니다. 카테고리 and 앞으로 진행할 수 있는 챌린지일 것.
+    filteredChallengeList () {
+      if (!this.nowSelectedCategory.trim()) {
+        return this.challengeList.filter(eachChallenge=> moment(eachChallenge.start_date).isAfter(moment()))
+      }
+      else {
+        return this.challengeList.filter((eachChallenge) => eachChallenge.category === parseInt(this.nowSelectedCategory) && moment(eachChallenge.start_date).isAfter(moment()))
+      }
+    },
   },
 
   created () {
