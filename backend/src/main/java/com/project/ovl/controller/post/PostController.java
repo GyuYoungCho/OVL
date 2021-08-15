@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -373,7 +374,7 @@ public class PostController {
 	
 	@GetMapping("/select_all/{user_id}")
 	@ApiOperation(value = "게시글 조회")
-	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id) {
+	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id, final Pageable pageable) {
 		// 내가 팔로우 한 사람 찾기
 		Optional<List<Follow>> followList = followDao.findByFromIdUserid(user_id);
 		Set<Integer> followingList = new HashSet<>();
@@ -388,8 +389,18 @@ public class PostController {
 		// 해당 게시글의 이미지 리스트를 찾기 위해 이미지 데이터 싹 가져오기
 		List<PostPhoto> photoList = postPhotoDao.findAll();
 		List<PostPhoto> returnList = new ArrayList<>();
+		
+		// 최근 게시글 위주
+		Calendar getToday = Calendar.getInstance();
+		getToday.setTime(new Date());
+		
 		for (Post p : postList) {
-			if (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id) {
+			Calendar postday = Calendar.getInstance();
+			getToday.setTime(p.getTime());
+			
+			long diff = (getToday.getTimeInMillis() - postday.getTimeInMillis()) / (1000*24*60*60);
+			
+			if (diff <=7 && (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id)) {
 				List<PostPhoto> saveList = new ArrayList<>();
 				// 해당 게시물의 이미지를 리스트에 저장
 				for (PostPhoto pp : photoList) {
