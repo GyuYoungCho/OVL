@@ -9,6 +9,15 @@ namespaced: true,
         replyList:[],
         replyLikeList:[],
 	},
+    getters: {
+        replyList (state) {
+            return state.replyList
+        },
+        replyLikeList (state) {
+            return state.replyLikeList
+        },
+    },
+    
 	mutations: {
         GET_REPLY_LIST(state, payload) {
             state.replyList = payload;

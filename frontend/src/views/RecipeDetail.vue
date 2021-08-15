@@ -79,9 +79,9 @@
         {{ recipe.like_count }}
         <v-icon class="chatIcon">mdi-chat-outline</v-icon>
         {{ recipe.comment_count }}
-        <v-menu offset-y class="inline">
-          <template v-slot:activator="{ on, attrs }" v-if="recipe.userid.userid===userinfo.userid">
-            <v-btn icon v-bind="attrs" v-on="on">
+        <v-menu offset-y class="inline" v-if="isCurrentRecipeAuthor">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on" >
               <v-icon>mdi-dots-horizontal</v-icon>
             </v-btn>
           </template>
@@ -104,22 +104,21 @@
     <!-- 대표 사진 -->
     <img :src="recipe.filepath" alt="" class="recipePic">
     
-    <div class="recipeContent">
-      {{ recipe.content }}
+    <div class="recipeContent" v-html="changeLine(recipe.content)">
     </div>
 
-    <!-- 탭 부분 -->
+    <!-- 탭 버튼 부분 -->
     <div class="recipeTab">
       <button :class="{'recipeTabBtn': tab==='ingredient', 'unselectedBtn': tab!=='ingredient'}" @click="onRecipeTagBtnClick('ingredient')">재료</button>
       <button :class="{'recipeTabBtn': tab==='process', 'unselectedBtn': tab!=='process'}" @click="onRecipeTagBtnClick('process')">과정</button>
       <button :class="{'recipeTabBtn': tab==='comment', 'unselectedBtn': tab!=='comment'}" @click="onRecipeTagBtnClick('comment')">댓글</button>
     </div>
+
+    <!-- 탭 내용 부분 -->
     <div class="recipeTabContent">
       <!-- 재료 탭 -->
       <div class="recipeIngredient" v-if="tab==='ingredient'">
-        <div
-          v-html="changeLine(recipe.ingredient)"
-        >
+        <div v-html="changeLine(recipe.ingredient)">
         </div>
       </div>
 
@@ -256,7 +255,7 @@ export default {
     updateModal: false,
   }),
   methods: {
-    ...mapActions(['registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
+    ...mapActions('recipe', ['fetchRecipeDetail', 'fetchRecipeComments', 'registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
     'registRecipeCommentReply', 'likeRecipeCommentReply', 'fetchRecipeReplyLikeList', 'modifyRecipeReply', 'deleteRecipeReply',]),
     changeLine (content) {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
@@ -426,7 +425,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', 
+    ...mapGetters('recipe', ['recipe', 'recipeDetail', 'recipeComments', 'recipeLikeList', 
     'recipeCommentLikeList', 'recipeCommentReply', 'recipeReplyLikeList',]),
     ...mapGetters("user", ["userinfo",]),
     comment () {
@@ -438,9 +437,14 @@ export default {
         }
       }
       return data
+    },
+    isCurrentRecipeAuthor () {
+      return parseInt(this.recipe.userid.userid)===parseInt(this.userinfo.userid)
     }
   },
   created () {
+    this.fetchRecipeDetail(this.$route.params.recipeId)
+    this.fetchRecipeComments(this.$route.params.recipeId)
     this.fetchRecipeCommentLikeList(this.userinfo.userid)
     this.fetchRecipeReplyLikeList(this.userinfo.userid)
   }

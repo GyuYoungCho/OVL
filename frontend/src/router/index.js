@@ -22,6 +22,7 @@ import ModifyPic from "../views/ModifyPic.vue";
 import OtherProfile from "../views/OtherProfile.vue";
 import Tutorial from "../views/Tutorial.vue";
 
+import NewsFeedPractice from "../views/NewsFeedPractice.vue";
 Vue.use(VueRouter);
 
 const routes = [
@@ -52,7 +53,7 @@ const routes = [
   },
   {
     path: "*",
-    redirect: "/404"
+    redirect: "/404",
   },
   {
     path: "/article_create/:type",
@@ -100,7 +101,7 @@ const routes = [
     component: RecipeCreate,
   },
   {
-    path: "/recipe_detail",
+    path: "/recipe_detail/:recipeId",
     name: "RecipeDetail",
     component: RecipeDetail,
   },
@@ -134,6 +135,11 @@ const routes = [
     name: "OtherProfile",
     component: OtherProfile,
   },
+  {
+    path: "/feed",
+    name: "NewsFeedPractice",
+    component: NewsFeedPractice,
+  },
 ];
 
 const router = new VueRouter({
@@ -146,7 +152,7 @@ import store from "@/store";
 // 로그인한 사람만 갈 수 있는 페이지와 아닌 사람만 갈 수 있는 페이지 구분
 router.beforeEach((to, from, next) => {
   // 로그인 안 해야 갈 수 있는 페이지
-  const outerPages = ["Signup", "Login", "FindEmail", "FindPassword"];
+  const outerPages = ["Signup", "Login", "FindEmail", "FindPassword", "NewsFeedPractice"];
   // 로그인 해야 갈 수 있는 페이지
   const privatePages = [
     "NotFound",
@@ -164,6 +170,7 @@ router.beforeEach((to, from, next) => {
     "ModifyUser",
     "ModifyPic",
     "OtherProfile",
+    "NewsFeedPractice",
   ];
 
   const authRequired = privatePages.includes(to.name);
