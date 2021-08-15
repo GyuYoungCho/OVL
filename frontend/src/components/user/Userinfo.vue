@@ -1,7 +1,24 @@
 <template>
 <v-container>
+    
+        
+    <div class="text-right">
+        <v-row justify="end">
+            <span class="mr-3 mt-4">계정 
+                <span v-if="account_open">공개</span>
+                <span v-else>비공개</span>
+            </span>
+            <v-switch class="py-0 " v-model="account_open" color="success"></v-switch>
+        </v-row>
+    </div>
+    
     <section class="modifyuser">
+        
+        
+        
+        <div>
         <img src="@/assets/image/OVL_logo.png" alt="">
+        </div>
     <!-- 이름 -->
     <div class="inputOnlyRead">
         {{name}}
@@ -57,6 +74,7 @@ export default {
             phone: '',
             password: '',
             passwordCheck: '',
+            account_open: false,
         }
     },
     created() {
@@ -66,7 +84,7 @@ export default {
         this.nickname = this.userinfo.nickname;
         this.phone = this.userinfo.phone;
         this.email = this.userinfo.email;
-        
+        this.account_open = this.userinfo.account_open
     },
     computed: {
         ...mapGetters("user", ["userinfo"]),
@@ -78,6 +96,9 @@ export default {
         passwordCheckFormValid () {
             return !this.passwordCheck || (this.password===this.passwordCheck)
         },
+        accountopen(){
+            return this.userinfo.account_open == 1
+        }
     },
     methods: {
         onClickNicknameValidate () {
@@ -126,7 +147,23 @@ export default {
                 .catch(err => 
                 console.error(err))
         },
+
+        onModifyAccountOpenToggle(val) {
+            axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
+            .then(res => {
+                console.log(res.data)
+                })
+            .catch(err => 
+                console.error(err)
+            )
+        }
     },
+    watch:{
+        account_open(val){
+            let open = val? 0 : 1
+            this.onModifyAccountOpenToggle(open)
+        }
+    }
 }
 </script>
 

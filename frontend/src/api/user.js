@@ -49,4 +49,7 @@ export default {
   rank(user_id) {
     return `/user/rank/${user_id}`;
   },
+  lock(user_id, account_open) {
+    return `/user/lock/${user_id}/${account_open}`;
+  },
 };
