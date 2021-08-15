@@ -20,6 +20,7 @@ import VetPartyList from "../views/VetPartyList.vue";
 import ModifyUser from "../views/ModifyUser.vue";
 import ModifyPic from "../views/ModifyPic.vue";
 import OtherProfile from "../views/OtherProfile.vue";
+import Tutorial from "../views/Tutorial.vue";
 
 Vue.use(VueRouter);
 
@@ -38,6 +39,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/tutorial",
+    name: "Tutorial",
+    component: Tutorial,
   },
   {
     path: "/404",
