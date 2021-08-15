@@ -19,6 +19,15 @@ namespaced: true,
         postList(state) {
             return state.postList
         },
+        postLikeList (state) {
+            return state.postLikeList
+        },
+        post (state) {
+            return state.post
+        },
+        postPhotoList (state) {
+            return state.postPhotoList
+        },
         postMyList(state) {
             return state.postMyList
         },

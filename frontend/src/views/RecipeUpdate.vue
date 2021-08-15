@@ -57,7 +57,7 @@
         </div>
       </div>
       <div>
-        <button @click="onRecipeUpdateBtnClick" class="finalBtn" :class="{ 'bg-freditgreen': valid, 'disabledBtn': !valid }">
+        <button @click="onRecipeUpdateBtnClick" class="finalBtn bg-freditgreen">
           레시피 수정
         </button>
       </div>
@@ -84,7 +84,7 @@ export default {
       changeProcessPhotoIdx: -1,
       processLastIdx: 0,
 
-
+      // 백으로 넘겨줘야 하는 리스트들
       contentList: [],
       processIds: [],
       deleteIdList: [0],
@@ -101,7 +101,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['fetchRecipeDetail', 'fetchRecipeComments']),
+    ...mapActions('recipe', ['fetchRecipeDetail', 'fetchRecipeComments']),
     onTabBtnClick () {
       this.isIngredient = !this.isIngredient
     },
@@ -184,24 +184,17 @@ export default {
       params.append('ingredient', this.ingredient)
       params.append('recipeId', this.recipe.recipeId)
 
-      console.log("title : ", this.title);
-      console.log("content : ", this.content);
-      console.log("ingredient : ", this.ingredient);
-      console.log("recipeId : ", this.recipe.recipeId);
-
+      // 대표사진, 수정 사진, 새로운 사진 리스트
       params.append('picPathList', picPathList)
       params.append('modifyPathList', modifyPathList)
       params.append('plusPathList', plusPathList)
-
-      console.log("picPathList : ", picPathList);
-      console.log("modifyPathList : ", modifyPathList);
-      console.log("plusPathList : ", plusPathList);
 
       // 수정 과정 아이디 리스트
       const modifyContentIdList = this.modifyContentIdList
       console.log('수정 과정 아이디 리스트;', modifyContentIdList)
       // 수정 과정 내용 리스트
       const modifyContentList = []
+
       modifyContentList.push("temp")
       for (let i=1; i < modifyContentIdList.length; i++) {
         modifyContentList.push(this.modifyContentObj[modifyContentIdList[i]])
@@ -219,36 +212,25 @@ export default {
       params.append('modifyPhotoIdList', modifyPhotoIdList)
       params.append('plusContentList', plusContentList)
 
-      console.log("deleteIdList : ", deleteIdList);
-      console.log("modifyContentIdList : ", modifyContentIdList);
-      console.log("modifyContentList : ", modifyContentList);
-      console.log("modifyPhotoIdList : ", modifyPhotoIdList);
-      console.log("plusContentList : ", plusContentList);
-
       const URL = API.url + recipeAPI.modify();
-
       axios.put(URL, params)
       .then((response) => {
-        alert("보냈슴!");
         if (response.data=="success") {
           this.fetchRecipeDetail(this.recipe.recipeId)
           this.fetchRecipeComments(this.recipe.recipeId)
-          this.$router.push({ name: 'RecipeDetail' })
+          this.$router.push({ name: 'RecipeDetail', params: {recipeId: this.recipe.recipeId} })
         }
       })
       .catch((error) => {
-        alert("못보냈슴!");
-        console.log(error);
+        alert('문제가 발생했습니다.')
+        console.error(error);
       })
     }
   },
 
   computed: {
     ...mapGetters('user', ['userinfo', ]),
-    ...mapGetters(['recipe', 'recipeDetail',]),
-    valid () {
-      return true
-    }
+    ...mapGetters('recipe', ['recipe', 'recipeDetail',]),
   },
 
   created () {
