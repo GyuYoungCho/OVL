@@ -2,8 +2,7 @@
 import axios from "axios";
 import API from "@/api/index.js";
 import userAPI from "@/api/user.js";
-import router from "@/router"
-
+import router from "@/router";
 
 export default {
   namespaced: true,
@@ -15,6 +14,7 @@ export default {
       name: "",
       nickname: "",
       phone: "",
+      account_open: "",
       filepath: "",
       challengeId: {
         start_date: null,
@@ -50,7 +50,7 @@ export default {
       if (!state.isLogin) {
         // 로그인이 되어있지 않다면 지금 로그인했다는 뜻! 로그인 끝내고 메인페이지로 보내기
         state.isLogin = true;
-        router.push({name: 'Main'})
+        router.push({ name: "Main" });
       }
       state.userinfo = payload;
       console.log("유저 : ", state.userinfo.nickname);
@@ -64,11 +64,10 @@ export default {
         name: "",
         nickname: "",
         phone: "",
+        account_open: "",
         filepath: "",
       };
-      state.rank = '',
-        state.percent = '',
-      localStorage.removeItem("access-token");
+      (state.rank = ""), (state.percent = ""), localStorage.removeItem("access-token");
       localStorage.removeItem("vuex");
     },
     SET_RESET(state) {
@@ -147,7 +146,7 @@ export default {
       })
         .then((res) => {
           localStorage.setItem("access-token", res.headers["access-token"]);
-          dispatch('getUserInfo');
+          dispatch("getUserInfo");
         })
         .catch((err) => {
           // 로그인 실패 시 모달 띄우기
