@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import com.project.ovl.dao.post.PostCommentDao;
 import com.project.ovl.dao.post.PostDao;
 import com.project.ovl.dao.post.PostLIkeDao;
 import com.project.ovl.dao.post.PostPhotoDao;
+import com.project.ovl.dao.recipe.RecipeDao;
 import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.model.challenge.Challenge;
@@ -40,6 +42,7 @@ import com.project.ovl.model.like.PostLike;
 import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
+import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
 
@@ -81,6 +84,9 @@ public class PostController {
 	
 	@Autowired
 	ChallengeCertificationDao challengeCertificationDao;
+	
+	@Autowired
+	RecipeDao recipeDao;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
@@ -491,5 +497,96 @@ public class PostController {
 			if (pl.getUserId().getUserid()==user_id) returnSet.add(pl.getPostId().getPostId());
 		}
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
+	}
+	
+	@GetMapping("recommend_ch")
+	@ApiOperation(value = "뉴스피드 챌린지 추천")
+	public ResponseEntity<List<Challenge>> recommend_ch() {
+		List<Challenge> returnList = new ArrayList<>();
+		List<Challenge> topChList = new ArrayList<>();
+		
+		// 챌린지 가져오기
+		List<Challenge> chList = challengeDao.findAll();
+		// 참여하는 인원 순으로 정렬
+		Collections.sort(chList, (o1, o2) -> {
+			return Integer.compare(o2.getCount(), o1.getCount());
+		});
+
+		// 정렬 후 상위 5개 뽑기 (참여하는 인원이 있는 경우에만)
+		for (int i = 0; i < 5; i++) {
+			if (chList.get(i).getCount() > 0) topChList.add(chList.get(i));
+			else break;
+		}
+
+		// 랜덤으로 2개 뽑기
+		int a[] = new int[2];
+		Random rand = new Random();
+		int cnt = topChList.size()>0?topChList.size():chList.size(); // 상위 5개에 값이 있을 때 (참여 인원이 있을 때)는 topChList 만큼, 아닐 때는 chList 만큼 --> 참여 인원이 없다면 전체 챌린지에서 랜덤으로 값 뽑기
+		System.out.println("cnt : "+cnt);
+		int size = cnt>2?2:cnt; // cnt 개수만큼 랜덤 값 뽑기
+		for (int i = 0; i < size; i++) {
+			a[i] = rand.nextInt(cnt);
+			for (int j = 0; j < i; j++) {
+				if (a[i] == a[j]) i--;
+			}
+		}
+
+		// 랜덤으로 뽑은 값 넣기
+		for (int i = 0; i < size; i++) {
+			if (topChList.size()>0) returnList.add(topChList.get(a[i]));
+			else returnList.add(chList.get(a[i]));
+		}
+		
+		return new ResponseEntity<List<Challenge>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("recommend_re")
+	@ApiOperation(value = "뉴스피드 레시피 추천, 상위 5개 중 2개 랜덤으로 골라서 리턴")
+	public ResponseEntity<List<Recipe>> recommend() {
+		List<Recipe> returnList = new ArrayList<>();
+		List<Recipe> topReList = new ArrayList<>();
+		
+		// 레시피 가져오기
+		List<Recipe> reList = recipeDao.findAll();
+		
+		// 레시피가 존재한다면
+		if (reList.size()>=1) {
+			// 좋아요 순으로 정렬
+			Collections.sort(reList, (o1, o2)-> {
+				return Integer.compare(o2.getLike_count(), o1.getLike_count());
+			});
+		} else { // 레시피가 없다면 
+			returnList.add(new Recipe(0, "", "", "", new Date(), 0, 0, "", new User(0, "", "", "", "", "", 0, 0, 0, "", new Challenge(0, "", "", new Date(), 0, 0, 0, 0, 0, 0))));
+			return new ResponseEntity<List<Recipe>>(returnList, HttpStatus.OK); // 바로 리턴
+		}
+
+		
+		// 정렬 후 상위 5개 뽑기 (좋아요 있을 경우에만)
+		int size = reList.size()<5?reList.size():5;
+		for (int i=0;i<size;i++) {
+			if (reList.get(i).getLike_count()>0) topReList.add(reList.get(i));
+			else break;
+		}
+		
+		// 랜덤으로 2개 뽑기
+		int a[] = new int[2];
+		Random rand = new Random();
+		int cnt = topReList.size()>0?topReList.size():reList.size(); // 상위 5개에 값이 있을 때 (좋아요 누른 게 있을 때)는 topReList 만큼, 아닐 때는 reList 만큼 --> 좋아요 누른 게 없다면 전체 레시피에서 랜덤으로 값 뽑기
+		
+		size = cnt>2?2:cnt; // cnt 개수만큼 랜덤 값 뽑기
+		for (int i=0;i<size;i++) {
+			a[i] = rand.nextInt(cnt);
+			for (int j=0;j<i;j++) {
+				if (a[i]==a[j]) i--;
+			}
+		}
+		
+		// 랜덤으로 뽑은 값 넣기
+		for (int i=0;i<size;i++) {
+			if (topReList.size()>0) returnList.add(topReList.get(a[i]));
+			else returnList.add(reList.get(a[i]));
+		}
+		
+		return new ResponseEntity<List<Recipe>>(returnList, HttpStatus.OK);
 	}
 }
