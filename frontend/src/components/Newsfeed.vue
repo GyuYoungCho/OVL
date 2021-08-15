@@ -3,7 +3,7 @@
     <v-container class="px-6 mt-4">
       <feed-search @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></feed-search>
-      <v-card v-if="searchUser && searchUser.length!=0" :click:outside="searchKeyword('')">
+      <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
         <v-col class="mt-5 pl-3">
             <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
         </v-col> 
