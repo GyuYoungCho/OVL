@@ -32,9 +32,15 @@
   width: 92%;
 }
 
-.welcomeBtn {
+.welcomeBtn1 {
   background-color: $freditgreen !important;
   border-radius: 8px !important;
   color: white !important;
   width: 30% !important;
+  margin-left: 2vw;
+}
+
+.welcomeBtn2 {
+  @extend .welcomeBtn1;
+  margin-left: none;
 }
