@@ -9,6 +9,14 @@ namespaced: true,
         commentList:[],
         commentLikeList:[],
 	},
+    getters: {
+        commentList (state) {
+            return state.commentList
+        },
+        commentLikeList (state) {
+            return state.commentLikeList
+        },
+    },
 	mutations: {
         GET_COMMENT_LIST(state, payload) {
             state.commentList = payload;

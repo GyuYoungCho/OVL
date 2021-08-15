@@ -1,10 +1,9 @@
 <template>
   <div>
-    
     <v-container class="px-6 mt-4">
       <feed-search @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></feed-search>
-      <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
+      <v-card v-if="searchUser && searchUser.length!=0" :click:outside="searchKeyword('')">
         <v-col class="mt-5 pl-3">
             <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
         </v-col> 
@@ -66,7 +65,7 @@
 <script>
 import FeedSearch from '@/components/basic/FeedSearch.vue';
 import ProfileName from '@/components/basic/ProfileName.vue'
-import {mapState} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 import moment from 'moment'
 
 
@@ -78,21 +77,6 @@ export default {
       order : [
         "User", "Post",
       ],
-      colors: [
-        'green',
-        'secondary',
-        'yellow darken-4',
-        'red lighten-2',
-        'orange darken-1',
-      ],
-      cycle: false,
-      slides: [
-        'First',
-        'Second',
-        'Third',
-        'Fourth',
-        'Fifth',
-      ],
     }
   },
   components: {
@@ -100,6 +84,8 @@ export default {
     ProfileName
   },
   methods: {
+    ...mapActions('post', ['getPostList', 'getPostLikeList', ]),
+    ...mapActions('user', ['getUserList',]),
     searchKeyword(val){ // 키워드 받아오기
       this.search = val
     },
@@ -110,13 +96,14 @@ export default {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      var category = this.searchPost[idx].postId.category;
+      const category = this.searchPost[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
     },
     moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.searchPost[idx].postId.postId});
+      // this.$router.push({path:"/article_detail/"+this.searchPost[idx].postId.postId});
+      this.$router.push({name: "ArticleDetail", params: {postId: this.searchPost[idx].postId.postId}});
     },
     isLike(idx) { // 좋아요 눌렀는지 확인
       if (this.postLikeList.includes(this.searchPost[idx].postId.postId)) return true;
@@ -135,8 +122,8 @@ export default {
     },
   },
   computed: {
-    ...mapState("post", (["postList", "postLikeList"])),
-    ...mapState("user", (["userinfo","userlist"])),
+    ...mapGetters("post", (["postList", "postLikeList"])),
+    ...mapGetters("user", (["userinfo", "userlist"])),
 
     searchPost() {
       // 대소문자 구분 x
@@ -180,9 +167,9 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch("post/getPostList", this.userinfo.userid);
-    this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
-    this.$store.dispatch("user/getUserList");
+    this.getPostList(this.userinfo.userid)
+    this.getPostLikeList(this.userinfo.userid)
+    this.getUserList()
   }
 }
 </script>
