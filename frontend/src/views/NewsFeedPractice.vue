@@ -12,7 +12,7 @@
         <div class="mt-4" v-for="(data, index) in feedDatas" :key="'mainCard' + index">
         
         </div>
-        <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
+        <!-- <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles"> -->
         <div slot="no-more" class="mt-4">
             
         </div>
@@ -20,17 +20,17 @@
         <div slot="no-results" class="mt-4">
             
         </div>
-        </infinite-loading>
+        <!-- </infinite-loading> -->
       </v-container>
   </div>
 </template>
 
 <script>
-import InfiniteLoading from 'vue-infinite-loading';
+// import InfiniteLoading from 'vue-infinite-loading';
 import { mapGetters } from 'vuex';
 export default {
   components: {
-    InfiniteLoading,
+    // InfiniteLoading,
   },
   computed:{
     ...mapGetters("user", (["userinfo"]))
@@ -63,7 +63,7 @@ export default {
   //         this.$store.state.token = null;
   //         this.$router.push('/');
   //     })
-  //   }
+    // }
 }
 </script>
 

@@ -36,7 +36,6 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <!-- <span @click="photoDelete(idx, 0)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>   -->
               <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
