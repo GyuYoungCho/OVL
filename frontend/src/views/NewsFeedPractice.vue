@@ -34,7 +34,36 @@ export default {
   },
   computed:{
     ...mapGetters("user", (["userinfo"]))
-  }
+  },
+  // infiniteHandler($state) {
+  //     axios.get('/board/list/'+this.loadNum,{
+  //         headers: {
+  //             authorization: this.$store.getters.auth_token
+  //         }
+  //     })
+  //     .then(res => {
+  //           if(res.data.totalPages == this.loadNum){
+  //               $state.complete();
+  //           }else{
+  //               setTimeout(() => {
+  //                   const data = res.data.content;
+  //                   for(let key in data){
+  //                       this.movies.push(data[key])
+  //                   }
+  //                   this.loadNum++;
+  //                   $state.loaded();
+  //               }, 1000)
+  //           }
+  //     })
+  //     .catch(err => {
+  //         console.log(err)
+  //         alert('에러');
+  //         localStorage.clear();
+  //         this.$store.state.loginState = false;
+  //         this.$store.state.token = null;
+  //         this.$router.push('/');
+  //     })
+  //   }
 }
 </script>
 

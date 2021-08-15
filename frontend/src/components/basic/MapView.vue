@@ -21,7 +21,7 @@ export default {
         step : String
     },
     computed: {
-        ...mapGetters('pot',['potitems']),
+        ...mapGetters('pot',['potitems','userpots']),
     },
 
     // 카카오맵을 가져옵니다
@@ -48,16 +48,21 @@ export default {
             }; 
             
             this.map = new kakao.maps.Map(container, options); 
-            this.addMarkers(this.potitems)
+            this.addMarkers(this.userpots,"my")
+            this.addMarkers(this.potitems,"not")
         }, 
         
         // 마커를 추가합니다
-        addMarkers(datas){
+        addMarkers(datas, sign){
             this.deleteMarkers() // 이전꺼 지우고 시작
             
             if(!datas) return;
-            var imageSrc = require('@/assets/image/marker.png'),
-            imageSize = new kakao.maps.Size(30, 40), // 마커이미지의 크기입니다
+            if(sign=="my"){
+                var imageSrc = require('@/assets/image/userpot.png')
+            }else{
+                var imageSrc = require('@/assets/image/potitem.png')
+            }
+            var imageSize = new kakao.maps.Size(30, 40), // 마커이미지의 크기입니다
             imageOption = { offset: new kakao.maps.Point(30, 40) }; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
             var map = this.map
             // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
