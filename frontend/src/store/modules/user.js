@@ -44,6 +44,12 @@ export default {
     modalContent(state) {
       return state.modalContent;
     },
+    percent(state) {
+      return state.percent;
+    },
+    rank(state) {
+      return state.rank;
+    },
   },
   mutations: {
     SET_USER_INFO(state, payload) {
@@ -53,7 +59,7 @@ export default {
         router.push({name: 'Main'})
       }
       state.userinfo = payload;
-      console.log("유저 : ", state.userinfo.nickname);
+      //console.log("유저 : ", state.userinfo.nickname);
     },
     SET_LOGOUT(state) {
       state.isLogin = false;
@@ -176,7 +182,7 @@ export default {
           console.log(err);
         });
     },
-    getUserRank({ commit }, payload) {
+    getUserRank({ commit },  payload ) {
       let token = localStorage.getItem("access-token");
       axios({
         method: "get",
@@ -184,9 +190,10 @@ export default {
         headers: { "access-token": token },
       })
         .then((res) => {
-          if (res) {
-            console.log(res.data.rank);
-            console.log("percent", res.data.percent);
+          //console.log(res)
+          if (res.data) {
+            // console.log("rank!!!!!!!!!!!!",res.data.rank);
+            // console.log("percent!!!!!!!!!!!!", res.data.percent);
             commit("SET_USER_RANK", res.data.rank);
             commit("SET_USER_PERCENT", res.data.percent);
           } else console.log("랭크 가져오기 실패.");
@@ -195,7 +202,7 @@ export default {
           console.log(err);
         });
     },
-    getUpdateUserInfo({ commit }, payload) {
+    getUpdateUserInfo({ commit },  payload ) {
       let token = localStorage.getItem("access-token");
       axios({
         method: "get",

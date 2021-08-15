@@ -365,6 +365,7 @@ public class UserController {
 		Map<String, Float> map = new HashMap<>();
 		
 		List<User> userList = userDao.findAll();
+		System.out.println(userList.toString());
 		Collections.sort(userList, (o1, o2)-> {
 			return Integer.compare(o2.getExperience(),o1.getExperience());
 		});
