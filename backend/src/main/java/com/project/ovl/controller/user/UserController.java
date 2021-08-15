@@ -623,4 +623,16 @@ public class UserController {
 		}
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
+    
+    @ApiOperation(value = "계정 공개 비공개", response = String.class)
+    @PutMapping(value = "/lock/{user_id}/{account_open}")
+	public ResponseEntity<String> lock(@PathVariable int user_id,@PathVariable int account_open) throws IOException {
+
+    	User user = userDao.getUserByUserid(user_id);
+    	
+    	user.setAccount_open(account_open);
+    	userDao.save(user);
+
+    	return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
 }
