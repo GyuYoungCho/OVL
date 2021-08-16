@@ -11,7 +11,7 @@
                                 <input id="file" type="file" ref="files" multiple @input="fileUpload">
                             </button>
                                 <div class="mb-0 mt-0">{{nickname}}</div>
-                                        <div v-if="isNotChallenging" style="font-size:x-small"> 
+                                        <div v-if="time <= 0" style="font-size:x-small"> 
                                             <span class="ingdate">&nbsp;</span>
                                         </div>
                                         <div v-else style="font-size:x-small"> 
@@ -162,6 +162,7 @@ import moment from 'moment';
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 import axios from 'axios'
+import filepath from '@/api/fileUpload.js';
 
 export default {
 components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
@@ -192,8 +193,13 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
         time() {
             const start = moment(this.start_date);
             const now = moment(new Date());
-            console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-            return now.diff(start, 'days') + 1;
+            //console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
+            if((now.diff(start, 'days') + 1) <= 0){
+                return 0;
+            }
+            else{
+                return now.diff(start, 'days') + 1
+            }
         },
         userPath() { // 프로필 사진 이미지 출력
             return API.url + "/profile/" + this.userinfo.userid + "/"+ this.userinfo.stored_file_path.split('/').reverse()[0]
@@ -251,22 +257,19 @@ components: { UserPosts, UserRecipes, UserChallenges, ProfileName},
 
             this.rankOpen = true;
         },
-        fileUpload(){
+        async fileUpload(){
             console.log("files : ", this.$refs.files.files[0]);
             // 파일 업로드를 클릭 했을 시, 백에 보낼 사진
             const picture = this.$refs.files.files[0]
             //프리뷰 url 만들기
             picture.previewURL = URL.createObjectURL(picture)
             this.picture = picture
-
-
-            const formData = new FormData()
-            formData.append('picture', picture)
+            var pflist = [];
+            pflist.push(picture)
+            var pfname = await filepath.upload(pflist, 'user');
+            console.log("pfname: ", pfname)
             console.log(API.url + userAPI.modify_pic(this.userinfo.userid))
-            axios.post(API.url + userAPI.modify_pic(this.userinfo.userid), formData,
-                {headers: {'Content-Type' : 'multipart/form-data'}
-                    
-                }
+            axios.post(API.url + userAPI.modify_pic(this.userinfo.userid), pfname,
             ).then((res)=>{
                // if(res.status === success)
                 this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid)

@@ -194,8 +194,9 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
             if((now.diff(start, 'days') + 1) <= 0){
                 return 0;
             }
-            else
+            else{
                 return now.diff(start, 'days') + 1
+            }
             
         },
 
