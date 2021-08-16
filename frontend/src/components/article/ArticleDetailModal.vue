@@ -6,7 +6,7 @@
       <v-toolbar dense color="#004627">
         <v-toolbar-title class="modalTitle"></v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon dark @click="modalOpen = false">
+        <v-btn icon dark @click="modalCancelBtnClick">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
