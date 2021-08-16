@@ -13,9 +13,9 @@
         <v-btn icon absolute right @click="onSearchBtnClick"><v-icon color="white" dark>mdi-magnify</v-icon></v-btn>        
       </div>
 
-
+      <!-- 레시피 목록 -->
       <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
-        
+        <!-- 검색 조건이랑 맞으면 -->
         <div v-if="containmentValid(recipe)">
           <ProfileName :user="recipe.userid"></ProfileName>
           <img :src="recipe.filepath" alt="" @click="onImgClick(recipe)" class="recipePic">
@@ -54,12 +54,10 @@ export default {
     searchClicked: false,
   }),
   methods: {
-    ...mapActions(['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes',]),
+    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes',]),
     
     onImgClick (recipe) {
-      this.fetchRecipeDetail(recipe.recipeId)
-      this.fetchRecipeComments(recipe.recipeId)
-      this.$router.push({ name: 'RecipeDetail' })
+      this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
     },
     onHeartIconClick (recipe) {
       const data = {
@@ -83,7 +81,7 @@ export default {
     
   },
   computed: {
-    ...mapGetters(['recipes', 'recipeLikeList', ]),
+    ...mapGetters('recipe', ['recipes', 'recipeLikeList', ]),
     ...mapGetters("user", (["userinfo"])),
   },
 

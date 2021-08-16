@@ -1,38 +1,10 @@
 <template>
   <div>
     <v-container>
-      <!-- 잠깐 보이는 모달 -->
-      <v-dialog v-model="modalOpen" max-width="300" persistent @click:outside="nothing">
-        <v-card>
-          <!-- 모달 타이틀 영역 -->
-          <v-toolbar dense color="#004627">
-            <v-toolbar-title class="modalTitle">
-              <!-- {{ modaltitle }} -->
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            
-          </v-toolbar>
-          <!-- 모달 컨텐츠 영역 -->
-          <v-container>
-          <div class="modalContent">
-            <div class="mb-3">
-              <span class="modalContentMessage">
-                {{ modalContent }}
-              </span>
-            </div>
-          </div>
-          <div class="modalContentButtonArea" v-if="modalConfirm">
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
-            <button class="modalContentButton" @click="photoDelete(deletePhotoIdx)">확인</button>
-            <v-spacer></v-spacer>
-            <button class="modalContentButton" @click="modalOpen = false">취소</button>
-            <v-spacer></v-spacer>
-            <v-spacer></v-spacer>
-          </div>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <!-- 게시글 수정 시 사진 삭제 모달 -->
+      <ArticleCreateModal :modalOpen="modalOpen" :modalContent="modalContent" 
+      :modalConfirm="modalConfirm" :deletePhotoIdx="deletePhotoIdx" 
+      @confirmBtnClicked="photoDelete(deletePhotoIdx)" @cancelBtnClicked="modalOpen=false" />
 
 
 
@@ -64,7 +36,6 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <!-- <span @click="photoDelete(idx, 0)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>   -->
               <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
@@ -109,11 +80,15 @@
 
 <script>
   import axios from "axios";
-  import {mapState} from "vuex";
+  import { mapState } from "vuex";
+  import ArticleCreateModal from "@/components/article/ArticleCreateModal.vue";
   import fileUpload from "@/api/fileUpload.js";
   import API from "@/api/index.js";
 
   export default {
+    components: {
+      ArticleCreateModal,
+    },
     data () {
       return {
         // 버튼 관련 css class list toggle 용 변수들 설정
@@ -164,9 +139,6 @@
       },
     },
     methods: {
-      nothing () {
-        console.log('nothing')
-      },
       foodClick () {
         // css 토글용
         this.foodSelected = true
@@ -219,7 +191,6 @@
 
         axios.post(API.url+'/post/regist', params)
         .then((response) => {
-          // alert("보냈슴!");
           console.log(response.data);
           this.$router.push({ name: 'Main' })
         })
@@ -305,9 +276,6 @@
       },
       photoDelete(idx) { // 사진 삭제
         const type = this.type
-        // var result = confirm("정말 삭제하시겠습니까?");
-        // if (result) {
-        // if (this.modalConfirmClicked) {
         if (type!=0) { // 게시글 수정일 때
           this.deleteIdList.push(this.photoList[idx].postPhotoId);
           this.photoList.splice(idx, 1);
@@ -320,15 +288,20 @@
         setTimeout(() => {
           this.modalOpen = false
           this.modalContent = ""
-        }, 500);
-          // alert("삭제 되었습니다.");
-        // }
+        }, 800);
       }
     },
-    created() {
+    async created() {
       this.type = this.$route.params.type;
+      // type != 0 이면 게시글 수정이라는 뜻
       if (this.$route.params.type!=0) {
-        this.$store.dispatch("post/getPost", this.$route.params.type);
+        // 스토어에 해당 게시물의 정보 가져온 후
+        await this.$store.dispatch("post/getPost", this.$route.params.type);
+        // 게시물의 작성자와 현재 로그인한 사용자가 다르면
+        if (this.post.userId.userid !== this.userinfo.userid) {
+          // 뒤로가기
+          this.$router.back()
+        }
         // 카테고리 선택
         if (this.post.category==1) this.foodClick();
         else if (this.post.category==2) this.clothClick();

@@ -5,13 +5,13 @@
       <img class="ovl-welcome" src="@/assets/image/OVLwelcome.png" alt="">
       <div class="welcome-button-box">
         <v-btn
-          class="welcomeBtn"
+          class="welcomeBtn1"
           @click="onJoinBtnClick"
         >
           Join
         </v-btn>
         <v-btn
-          class="welcomeBtn"
+          class="welcomeBtn2"
           @click="onLoginBtnClick"
         >
           Login
@@ -31,7 +31,7 @@ export default {
   }),
   methods: {
     onJoinBtnClick () {
-      this.$router.push({ name: "Signup" })
+      this.$router.push({ name: "Tutorial" })
     },
     onLoginBtnClick () {
       this.$router.push({ name: "Login" })

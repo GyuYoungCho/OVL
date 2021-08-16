@@ -63,8 +63,8 @@ export default {
         payload.forEach((item) => {
           if (today < new Date(item.time).getTime()) {
             if (user.length == 0 || !user.includes(item.potid)) {
-              // 사람이 다 찬 경우 따로 마감 표시를 하기 위함
-              if (item.pot_count < item.total_peole) {
+              // 사람이 다 찬 경우 따로 마감 표시를 하기 위함\
+              if (item.pot_count < item.total_people) {
                 potdatas.push(item);
               } else {
                 notdatas.push(item);
@@ -158,6 +158,7 @@ export default {
         .get(API.url + potAPI.select_all())
         .then((res) => {
           store.commit("set_Pot_Items", res.data);
+          console.log(store.state.userpots);
         })
         .catch((error) => {
           console.log(error);
@@ -168,6 +169,7 @@ export default {
         .get(API.url + potAPI.select(user_id))
         .then((res) => {
           commit("set_User_Pots", res.data);
+          console.log("userpot");
         })
         .catch((error) => {
           console.log(error);
