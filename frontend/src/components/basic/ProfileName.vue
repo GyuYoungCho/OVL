@@ -1,13 +1,14 @@
 <template>
     <div class="d-flex" @click="clickProfile" style="max-width:120px;">
+        <!-- 동그란 프사 영역 -->
         <v-list-item-avatar class="px-0 mx-2" size=25>
             <v-img
             :src="user.filepath"
             ></v-img>
         </v-list-item-avatar>
+        <!-- 유저 이름 -->
         <v-list-item-content class="mx=0" >
-            <v-list-item-subtitle v-text="user.nickname" min-width="10px">
-            </v-list-item-subtitle>
+            <v-list-item-subtitle v-text="user.nickname" min-width="10px"></v-list-item-subtitle>
         </v-list-item-content>
     </div>
 </template>

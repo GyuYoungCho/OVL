@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-dialog
+      <v-dialog
         v-model="modalOpen"
         persistent
         max-width="300"

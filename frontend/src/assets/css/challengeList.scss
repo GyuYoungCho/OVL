@@ -47,7 +47,7 @@
   // 기본 버튼 css 로부터 background-color를 제외한 모든 css 프로퍼티를 상속 받습니다.
   .myParticipation {
     @extend .beginParticipation;
-    background-color: $hy-blue;
+    background-color: $hy-red;
   }
 
   .cancleChallenge {

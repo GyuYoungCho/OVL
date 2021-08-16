@@ -4,15 +4,7 @@
     <section  class="vetparty">
       <content-confirm :modalOpen="modalOpen" :modalContent="modalContent"
         @changeNext="changeNext" />
-      <v-row justify="end">
-        <v-spacer></v-spacer>
-          
-          <v-btn icon @click="goList()" justify="end">
-             <v-icon>mdi-chevron-double-right</v-icon>
-          </v-btn>
-        
-          
-    </v-row>
+
     <h4 v-if="type==0">채식팟 생성</h4>
     <h4 v-else>채식팟 수정</h4>
       
@@ -44,8 +36,12 @@
       </div>
 
       <div class="categoryBtn_box">
+        <div></div>
+        <div></div>
         <button @click="changedRest" :class="{'vetpartyBtnNotSelected':!isRestaurant, 'vetpartyBtnSelected':isRestaurant}">식당</button>
         <button @click="changedAdd" :class="{'vetpartyBtnNotSelected':!isAddress, 'vetpartyBtnSelected':isAddress}">도시락</button>
+        <div></div>
+        <div></div>
       </div>
 
 
@@ -62,19 +58,15 @@
           max-width="500px"
           scrollable
         >
-        <v-card>
-          <v-toolbar
-        color="#004627"
-        dark
-      >
-        <v-toolbar-title>식당 검색</v-toolbar-title>
-        <v-spacer></v-spacer>
-  
-        <v-btn @click="cancelAddres">
-          cancel
-        </v-btn>
+      <v-card>
+        <v-toolbar color="#004627" dark dense>
+          <v-toolbar-title>식당 검색</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon dark @click="cancelAddres">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-toolbar>
-            <v-card-title>
+          <v-card-title>
             <v-text-field
               v-model="search"
               append-icon="mdi-magnify"
@@ -82,29 +74,26 @@
               single-line
               hide-details
             ></v-text-field>
-            </v-card-title>
-            
-            <restaurant-list :search="search"></restaurant-list>
-          </v-card>
+          </v-card-title>
+        <!-- 레스토랑 리스트 -->
+        <restaurant-list :search="search"></restaurant-list>
+      </v-card>
     </v-dialog>
     <!-- 주소 넣기 관련 부분 -->
-    <div >
-       <input type="text" v-model="roadAddress" readonly placeholder="주소"
-       style="width:80%;">
-       <button class=BtnComp @click="onAddressBtnClick"
-       style="width:20%;">검색</button>
+    <div style="display:flex">
+       <input type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%;">
+       <v-spacer></v-spacer>
+       <button class=BtnComp @click="onAddressBtnClick" style="width:20%;">검색</button>
     </div>
     <input type="text" v-model="detailAddress" placeholder="상세주소">
-    <div>
-    
-      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:50%;">
-      
-      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:50%;">
+    <div style="display:flex">
+      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;">
+      <v-spacer></v-spacer>
+      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
     </div>
    
 
     <!-- 인원수 -->
-    
     <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
       <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
@@ -117,11 +106,9 @@
   </div>
 </template>
 
-
 <!-- 주소 찾기 관련 api -->
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
-
 import axios from "axios";
 import API from '@/api/index.js'
 import potAPI from '@/api/pot.js'
@@ -129,7 +116,6 @@ import RestaurantList from '@/components/pot/RestaurantList.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import { mapGetters, mapActions } from 'vuex';
 import ContentConfirm from '@/components/basic/ContentConfirm.vue';
-
 
 export default {
   components : {
@@ -226,10 +212,6 @@ export default {
   methods: {
     
     ...mapActions("pot", ["setPotItems","setUsersPots"]),
-    
-    goList(){
-      this.$router.push({ name: "VetPartyList" })
-    },
     
     // 주소 넣는 팝업창 생성
     onAddressBtnClick () {
