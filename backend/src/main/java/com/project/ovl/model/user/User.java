@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.project.ovl.model.challenge.Challenge;
 
@@ -31,6 +32,8 @@ public class User {
     private String nickname;
     private String name;
     private String phone;
+    
+    @JsonIgnore
     private String password;
     private int experience;
     private int account_open;
