@@ -8,9 +8,6 @@ export default {
     // 모든 챌린지 리스트가 들어 옵니다.
     challengeList: [],
     userchallengeList: [],
-    userfoodChallengeList: [],
-    userclothChallengeList: [],
-    usercosmeticChallengeList: [],
     certList: [],
   },
   getters: {
@@ -40,9 +37,6 @@ export default {
     },
     SET_USER_CHALLENGE_LISTS(state, userchallengeList) {
       state.userchallengeList = userchallengeList;
-      state.userfoodChallengeList = userchallengeList.filter((eachList) => eachList.category === 1);
-      state.userclothChallengeList = userchallengeList.filter((eachList) => eachList.category === 2);
-      state.usercosmeticChallengeList = userchallengeList.filter((eachList) => eachList.category === 3);
     },
     SET_CERT_LIST(state, payload) {
       state.certList = payload;
@@ -108,5 +102,6 @@ export default {
           console.log(error);
         });
     },
+
   },
 };

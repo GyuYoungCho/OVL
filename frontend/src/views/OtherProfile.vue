@@ -313,13 +313,18 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
         
     },
     // wathch(){
-    //             if(this.$route.params.userid === this.userinfo.userid){
+    //     if(this.$route.params.userid === this.userinfo.userid){
     //         console.log("야 너네 똑같다고")
-    //         //this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
+    //         this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
     //     }
     // },
     created() {
-
+        // console.log("type1", typeof this.$route.params.userid)
+        // console.log("type2", typeof this.userinfo.userid)
+        //타입을 고려하여 연산
+        if(this.$route.params.userid == this.userinfo.userid){
+            this.$router.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
+        }
         axios({
                 method: "get",
                 url: API.url + reportAPI.select(this.userinfo.userid),
