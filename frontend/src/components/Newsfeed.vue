@@ -3,7 +3,7 @@
     <v-container class="px-6">
       <!-- 캐러셀 영역 -->
       <div>
-      <v-carousel hide-delimiters height="22vh" data-interval="true" class="carouselBorder" :show-arrows="false" cycle interval="4000">
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="carouselBorder borderRadius" :show-arrows="false" cycle interval="4000">
         <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
           <!-- 챌린지 일 때 -->
           <div v-if="info.type==0" class="carousel_content">
@@ -92,7 +92,7 @@
             <v-col cols="6" md="1">
               <ProfileName :user="info.postId.userId"></ProfileName>
             </v-col>
-            <v-col cols="6" md="1" style="text-align:right">
+            <v-col cols="6" md="1" class="mt-2" style="text-align:right">
               <img :src="iconPath(idx)" width=15%>
             </v-col>
           </v-row>

@@ -1,0 +1,17 @@
+.commentUserAndContent {
+    display: flex;
+    align-items: center;
+    .commentContent {
+      margin-bottom: 0;
+      margin-left: 2vw;
+      width: 100%;
+    }
+}
+
+.likedHeart {
+    color: $heart-green !important;  
+}
+  
+.unlikedHeart {
+    color: $hy-grey !important;
+}

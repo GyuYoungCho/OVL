@@ -23,6 +23,7 @@
 // Article 관련 scss
 @import "./textField.scss";
 @import "./articleCreate.scss";
+@import "./articleDetail.scss";
 
 // post 관련 scss
 @import "./Newsfeed.scss";
@@ -50,3 +51,6 @@
 
 // 유저 검색 관련 scss
 @import "./userSearch.scss";
+
+// 유저 프로필 + 닉네임 관련 scss
+@import "./profileName.scss";

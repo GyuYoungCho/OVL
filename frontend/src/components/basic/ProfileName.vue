@@ -1,12 +1,12 @@
 <template>
     <div class="d-flex" @click="clickProfile" style="max-width:120px;">
-        <v-list-item-avatar class="px-0 mx-2" size=25>
+        <v-list-item-avatar class="px-0" size=25>
             <v-img
             :src="user.filepath"
             ></v-img>
         </v-list-item-avatar>
-        <v-list-item-content class="mx=0" >
-            <v-list-item-subtitle v-text="user.nickname" min-width="10px">
+        <v-list-item-content class="px-0">
+            <v-list-item-subtitle v-text="user.nickname" style="font-size:17px" min-width="10px">
             </v-list-item-subtitle>
         </v-list-item-content>
     </div>
