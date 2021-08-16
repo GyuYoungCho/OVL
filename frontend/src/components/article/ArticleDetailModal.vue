@@ -15,15 +15,15 @@
       <div class="modalContent">
         <div class="mb-3">
           <span class="modalContentMessage">
-            정말로 삭제하시겠습니까?
+            {{ modalContent }}
           </span>
         </div>
         <div class="modalContentButtonArea">
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="confirmBtnClick">확인</button>
+          <button class="modalContentButton" @click="modalConfirmBtnClick">확인</button>
           <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="cancelBtnClick">취소</button>
+          <button class="modalContentButton" @click="modalCancelBtnClick">취소</button>
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
         </div>
@@ -37,13 +37,16 @@
 export default {
   props: {
     modalOpen: Boolean,
+    modalContent:String,
+    post:Object,
   },
   methods: {
-    confirmBtnClick () {
-      this.$emit('confirmBtnClick')
+    modalConfirmBtnClick () {
+      console.log("확인!!!");
+      this.$emit('modalConfirmBtnClick')
     },
-    cancelBtnClick () {
-      this.$emit('cancelBtnClick')
+    modalCancelBtnClick () {
+      this.$emit('modalCancelBtnClick')
     },
   }
 }
