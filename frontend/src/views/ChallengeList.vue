@@ -173,7 +173,7 @@ export default {
   },
   computed: {
     // 일단 store.state 에서 4개의 리스트 (챌린지 종류에 따른 배열) 을 가져 옵니다. <위에서 v-for 로 풀어주는 용도>
-    ...mapGetters("challenge", ["challengeList", "foodChallengeList", "clothChallengeList", "cosmeticChallengeList"]),
+    ...mapGetters("challenge", ["challengeList",]),
     // userinfo.challengeId.challengeId 가 1 이라면 아직 아무런 챌린지도 하고 있지 않은 상태고, 나머지라면 어떤 챌린지에 참여중인 상태입니다.
     ...mapGetters("user", ["userinfo",]),
     // 스토어엔 전체 챌린지 리스트만 두고, computed를 활용해 필터링 로직을 넣어 줍니다. 카테고리 and 앞으로 진행할 수 있는 챌린지일 것.

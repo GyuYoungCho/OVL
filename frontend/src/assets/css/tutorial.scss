@@ -1,0 +1,66 @@
+.tutorial {
+  position: relative;
+  background-color: $hy-green;
+  min-height: 100vh;
+
+  &Header {
+    position: absolute;
+    top: 1vh;
+    right: 4vw;
+  }
+
+  &Chevron {
+    color: black !important;
+    font-size: 1.5rem !important;
+  }
+
+  &Image {
+    width: 70vw;
+    position: absolute;
+    bottom: 0;
+    left: 15vw;
+  }
+
+  &Article {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5vh;
+  }
+
+  &BtnDivLeft {
+    position: absolute;
+    left: 2vw;
+    top: 50%;
+  }
+
+  &BtnDivRight {
+    position: absolute;
+    right: 2vw;
+    top: 50%;
+  }
+}
+
+.Compressed {
+  position: absolute;
+  width: 70vw;
+  height: 73vh;
+  left: 15vw;
+  bottom: 0;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.component-fade-enter-active, .component-fade-leave-active {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.component-fade-enter, .component-fade-leave-to {
+  opacity: 0;
+}
