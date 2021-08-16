@@ -26,7 +26,8 @@
                   <article class="cardContent">
                     <!-- (1) 개별 카드에서의 더미 이미지 영역 -->
                     <div class="cardContentArea">
-                      <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
+                            <img v-if="challenge.type === 2" src="@/assets/image/challenge_recipe.png" class='cardImage'>
+                            <img v-else :src="require(`@/assets/image/challenge${challenge.category}.png`)" class='cardImage'>
                     </div>
                     <!-- (2) 제목 -->
                     <div class="cardContentArea cardContentAreaTitle">
@@ -69,7 +70,8 @@
                   <article class="cardContent">
                     <!-- (1) 개별 카드에서의 더미 이미지 영역 -->
                     <div class="cardContentArea">
-                      <img src="@/assets/image/challenge_dummy.jpg" class='cardImage'>
+                            <img v-if="challenge.type === 2" src="@/assets/image/challenge_recipe.png" class='cardImage'>
+                            <img v-else :src="require(`@/assets/image/challenge${challenge.category}.png`)" class='cardImage'>
                     </div>
                     <!-- (2) 제목 -->
                     <div class="cardContentArea cardContentAreaTitle">
@@ -161,9 +163,6 @@ data() {
     }
 },
 methods: {
-    moveDetail(idx) { // 게시글 상세보기
-    this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
-    },
       ...mapActions("challenge", ["fetchUserChallengeList"]),
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
