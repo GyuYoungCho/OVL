@@ -7,7 +7,7 @@
                         <div class="image text-center">
                             <img :src="otheruserinfo.filepath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
                         <div class="mb-0 mt-0">{{this.otheruserinfo.nickname}}</div>
-                            <div v-if="isNotChallenging" style="font-size:x-small">
+                            <div v-if="time <=0" style="font-size:x-small">
                                 <span class="ingdate">&nbsp;</span>
                             </div>
                             <div v-else style="font-size:x-small"
@@ -280,6 +280,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
             follower: '',
             following: '',
             Rank : null,
+            percent: '',
             isLocked: false,
             isFollowing: false,
             rankOpen: false,
@@ -299,10 +300,24 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
             const start = moment(this.start_date);
             const now = moment(new Date());
             // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-            return now.diff(start, 'days') + 1;
-        },
+            if((now.diff(start, 'days') + 1) <= 0){
+                return 0;
+            }
+            else{
+                return now.diff(start, 'days') + 1
+            }
+        }
+
+        
     },
+    // wathch(){
+    //             if(this.$route.params.userid === this.userinfo.userid){
+    //         console.log("야 너네 똑같다고")
+    //         //this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
+    //     }
+    // },
     created() {
+
         axios({
                 method: "get",
                 url: API.url + reportAPI.select(this.userinfo.userid),
@@ -319,16 +334,31 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
             }).catch((err)=> {
                 console.log(err)
             })
-
+            //랭크 
+            axios({
+            method: "get",
+            url: API.url + userAPI.rank(this.$route.params.userid),
+            }).then((res) => {
+                if(res){
+                    this.Rank = res.data.rank
+                    this.percent = res.data.percent;
+                    
+                    //console.log("가져온 percent",this.percent)
                     //쿵야 셋팅
-        console.log(this.percent)
-        if(this.percent < 31 ){
-            this.step = 1;
-        }else if( this.percent > 30 && this.percent < 61){
-            this.step = 2;
-        }else{
-            this.step = 3;
-        }
+                    if(this.percent < 31 ){
+                        this.step = 1;
+                    }else if( this.percent > 30 && this.percent < 61){
+                        this.step = 2;
+                    }else{
+                        this.step = 3;
+                    }
+                }else{
+                    console.log("랭크 가져오기 실패")
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
+
     },
     methods: {
         onClickRequestBtn(){
@@ -485,6 +515,9 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
     mounted(){
             //url userid 체크
         let userid = this.$route.params.userid;
+        //url 에 자신의 아이디를 입력했을 때 자신의 프로필로 돌아가rl
+
+
         let isOpened = 0;
         //다른 유저 정보 가져오기
         axios({
@@ -581,20 +614,8 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
             }).catch((err) => {
                 console.log("실패");
                 console.log(err);
-            }),
-            //랭크 
-            axios({
-            method: "get",
-            url: API.url + userAPI.rank(userid),
-            }).then((res) => {
-            if(res){
-                this.Rank = res.data.rank
-            }else{
-                console.log("랭크 가져오기 실패")
-            }
-        }).catch((err) => {
-            console.log(err)
-        })
-}
+            })
+
+    }
 }
 </script>

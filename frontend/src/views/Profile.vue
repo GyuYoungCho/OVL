@@ -35,7 +35,7 @@ export default {
   created(){
     //userid 검증
     //console.log(this.$route.params.userid)
-    if(this.$route.params.userid == this.userinfo.userid){
+    if(this.$route.params.userid === this.userinfo.userid){
       //로그인 user == 프로필 확인 user 같음
       this.isUser = true;
 

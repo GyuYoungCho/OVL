@@ -8,7 +8,7 @@
                         <div class="image text-center"> 
                             <img :src="userinfo.filepath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
                             <div class="mb-0 mt-0">{{nickname}}</div>
-                            <div v-if="isNotChallenging" style="font-size:x-small">
+                            <div v-if="time <= 0" style="font-size:x-small">
                             <span class="ingdate">&nbsp;</span></div>
                             <div v-else style="font-size:x-small"
                             @click="openCertDialog(true)">
@@ -191,7 +191,12 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
             const start = moment(this.start_date);
             const now = moment(new Date());
             // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-            return now.diff(start, 'days') + 1;
+            if((now.diff(start, 'days') + 1) <= 0){
+                return 0;
+            }
+            else
+                return now.diff(start, 'days') + 1
+            
         },
 
     },
