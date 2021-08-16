@@ -51,7 +51,7 @@
                             <div class="d-flex justify-content-center">
                                 
                                 <div v-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
-                                    <button class="requestFollow" @click="onClickRequestBtn()">비공개 계정</button>
+                                    <button class="requestFollow">비공개 계정</button> <!--@click="onClickRequestBtn()"-->
                                 </div>
                                 <div v-else>                                
                                     <div v-if="this.isFollowing" width=""> 
@@ -313,13 +313,18 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
         
     },
     // wathch(){
-    //             if(this.$route.params.userid === this.userinfo.userid){
+    //     if(this.$route.params.userid === this.userinfo.userid){
     //         console.log("야 너네 똑같다고")
-    //         //this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
+    //         this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
     //     }
     // },
     created() {
-
+        // console.log("type1", typeof this.$route.params.userid)
+        // console.log("type2", typeof this.userinfo.userid)
+        //타입을 고려하여 연산
+        if(this.$route.params.userid == this.userinfo.userid){
+            this.$router.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
+        }
         axios({
                 method: "get",
                 url: API.url + reportAPI.select(this.userinfo.userid),
@@ -364,7 +369,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
     },
     methods: {
         onClickRequestBtn(){
-            alert("팔로우 요청이 완료 되었습니다.")
+            //alert("팔로우 요청이 완료 되었습니다.")
         },
         //신고 모달창 열기
         onClickReport(){
