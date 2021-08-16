@@ -63,14 +63,14 @@ public class FeedController {
 		return new PageImpl<PostPhoto>(posts,pageable,postpage.getTotalElements());
 	}
 	
-//	@GetMapping("/postfeed/search")
-//	@ApiOperation(value = "포스트 검색")
-//	public Page<PostPhoto> searchpostkeyword(@RequestParam("keyword") String keyword, final Pageable pageable) {
-//		// 페이지 index는 0부터
-//		Page<PostPhoto> postpage = postPhotoDao.findByContentkeyword(keyword, pageable);
-//		List<PostPhoto> posts = postpage.toList();
-//		return new PageImpl<PostPhoto>(posts,pageable,postpage.getTotalElements());
-//	}
+	@GetMapping("/postfeed/search")
+	@ApiOperation(value = "포스트 검색")
+	public Page<PostPhoto> searchpostkeyword(@RequestParam("keyword") String keyword, final Pageable pageable) {
+		// 페이지 index는 0부터
+		Page<PostPhoto> postpage = postPhotoDao.findByContentkeyword(keyword, pageable);
+		List<PostPhoto> posts = postpage.toList();
+		return new PageImpl<PostPhoto>(posts,pageable,postpage.getTotalElements());
+	}
 	
 //	@GetMapping("/recipe/main")
 //	@ApiOperation(value = "레시피 페이징")
@@ -80,21 +80,21 @@ public class FeedController {
 //		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
 //	}
 //	
-//	@GetMapping("/following/page/{from_id}")
-//	@ApiOperation(value = "내가 팔로우하는 스크롤")
-//	public Page<User> findfollowing(@RequestParam int from_id, final Pageable pageable) {
-//		Page<User> flist = followDao.findfollwing(from_id, pageable);
-//		List<User> ulist = flist.toList();
-//		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
-//	}
-//	
-//	@GetMapping("/follower/page/{to_id}")
-//	@ApiOperation(value = "나를 팔로우하는 사람들 스크롤")
-//	public Page<User> findfollower(@PathVariable int to_id, final Pageable pageable) {
-//		
-//		Page<User> flist = followDao.findfollwer(to_id, pageable);
-//		List<User> ulist = flist.toList();
-//		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
-//		
-//	}
+	@GetMapping("/following/page/{from_id}")
+	@ApiOperation(value = "내가 팔로우하는 스크롤")
+	public Page<User> findfollowing(@RequestParam int from_id, final Pageable pageable) {
+		Page<User> flist = followDao.findfollwing(from_id, pageable);
+		List<User> ulist = flist.toList();
+		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
+	}
+	
+	@GetMapping("/follower/page/{to_id}")
+	@ApiOperation(value = "나를 팔로우하는 사람들 스크롤")
+	public Page<User> findfollower(@PathVariable int to_id, final Pageable pageable) {
+		
+		Page<User> flist = followDao.findfollwer(to_id, pageable);
+		List<User> ulist = flist.toList();
+		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
+		
+	}
 }

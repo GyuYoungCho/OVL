@@ -119,16 +119,13 @@ export default {
     },
     infiniteHandler($state) {
       
-      console.log(this.selectedOption)
       var params = new URLSearchParams();
       params.append("size", this.pageSize);
       params.append("page", this.pageNumber);
       params.append("cate", this.selectedOption);
       params.append("keyword", this.query);
-      console.log(params)
       axios.get(API.url + recipeAPI.select_all(),{params})
         .then(res => {
-          console.log(res.data)
           if (res.data.content.length > 0) {
               this.feedDatas = this.feedDatas.concat(res.data.content);
               this.fetchRecipes(this.feedDatas)
