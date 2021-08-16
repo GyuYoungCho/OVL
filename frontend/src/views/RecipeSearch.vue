@@ -26,10 +26,10 @@
           <div>
             <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe)">mdi-heart</v-icon>
             <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe)">mdi-heart-outline</v-icon>
-            {{ recipe.like_count}}
+            {{ recipe.likecount}}
             
             <v-icon class="chatIcon">mdi-chat-outline</v-icon>
-            {{ recipe.comment_count }}
+            {{ recipe.commentcount }}
           </div>
         </div>
       </div>
@@ -160,7 +160,12 @@ export default {
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
-  }
+  },
+  created () {
+    this.fetchRecipes()
+    this.fetchRecipeLikeList(this.userinfo.userid)
+  },
+
 }
 </script>
 

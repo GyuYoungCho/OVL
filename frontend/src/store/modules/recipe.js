@@ -66,11 +66,11 @@ export default {
         });
       } else if (option === "like") {
         recipes.sort(function(recipe1, recipe2) {
-          return recipe2.like_count - recipe1.like_count;
+          return recipe2.likecount - recipe1.likecount;
         });
       } else if (option === "comment") {
         recipes.sort(function(recipe1, recipe2) {
-          return recipe2.comment_count - recipe1.comment_count;
+          return recipe2.commentcount - recipe1.commentcount;
         });
       }
       state.recipes = recipes;

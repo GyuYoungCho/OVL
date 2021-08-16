@@ -24,9 +24,9 @@
         <!-- 좋아요, 댓글수 -->
         <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onRecipeLikeBtnClick">mdi-heart</v-icon>
         <v-icon class="unlikedHeart" v-else @click="onRecipeLikeBtnClick">mdi-heart-outline</v-icon>
-        {{ recipe.like_count }}
+        {{ recipe.likecount }}
         <v-icon class="chatIcon">mdi-chat-outline</v-icon>
-        {{ recipe.comment_count }}
+        {{ recipe.commentcount }}
         <v-menu offset-y class="inline" v-if="isCurrentRecipeAuthor">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on" >
@@ -151,7 +151,7 @@
                 <v-icon class="unlikedHeart" @click="onReplyLikeClick(reply)" v-else>mdi-heart-outline</v-icon>
               </div>
               <div class="infoBelowOneReply">
-                <span class="oneInfo">좋아요{{ reply.like_count }}개</span>
+                <span class="oneInfo">좋아요{{ reply.likecount }}개</span>
                 <div class="oneInfo">
                   <!-- 답글 수정 -->
                   <span v-if="reply.userId.userid===userinfo.userid" @click="onModifyReplyClick(reply)">수정</span> |
