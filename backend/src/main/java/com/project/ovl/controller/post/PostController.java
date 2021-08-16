@@ -48,6 +48,7 @@ import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -373,8 +374,27 @@ public class PostController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
 	
-	@GetMapping("/select_all/{user_id}")
-	@ApiOperation(value = "게시글 조회")
+	@GetMapping("/select_all")
+	@ApiOperation(value = "전체 게시글 조회")
+	public ResponseEntity<List<PostPhoto>> select_all() {
+		List<PostPhoto> postList = postPhotoDao.findAll();
+		List<PostPhoto> returnList = new ArrayList<>();
+		Set<Integer> idList = new HashSet<>();
+		
+		for (PostPhoto pp : postList) {
+			if (!idList.contains(pp.getPostId().getPostId())) {
+				idList.add(pp.getPostId().getPostId());
+				returnList.add(pp);
+			}
+		}
+		Collections.sort(returnList, (o1, o2)-> {
+			return Integer.compare(o2.getPostId().getPostId(), o1.getPostId().getPostId());
+		});
+		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/select_my/{user_id}")
+	@ApiOperation(value = "나와 관련된 게시글 조회")
 	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id, final Pageable pageable) {
 		// 내가 팔로우 한 사람 찾기
 		Optional<List<Follow>> followList = followDao.findByFromIdUserid(user_id);

@@ -21,6 +21,7 @@ import ModifyUser from "../views/ModifyUser.vue";
 import ModifyPic from "../views/ModifyPic.vue";
 import OtherProfile from "../views/OtherProfile.vue";
 import Tutorial from "../views/Tutorial.vue";
+import UserSearch from "../views/UserSearch.vue";
 
 import NewsFeedPractice from "../views/NewsFeedPractice.vue";
 Vue.use(VueRouter);
@@ -140,6 +141,11 @@ const routes = [
     name: "NewsFeedPractice",
     component: NewsFeedPractice,
   },
+  {
+    path: "/userSearch",
+    name: "UserSearch",
+    component: UserSearch,
+  },
 ];
 
 const router = new VueRouter({
@@ -171,6 +177,7 @@ router.beforeEach((to, from, next) => {
     "ModifyPic",
     "OtherProfile",
     "NewsFeedPractice",
+    "UserSearch"
   ];
 
   const authRequired = privatePages.includes(to.name);

@@ -7,6 +7,7 @@ export default {
 namespaced: true,
 	state: {
         postList:[],
+        postAll:[],
         postLikeList:[],
         post:{},
         postPhotoList: [],
@@ -20,6 +21,9 @@ namespaced: true,
     getters: {
         postList(state) {
             return state.postList
+        },
+        postAll(state) {
+            return state.postAll;
         },
         postLikeList (state) {
             return state.postLikeList
@@ -53,6 +57,9 @@ namespaced: true,
         GET_POST_LIST(state, payload) {
             state.postList = payload;
         },
+        GET_POST_ALL(state, payload) {
+            state.postAll = payload;
+        },
         GET_POST_LIKE_LIST(state, payload) {
             state.postLikeList = payload;
         },
@@ -79,12 +86,19 @@ namespaced: true,
         getPostList(store, payload) {
             axios({
                 method:"get",
-                url: API.url + postAPI.select_all(payload),
+                url: API.url + postAPI.select_my(payload),
             }).then((res)=>{
                 store.commit("GET_POST_LIST", res.data);
             }).catch((err)=>{
                 console.log(err);
             })
+        },
+        getPostAll(store) {
+            const URL = API.url + postAPI.select_all();
+            axios.get(URL)
+            .then((res)=>{
+                store.commit("GET_POST_ALL", res.data);
+            }).catch(err=>console.error(err))
         },
         getUserPostList(store, payload) {
             axios({

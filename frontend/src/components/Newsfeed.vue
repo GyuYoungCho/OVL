@@ -1,18 +1,9 @@
 <template>
   <div>
-    <v-container class="px-6 mt-4">
-      <feed-search @searchKeyword="searchKeyword"
-        @selectOrd="selectOrd"></feed-search>
-      <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
-        <v-col class="mt-5 pl-3">
-            <profile-name v-for="(suser, index) in searchUser" :key="index" :user="suser"></profile-name>
-        </v-col> 
-      </v-card>
-      
-
+    <v-container class="px-6">
       <!-- 캐러셀 영역 -->
       <div>
-      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7 carouselBorder" :show-arrows="false" cycle interval="4000">
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="carouselBorder" :show-arrows="false" cycle interval="4000">
         <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
           <!-- 챌린지 일 때 -->
           <div v-if="info.type==0" class="carousel_content">
@@ -108,7 +99,7 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-            <img :src="feedDatas[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
+            <img :src="info.filepath" width=100%  style="border-radius: 7px;" class="my-1">
             <div class="contentAndTime">
               <div v-html="contentReplace(info.postId.content)"></div>
               <span>{{ calTime(info.postId.time) }}</span>
@@ -171,7 +162,6 @@
 </template>
 
 <script>
-import FeedSearch from '@/components/basic/FeedSearch.vue';
 import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapGetters, mapActions} from "vuex";
 import moment from 'moment'
@@ -183,16 +173,10 @@ import InfiniteLoading from 'vue-infinite-loading';
 export default {
   data(){
     return{
-      search : '',
-      ord : 'User',
-      order : [
-        "User", "Post",
-      ],
       recommendList:[],
       isDetail:false,
-      detailCh:{},
-
       feedDatas: [],
+      detailCh:{},
       pageNumber: 0,
       pageSize: 3,
       mode : 0,
@@ -200,12 +184,10 @@ export default {
   },
   components: {
     InfiniteLoading,
-    FeedSearch,
     ProfileName
   },
   methods: {
     ...mapActions('post', ['getPostList', 'getPostLikeList', 'getRecommend']),
-    ...mapActions('user', ['getUserList',]),
     ...mapActions("challenge", ["challengeAttend"]),
     recalibratedDate(start_date, period) {
       if (period==0) return start_date.substring(0,10);
@@ -226,39 +208,32 @@ export default {
         this.isDetail = true;
         this.detailCh = info.challenge;
       } else if (info.type==1) { // 레시피 클릭 시
-        console.log("recipeId : "+info.recipe.recipeId);
         this.$router.push({name: 'RecipeDetail', params: {recipeId: info.recipe.recipeId}});
       } else { // 채식팟 클릭 시 
         this.$router.push({name:'VetPartyList'})
       }
     },
-    searchKeyword(val){ // 키워드 받아오기
-      this.search = val
-    },
-    selectOrd(val){ //카테고리 받아오기
-      this.ord = val
-    },
     contentReplace(content) { // 줄바꿈
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      const category = this.searchPost[idx].postId.category;
+      const category = this.feedDatas[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
     },
     moveDetail(idx) { // 게시글 상세보기
       // this.$router.push({path:"/article_detail/"+this.searchPost[idx].postId.postId});
-      this.$router.push({name: "ArticleDetail", params: {postId: this.searchPost[idx].postId.postId}});
+      this.$router.push({name: "ArticleDetail", params: {postId: this.feedDatas[idx].postId.postId}});
     },
     isLike(idx) { // 좋아요 눌렀는지 확인
-      if (this.postLikeList.includes(this.searchPost[idx].postId.postId)) return true;
+      if (this.postLikeList.includes(this.feedDatas[idx].postId.postId)) return true;
       else return false;
     }, 
     like(idx) { // 좋아요 버튼 눌렀슴
       var payload = {
         "userId" : this.userinfo.userid,
-        "postId" : this.searchPost[idx].postId.postId,
+        "postId" : this.feedDatas[idx].postId.postId,
         "type": 1 // 뉴스피드
       }
       this.$store.dispatch("post/postLike", payload);
@@ -267,7 +242,6 @@ export default {
       return moment(time).fromNow()
     },
     infiniteHandler($state) {
-      
       var params = new URLSearchParams();
       params.append("size", this.pageSize);
       params.append("page", this.pageNumber);
@@ -290,54 +264,12 @@ export default {
   },
   computed: {
     ...mapGetters("post", (["postList", "postLikeList", "recommendRe", "recommendCh"])),
-    ...mapGetters("user", (["userinfo", "userlist"])),
-
-    searchPost() {
-      // 대소문자 구분 x
-      const search = this.search.toLowerCase()
-      if (this.ord == 'User' || !search) return this.postList
-      
-      // 포함된 단어 거르기
-      let allitems = this.postList.filter(item => {
-        const text = item.postId.content.toLowerCase()
-
-        return text.indexOf(search) > -1
-      })
-
-      // 포함된 단어 위치 인덱스 기준 정렬
-      allitems = allitems.sort(function(a, b) {
-          let x = a.postId.content.indexOf(search);
-          let y = b.postId.content.indexOf(search);
-          if (x < y)  return -1;
-          if (x > y) return 1;
-          return 0;
-      });
-      return (allitems.length >5) ? allitems.slice(0,5) : allitems
-    },
-    searchUser(){ // 위와 같은 원리
-      const search = this.search.toLowerCase()
-      if(!search || this.ord=='Post') return []
-      
-      let allitems = this.userlist.filter(item => {
-        const text = item.nickname.toLowerCase()
-        return text.indexOf(search) > -1
-      })
-      
-      allitems = allitems.sort(function(a, b) {
-          let x = a.nickname.indexOf(search);
-          let y = b.nickname.indexOf(search);
-          if (x < y)  return -1;
-          if (x > y) return 1;
-          return 0;
-      });
-       return (allitems.length >3) ? allitems.slice(0,5) : allitems
-    },
+    ...mapGetters("user", (["userinfo"])),
   },
   created() {
     this.getRecommend() 
     this.getPostList(this.userinfo.userid)
     this.getPostLikeList(this.userinfo.userid)
-    this.getUserList()
 
     // 추천 목록 만들기
     for (var i=0;i<this.recommendCh.length;i++) {
@@ -365,8 +297,6 @@ export default {
       "type":2, // type = 2 -> 채식팟
       "src":require("@/assets/image/map.png")
     })
-
-    console.log("recommendList : ", this.recommendList);
   }
 }
 </script>
