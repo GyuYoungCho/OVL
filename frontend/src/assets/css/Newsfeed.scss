@@ -49,67 +49,6 @@ h3 {
   justify-content: space-between;
 }
 
-.search_bar {
-  input {
-    margin-top: 5px;
-    background-color: transparent;
-    border: none;
-  }
-
-  i {
-    background-color: $freditgreen;
-    border-radius: 15px;
-    margin-right: 30px;
-  }
-
-  .row {
-    height: 35px;
-  }
-  .v-select .dropdown-toggle {
-    border: none;
-  }
-
-  div {
-    .v-text-field--rounded > .v-input__control > .v-input__slot {
-      padding: 0 5px;
-      input {
-        margin-top: 10px;
-      }
-    }
-
-    .v-input__slot {
-      margin-left: 0px;
-      margin-bottom: 0px;
-      padding-right: 10px;
-    }
-
-    .v-input__control {
-      height: 30px;
-      input {
-        margin-left: 10px;
-      }
-    }
-
-    .v-select__slot {
-      margin-bottom: 11px;
-
-      i {
-        margin-left: 0px;
-        color: white;
-        margin-right: 20px;
-      }
-
-      .v-input__control {
-        padding: 0px;
-      }
-
-      .v-select__selections {
-        margin-left: 20px;
-      }
-    }
-  }
-}
-
 .detext {
   font-size: 13px;
 }
