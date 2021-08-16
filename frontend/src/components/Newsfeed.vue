@@ -9,14 +9,34 @@
         </v-col> 
       </v-card>
       
+
       <!-- 캐러셀 영역 -->
-      <!-- <v-carousel hide-delimiters>
-        <v-carousel-item
-          v-for="(info,i) in adList"
-          :key="i"
-          :src="info.src"
-        ></v-carousel-item>
-      </v-carousel> -->
+      <div>
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7">
+        <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
+          <!-- 챌린지 일 때 -->
+          <div v-if="info.type==0" class="carousel_content">
+            <h2>&lt; {{info.challenge.title}} &gt; </h2>
+            <div># {{info.challenge.count}}명&nbsp;# {{info.challenge.cycle}}주&nbsp;# {{info.challenge.score}}점 </div> <br>
+            <div>클릭 시 챌린지 상세보기</div>
+          </div>
+
+          <!-- 레시피 일 때 -->
+          <div v-else-if="info.type==1" class="carousel_content blackSquare">
+            <h3>인기 레시피를 확인해보세요! </h3>
+            <h2># {{info.recipe.title}} </h2> <br>
+            <div>클릭 시 레시피 상세보기</div>
+          </div>
+
+          <!-- 채식팟 일 때 -->
+          <div v-else class="carousel_content blackSquare">
+            <div style="font-size:20px"> 음식 뿐만 아니라 가치를 공유하는 </div>
+            <div style="font-size:20px">채식팟에 참여해보세요! </div> <br>
+            <div>클릭 시 채식팟 이동</div>
+          </div>
+        </v-carousel-item>
+      </v-carousel>
+      </div>
 
       <div v-for="(info, idx) in searchPost" :key="idx" class="mt-9">
         
@@ -77,6 +97,7 @@ export default {
       order : [
         "User", "Post",
       ],
+      recommendList:[],
     }
   },
   components: {
@@ -84,8 +105,16 @@ export default {
     ProfileName
   },
   methods: {
-    ...mapActions('post', ['getPostList', 'getPostLikeList', ]),
+    ...mapActions('post', ['getPostList', 'getPostLikeList', 'getRecommend']),
     ...mapActions('user', ['getUserList',]),
+    recommendClick(info) {
+      if (info.type==1) { // 레시피 클릭 시
+        console.log("recipeId : "+info.recipe.recipeId);
+        this.$router.push({name: 'RecipeDetail', params: {recipeId: info.recipe.recipeId}});
+      } else if (info.type==2) { // 채식팟 클릭 시 
+        this.$router.push({name:'VetPartyList'})
+      }
+    },
     searchKeyword(val){ // 키워드 받아오기
       this.search = val
     },
@@ -122,7 +151,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("post", (["postList", "postLikeList"])),
+    ...mapGetters("post", (["postList", "postLikeList", "recommendRe", "recommendCh"])),
     ...mapGetters("user", (["userinfo", "userlist"])),
 
     searchPost() {
@@ -167,9 +196,39 @@ export default {
     },
   },
   created() {
+    this.getRecommend() 
     this.getPostList(this.userinfo.userid)
     this.getPostLikeList(this.userinfo.userid)
     this.getUserList()
+
+    // 추천 목록 만들기
+    for (var i=0;i<this.recommendCh.length;i++) {
+      let src = "";
+      if (this.recommendCh[i].category==1 && this.recommendCh[i].type==1) src=require("@/assets/image/challenge1.png")
+      else if (this.recommendCh[i].type==2) src=require("@/assets/image/challenge_recipe.png")
+      else if (this.recommendCh[i].category==2) src=require("@/assets/image/challenge2.png")
+      else src=require("@/assets/image/challenge3.png")
+      this.recommendList.push({
+        "type":0, // type = 0 -> 챌린지
+        "challenge":this.recommendCh[i],
+        "src":src
+      })
+    }
+
+    for (var j=0;j<this.recommendRe.length;j++) {
+      this.recommendList.push({
+        "type":1, // type = 1 -> 레시피 
+        "recipe":this.recommendRe[j],
+        "src":this.recommendRe[j].filepath
+      })
+    }
+
+    this.recommendList.push({
+      "type":2, // type = 2 -> 채식팟
+      "src":require("@/assets/image/map.png")
+    })
+
+    console.log("recommendList : ", this.recommendList);
   }
 }
 </script>

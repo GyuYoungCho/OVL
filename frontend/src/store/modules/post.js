@@ -14,6 +14,8 @@ namespaced: true,
         foodPostList: [],
         clothPostList: [],
         cosmeticPostList: [],
+        recommendCh:[],
+        recommendRe:[]
     },
     getters: {
         postList(state) {
@@ -40,6 +42,12 @@ namespaced: true,
         cosmeticPostList(state) {
             return state.cosmeticPostList
         },
+        recommendRe(state) {
+            return state.recommendRe
+        },
+        recommendCh(state) {
+            return state.recommendCh
+        }
     },
 	mutations: {
         GET_POST_LIST(state, payload) {
@@ -60,6 +68,12 @@ namespaced: true,
             state.clothPostList = payload.filter((eachList)=> eachList.postId.category===2)
             state.cosmeticPostList = payload.filter((eachList)=> eachList.postId.category===3)
         },
+        GET_RECOMMEND_CHALLENGE(state, payload) {
+            state.recommendCh = payload
+        },
+        GET_RECOMMEND_RECIPE(state, payload) {
+            state.recommendRe = payload
+        }
 	},
 	actions: {
         getPostList(store, payload) {
@@ -141,6 +155,21 @@ namespaced: true,
             }).catch((err)=>{
                 console.log(err);
             })
+        },
+        getRecommend(store) {
+            let URL = API.url + postAPI.recommendCh();
+            axios.get(URL)
+            .then(res=> {
+                store.commit('GET_RECOMMEND_CHALLENGE', res.data)
+            })
+            .catch(err=>console.error(err))
+
+            URL = API.url + postAPI.recommendRe();
+            axios.get(URL)
+            .then(res=> {
+                store.commit('GET_RECOMMEND_RECIPE', res.data);
+            })
+            .catch(err=>console.error(err))
         }
     }
 }

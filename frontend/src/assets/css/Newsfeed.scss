@@ -1,5 +1,30 @@
+h2 {
+  font-size: 1.3em;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
 .inline {
   display: inline-block;
+}
+
+.blackSquare {
+  background-image:url('../image/blackSquare.png');
+  background-size: 100%;
+}
+
+.carousel_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color:white;
+  // text-align: center;
+  height: 100%;
 }
 
 .color-gray {
