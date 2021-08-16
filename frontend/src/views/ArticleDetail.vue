@@ -1,8 +1,20 @@
 <template>
   <div>
     <v-container class="px-7 mt-4">
-      <!-- 삭제 관련 모달 -->
-      <ArticleDetailModal :modalOpen="modalOpen" @confirmBtnClick="confirmBtnClick" @cancelBtnClick="cancelBtnClick" />
+      <!-- 게시글 답글 삭제 모달 -->
+      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      @modalConfirmBtnClick="onDeleteReplyModalClick" v-if="deletingReply" @modalCancelBtnClick="deleteModal = false" />
+      <!-- 게시글 댓글 삭제 모달 -->
+      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      @modalConfirmBtnClick="onDeleteCommentModalClick" v-else-if="deletingComment" @modalCancelBtnClick="deleteModal = false" />
+      <!-- 게시글 삭제 모달 -->
+      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      @modalConfirmBtnClick="onDeleteConfirmClick" v-else @modalCancelBtnClick="deleteModal = false" />
+      
+
+      <!-- 게시글 수정 모달 -->
+      <ArticleDetailModal :modalOpen="updateModal" modalContent="정말로 수정하시겠습니까?" :post="post"
+      @modalConfirmBtnClick="onUpdateConfirmClick" @modalCancelBtnClick="updateModal = false" />
       
       <!-- 게시글 시작 -->
       <div>
@@ -33,9 +45,13 @@
                 </v-btn>
               </template>
               <v-list>
-                <!-- <v-list-item v-for="(item, index) in items" :key="index" @click="postModify(item.title)"> -->
-                <v-list-item v-for="(item, index) in items" :key="index" @click="onDeleteUpdateClick(item.title)">
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                <!-- 게시글 수정 -->
+                <v-list-item @click="onPostUpdateClick">
+                  <v-list-item-title>수정</v-list-item-title>
+                </v-list-item>
+                <!-- 게시글 삭제 -->
+                <v-list-item @click="onPostDeleteClick">
+                  <v-list-item-title>삭제</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -97,7 +113,7 @@
             </div>
             <div class="inline" v-if="isCommentUser(info)">
               <button @click="commentModify(info)">수정</button> | 
-              <button @click="deleteModalPopup('comment', info)">삭제</button>
+              <button @click="onDeleteCommentClick(info.postCommentId)">삭제</button>
             </div>
           </div>
 
@@ -134,7 +150,7 @@
                   좋아요 {{replyInfo.like_count}}개 &nbsp;
                   <div class="inline" v-if="isReplyUser(replyInfo)">
                     <button @click="replyModify(replyInfo)">수정</button> | 
-                    <button @click="deleteModalPopup('reply', replyInfo)">삭제</button>
+                    <button @click="deleteModalPopup(replyInfo)">삭제</button>
                   </div>
                 </div>
 
@@ -172,37 +188,24 @@ export default {
       replyBtnClickId:0,
 
       // 모달 관련 변수
-      modalOpen: false,
-      // deletingArticle: false,
+      deleteModal: false,
       deletingComment: false,
+      deletingCommentId: 0,
       deletingReply: false,
-      deletingInfo: null,
+      deletingReplyId: 0,
+
+      updateModal: false,
     }
   },
   methods: {
     ...mapActions('post', ['getPost',]),
     ...mapActions('postComment', ['getCommentList', 'getCommentLikeList']),
     ...mapActions('postReply', ['getReplyList', 'getReplyLikeList',]),
-    // 모달에서 '확인' 버튼 클릭
-    confirmBtnClick () {
-      if (this.deletingReply) {
-        this.replyDelete()
-      } else if (this.deletingComment) {
-        this.commentDelete()
-      } else {
-        this.postModify('삭제')
-      }
+    onPostUpdateClick () {
+      this.updateModal = true
     },
-    // 모달에서 '취소' 버튼 클릭
-    cancelBtnClick () {
-      this.modalOpen = false
-    },
-    onDeleteUpdateClick(title) {
-      if (title==="삭제") {
-        this.modalOpen = true
-      } else {
-        this.postModify(title)
-      }
+    onPostDeleteClick () {
+      this.deleteModal = true
     },
     commentModify(info) { // 댓글 수정 
       this.isComment = true;
@@ -211,43 +214,41 @@ export default {
       this.commentId = info.postCommentId;
     },
     replyModify(replyInfo) { // 답글 수정
-      console.log("답글 수정");
       this.isComment = false;
       this.inputBtn = "수정";
       this.commentInput = replyInfo.content;
       this.replyId = replyInfo.postReplyId;
     },
-    deleteModalPopup(type, info) {
-      if (type==='comment') {
-        this.deletingComment = true
-      } else {
-        this.deletingReply = true
-      }
-      this.modalOpen = true
-      this.deletingInfo = info
+    deleteModalPopup(replyInfo) {
+      this.deletingReply = true
+      this.deleteModal = true
+      this.deletingCommentId = replyInfo.postCommentId.postCommentId
+      this.deletingReplyId = replyInfo.postReplyId
     },
-    // @@@@@@@@@@@ 댓글 삭제 로직 @@@@@@@@@@@
-    commentDelete() { // 댓글 삭제
-      const info = this.deletingInfo
-      // if (confirm("정말 삭제하시겠습니까?")) {
-        let paylaod = {
-          "commentId" : info.postCommentId,
-          "postId" : this.post.postId
-        }
-        this.deletingComment = false
-        this.modalOpen = false
-        this.$store.dispatch("postComment/commentDelete", paylaod);
-      // }
+    onDeleteCommentClick (postCommentId) {
+      this.deletingComment = true
+      this.deleteModal = true
+      this.deletingCommentId = postCommentId
     },
-    // @@@@@@@@@@@ 답글 삭제 로직 @@@@@@@@@@@
-    replyDelete() { // 답글 삭제
-      const replyInfo = this.deletingInfo
+    onDeleteCommentModalClick() { // 댓글 삭제
       let paylaod = {
-        "replyId" : replyInfo.postReplyId,
+        "commentId" : this.deletingCommentId,
         "postId" : this.post.postId
       }
+      this.deletingComment = false
+      this.deletingCommentId = 0
+      this.deleteModal = false
+      this.$store.dispatch("postComment/commentDelete", paylaod);
+    },
+    onDeleteReplyModalClick() { // 답글 삭제
+      let paylaod = {
+        "replyId" : this.deletingReplyId,
+        "postId" : this.post.postId
+      }
+      this.deleteModal = false
       this.deletingReply = false
-      this.modalOpen = false
+      this.deletingCommentId = 0
+      this.deletingReplyId = 0
       this.$store.dispatch("postReply/replyDelete", paylaod);
     },
     isUser() { // 유저가 맞다면 수정, 삭제 버튼 생기기
@@ -262,16 +263,16 @@ export default {
       if (replyInfo.userId.userid == this.userinfo.userid) return true;
       else return false;
     },
-    postModify(title) { // 게시글 수정, 삭제 버튼 클릭
-      if (title=="수정") this.$router.push({path:"/article_create/"+this.post.postId});
-      else { // 삭제
+    onUpdateConfirmClick() { // 게시글 수정
+      this.$router.push({path:"/article_create/"+this.post.postId});
+    },
+    onDeleteConfirmClick() { // 게시글 삭제
       var payload = {
         "userId" : this.userinfo.userid,
         "postId" : this.post.postId
       }
       var move = this.$store.dispatch("post/postDelete", payload);
       if (move) this.$router.push({path:"/"});
-      }
     },
     replyClick(info) { // 답글 보기 or 숨기기
       if (this.showReply.includes(info.postCommentId)) { // 답글 이제 숨겨주자!!
