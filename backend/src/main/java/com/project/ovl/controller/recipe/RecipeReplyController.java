@@ -67,7 +67,7 @@ public class RecipeReplyController {
 		recipeCommentDao.save(comment);
 		// 해당 게시글 comment_count+1
 		Recipe recipe = recipeDao.findRecipeByRecipeId(comment.getRecipeId().getRecipeId());
-		recipe.setComment_count(recipe.getComment_count()+1);
+		recipe.setCommentcount(recipe.getCommentcount()+1);
 		recipeDao.save(recipe);
 		
 		recipeReplyDao.save(new RecipeReply(0, content, 0, new Date(), comment, user));
@@ -101,7 +101,7 @@ public class RecipeReplyController {
 		recipeCommentDao.save(comment);
 		// 해당 게시글 comment_count -1
 		Recipe recipe = recipeDao.findRecipeByRecipeId(comment.getRecipeId().getRecipeId());
-		recipe.setComment_count(recipe.getComment_count()-1);
+		recipe.setCommentcount(recipe.getCommentcount()-1);
 		recipeDao.save(recipe);
 		
 		recipeReplyDao.delete(reply);

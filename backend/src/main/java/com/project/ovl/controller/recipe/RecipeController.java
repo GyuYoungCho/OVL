@@ -12,7 +12,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -277,10 +279,13 @@ public class RecipeController {
 	
 	@GetMapping("/select_all")
 	@ApiOperation(value = "레시피 전체 조회")
-	public Page<Recipe> select_all(Pageable pageable) {
-		Page<Recipe> recipepage = recipeDao.findAll(pageable);
+	public Page<Recipe> select_all(@RequestParam(required = false, defaultValue = "") String keyword, @RequestParam("cate") String cate, Pageable pageable) {
+		keyword = "%" + keyword + "%";
+		Pageable sortedByTimeDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(cate).descending()); 
+		Page<Recipe> recipepage = recipeDao.findByKeyWord(keyword, sortedByTimeDesc);
 		List<Recipe> recipeList = recipepage.toList();
-		return new PageImpl<Recipe>(recipeList, pageable ,recipepage.getTotalElements());
+		
+		return new PageImpl<Recipe>(recipeList, sortedByTimeDesc ,recipepage.getTotalElements());
 	}
 	
 	@GetMapping("/select_detail/{recipe_id}")
@@ -323,13 +328,13 @@ public class RecipeController {
 		// like 테이블에 존재하는지 확인
 		if (like==null) { // 존재하지 않을 시
 			// 해당 recipe like_count +1
-			recipe.setLike_count(recipe.getLike_count()+1);
+			recipe.setLikecount(recipe.getLikecount()+1);
 			
 			// like 테이블에 저장
 			recipeLikeDao.save(new RecipeLike(0, user, recipe));
 		} else { // 이미 존재 시
 			// 해당 recipe like_count -1
-			recipe.setLike_count(recipe.getLike_count()-1);
+			recipe.setLikecount(recipe.getLikecount()-1);
 			
 			recipeLikeDao.delete(like);
 		}

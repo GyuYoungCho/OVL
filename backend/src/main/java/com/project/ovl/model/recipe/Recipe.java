@@ -36,8 +36,10 @@ public class Recipe {
     private String ingredient;
 	
 	private Date time;
-	private int like_count;
-	private int comment_count;
+	@Column(name="like_count")
+	private int likecount;
+	@Column(name="comment_count")
+	private int commentcount;
 	
 	private String filepath;
 	
