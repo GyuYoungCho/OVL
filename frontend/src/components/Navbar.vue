@@ -123,6 +123,7 @@ import FlashModal from '@/components/signup/FlashModal.vue'
         setTimeout(() => {
           this.modalOpen = false
           this.logout()
+          this.$router.push({name: 'Main'})
         }, 1000);
       }
     },
