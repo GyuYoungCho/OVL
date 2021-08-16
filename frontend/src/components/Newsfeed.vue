@@ -34,11 +34,9 @@
             <div style="font-size:20px">채식팟에 참여해보세요! </div> <br>
             <div>클릭 시 채식팟 이동</div>
           </div>
-
-          
-          
         </v-carousel-item>
       </v-carousel>
+
       <!-- 커스텀 모달 영역-->
       <v-dialog v-model="isDetail" max-width="300">
         <v-card>
@@ -95,7 +93,7 @@
       </v-dialog>
       </div>
 
-      <div v-for="(info, idx) in searchPost" :key="idx" class="mt-9">
+      <div v-for="(info, idx) in searchPost" :key="idx" class="mt-4">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
