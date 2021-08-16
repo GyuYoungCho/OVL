@@ -33,7 +33,7 @@ public class ChallengeSchedular {
 	@Autowired
 	ChallengeController challengeController;
 
-	@Scheduled(cron = "0 51 1 * * *")
+	@Scheduled(cron = "0 30 4 * * *")
 	public void challengeJobSchedualing() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date now = new Date();

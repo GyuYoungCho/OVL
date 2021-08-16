@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import {mapGetters, mapActions} from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   data() {
@@ -84,7 +84,7 @@ export default {
     }
   },
   methods: {
-        ...mapActions("post", ["getUserPostList", ]),
+        //...mapActions("post", ["getUserPostList"]),
     moveDetail(idx) { // 게시글 상세보기
       this.$router.push({path:"/article_detail/"+this.postMyList[idx].postId.postId});
     },
@@ -92,9 +92,9 @@ export default {
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
             this.showAll = true;
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
+            // console.log(num)
+            // console.log("btn",this.btnActive)
+            // console.log("show",this.showAll)
         }else if(this.btnActive[num] ===false){
             this.btnActive[num] = true;
             this.showAll = false;
@@ -103,15 +103,13 @@ export default {
                 this.btnActive[i] = false;
               }
             }
-            console.log(num)
-            console.log("btn",this.btnActive)
-            console.log("show",this.showAll)
         }
     },
   },
   computed: {
     ...mapGetters("post", ["postMyList", "foodPostList", "clothPostList", "cosmeticPostList"]),
     ...mapGetters("user", ["userinfo"]),
+    
   },
   created() {
     this.$store.dispatch("post/getUserPostList", this.userinfo.userid);

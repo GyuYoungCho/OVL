@@ -5,8 +5,8 @@
     <div class="text-right">
         <v-row justify="end">
             <span class="mr-3 mt-4">계정 
-                <span v-if="account_open">공개</span>
-                <span v-else>비공개</span>
+                <span v-if="account_open">비공개</span>
+                <span v-else>공개</span>
             </span>
             <v-switch class="py-0 " v-model="account_open" color="success"></v-switch>
         </v-row>
@@ -125,6 +125,12 @@ export default {
             // formData.append('nickname', this.nickname)
             // formData.append('password', this.password)
             // formData.append const { email, name, nickname, password, phone } = this
+            console.log("챌린지 정보:" , this.userinfo.challengeId)
+            let send_account = 0;
+            if(this.account_open){
+                send_account = 1;
+            }
+            console.log("계정 비공개.공개 정보:", this.account_open)
             let pw = '';
             if(this.password.length > 0){
                 pw = this.password;
@@ -136,26 +142,29 @@ export default {
                 "phone": this.phone,
                 "name": '',
                 "email": "string",
+                "challengeId": this.userinfo.challengeId,
+                "account_open" : send_account,
             }
 
             axios.put(URL, payload).then(res => {
                 console.log("회원정보 수정 결과 : ",res.data);
 
                 this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
-                this.$router.push({ name: 'Login' })
+                this.$router.push({ name: 'Profile', params: {userid: this.userinfo.userid} })
                 })
                 .catch(err => 
                 console.error(err))
         },
 
-        onModifyAccountOpenToggle(val) {
-            axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
-            .then(res => {
-                console.log(res.data)
-                })
-            .catch(err => 
-                console.error(err)
-            )
+        onModifyAccountOpenToggle(open) {
+            // axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
+            // .then(res => {
+            //     console.log(res.data)
+            //     })
+            // .catch(err => 
+            //     console.error(err)
+            // )
+            console.log("계정 여부", open)
         }
     },
     watch:{

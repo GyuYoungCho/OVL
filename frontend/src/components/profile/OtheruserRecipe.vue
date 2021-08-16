@@ -42,7 +42,6 @@ export default {
 
   },
   computed: {
-    ...mapGetters(['recipes']),
     ...mapGetters("user", (["userinfo"])),
   },
   created() {
