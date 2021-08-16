@@ -72,7 +72,7 @@
               <!-- (5) 참여 인원을 나타내는 영역 -->
               <div class="cardContentArea">
                 <v-icon x-small>mdi-account</v-icon>
-                {{challenge.count}}명 참여중
+                {{challenge.count}}명 참여 중
               </div>
               <!-- (6) 참여 기간을 나타내는 영역 -->
               <div class="cardContentArea">
