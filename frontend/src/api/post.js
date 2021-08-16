@@ -29,5 +29,10 @@ export default {
   like (user_id, post_id) {
     return `/post/like/${user_id}/${post_id}`
   },
-
+  recommendRe() {
+    return '/post/recommend_re'
+  },
+  recommendCh() {
+    return '/post/recommend_ch'
+  }
 }
