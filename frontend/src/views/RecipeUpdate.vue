@@ -233,12 +233,17 @@ export default {
     ...mapGetters('recipe', ['recipe', 'recipeDetail',]),
   },
 
-  created () {
-    this.title = this.recipe.title
-    this.content = this.recipe.content
-    this.ingredient = this.recipe.ingredient
-    for (let i=0; i < this.recipeDetail.length; i++) {
-      this.processFiles.push(this.recipeDetail[i])
+  async created () {
+    await this.fetchRecipeDetail(this.$route.params.recipeId)
+    if (this.recipe.userid.userid !== this.userinfo.userid) {
+      this.$router.back()
+    } else {
+      this.title = this.recipe.title
+      this.content = this.recipe.content
+      this.ingredient = this.recipe.ingredient
+      for (let i=0; i < this.recipeDetail.length; i++) {
+        this.processFiles.push(this.recipeDetail[i])
+      }
     }
   }
   
