@@ -2,6 +2,8 @@
   <div>
     <v-container>
     <section  class="vetparty">
+      <content-confirm :modalOpen="modalOpen" :modalContent="modalContent"
+        @changeNext="changeNext" />
       <v-row justify="end">
         <v-spacer></v-spacer>
           
@@ -126,12 +128,14 @@ import potAPI from '@/api/pot.js'
 import RestaurantList from '@/components/pot/RestaurantList.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import { mapGetters, mapActions } from 'vuex';
+import ContentConfirm from '@/components/basic/ContentConfirm.vue';
 
 
 export default {
   components : {
     RestaurantList,
     ConfirmSnack,
+    ContentConfirm,
   },
   data() {
       return {
@@ -161,6 +165,10 @@ export default {
         overlay : false,
 
         type : 0,
+
+        confirms : false,
+        modalOpen:false,
+        modalContent:'저장되지 않은 작업이 있습니다! 정말 나갈까요?'
       }
   },
   computed: {
@@ -335,6 +343,14 @@ export default {
     cancelAddres(){
       this.rest_list_modal = false
     },
+    openModal(){
+      this.modalOpen = true
+      return this.confirms
+    },
+    changeNext(val){
+      this.confirms = val
+      return k
+    },
 
     async updateStore(){
           
@@ -366,7 +382,15 @@ export default {
       }, 2000)
     }
   },
-  
+  // async beforeRouteLeave(to, from, next) {
+  //   const a = await this.openModal()
+  //   if (this.confirms) {
+  //       next();
+  //   } else {
+  //       next(false);
+  //   }
+    
+  // },
 }
 </script>
 

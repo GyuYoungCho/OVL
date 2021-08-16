@@ -365,6 +365,7 @@ public class UserController {
 		Map<String, Float> map = new HashMap<>();
 		
 		List<User> userList = userDao.findAll();
+		System.out.println(userList.toString());
 		Collections.sort(userList, (o1, o2)-> {
 			return Integer.compare(o2.getExperience(),o1.getExperience());
 		});
@@ -382,50 +383,11 @@ public class UserController {
 
 	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
     @PostMapping(value = "/modify_pic/{user_id}")
-	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic) throws IOException {
-//    	User useropt = userDao.getUserByUserid(user_id);
-//    	String originalFileExtension;
-//    	
-//    	if(pic!=null) {
-//    		
-//    		File file = new File(useropt.getStored_file_path());
-//    		if(file.exists() == true){
-//    			file.delete();
-//    		}
-//            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-//            String path = "src/main/resources/static/profile/" + useropt.getUserid();
-//            file = new File(path);
-//            
-//            if(!file.exists()){
-//                file.mkdirs();
-//            }
-//            String contentType = pic.getContentType();
-//
-//            if(!ObjectUtils.isEmpty(contentType)) {
-//
-//                if(contentType.contains("image/jpeg"))
-//                    originalFileExtension = ".jpg";
-//                else if(contentType.contains("image/png"))
-//                    originalFileExtension = ".png";
-//              
-//                else {
-//                	userDao.save(useropt);
-//            		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
-//                }
-//                String new_file_name = System.nanoTime() + originalFileExtension;
-//                useropt.setStored_file_path(path + "/" + new_file_name);
-//                useropt.setOriginal_file_name(pic.getOriginalFilename());
-//                
-//                userDao.save(useropt);
-//                
-//                file = new File(absolutePath + path + File.separator + new_file_name);
-//                pic.transferTo(file);
-//                
-//                file.setWritable(true);
-//                file.setReadable(true);
-//            }
-//            
-//    	}
+	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestBody List<String> pic) throws IOException {
+    	User useropt = userDao.getUserByUserid(user_id);
+    	useropt.setFilepath(pic.get(1));
+    	userDao.save(useropt);
+
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -435,6 +397,8 @@ public class UserController {
 
     	User user = userDao.getUserByUserid(request.getUserid());
     	
+    	user.setChallengeId(request.getChallengeId());
+    	user.setAccount_open(request.getAccount_open());
     	user.setNickname(request.getNickname());
     	user.setPhone(request.getPhone());
     	if(request.getPassword().length()>0) user.setPassword(passwordEncoder.encode(request.getPassword()));

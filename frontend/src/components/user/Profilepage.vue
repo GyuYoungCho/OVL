@@ -8,7 +8,7 @@
                         <div class="image text-center"> 
                             <img :src="userinfo.filepath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
                             <div class="mb-0 mt-0">{{nickname}}</div>
-                            <div v-if="isNotChallenging" style="font-size:x-small">
+                            <div v-if="time <= 0" style="font-size:x-small">
                             <span class="ingdate">&nbsp;</span></div>
                             <div v-else style="font-size:x-small"
                             @click="openCertDialog(true)">
@@ -185,26 +185,28 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
         }
     },
     computed:{
-        ...mapGetters("user",(["userinfo","isLogin", "challenge"])),
+        ...mapGetters("user",(["userinfo","isLogin", "challenge", "rank", "percent"])),
         ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
-        ...mapState("user", (["isLogin", "rank", "percent"])),
         time() {
             const start = moment(this.start_date);
             const now = moment(new Date());
             // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
-            return now.diff(start, 'days') + 1;
+            if((now.diff(start, 'days') + 1) <= 0){
+                return 0;
+            }
+            else{
+                return now.diff(start, 'days') + 1
+            }
+            
         },
 
     },
     created() {
-        //url userid 체크
-        let userid = this.$route.params.userid;
-        //this.$store.dispatch('user/getUpdateUserInfo', userid);
-        console.log("profilepage : ", this.userinfo.nickname);
+        //console.log("profilepage : ", this.userinfo.nickname);
         this.nickname = this.userinfo.nickname;
-        this.$store.dispatch("user/getUserRank", userid);
-        this.$store.dispatch("follow/getFollowingList", userid);
-        this.$store.dispatch("follow/getFollowerList", userid);
+        this.$store.dispatch("user/getUserRank", this.userinfo.userid);
+        this.$store.dispatch("follow/getFollowingList", this.userinfo.userid);
+        this.$store.dispatch("follow/getFollowerList", this.userinfo.userid);
 
         //console.log(this.followerList)
         this.follower = this.followerList.length;
@@ -219,7 +221,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
         this.start_date = this.userinfo.challengeId.start_date;
 
         //쿵야 셋팅
-        console.log(this.percent)
+        //console.log(this.percent)
         if(this.percent < 31 ){
             this.step = 1;
         }else if( this.percent > 30 && this.percent < 61){
@@ -241,7 +243,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
                 url: API.url + userAPI.select(this.userinfo.userid)
             }).then((res)=>{
                 if(res.data !== null){
-                    console.log("유저 경험점수" , res.data)
+                    //console.log("유저 경험점수" , res.data)
                     this.experience = res.data.experience;
                 }
             }).catch((err)=>{

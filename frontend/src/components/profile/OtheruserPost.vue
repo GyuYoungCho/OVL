@@ -93,8 +93,9 @@ export default {
   methods: {
         ...mapActions("post", ["getPostList", ]),
     moveDetail(idx) { // 게시글 상세보기
-      this.$router.push({path:"/article_detail/"+this.postList[idx].postId.postId});
+      this.$router.push({path:"/article_detail/"+this.otherpostList[idx].postId.postId});
     },
+    //버튼에 따른 아이콘 변경 / 카테고리 별 내용 확인
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
@@ -119,6 +120,7 @@ export default {
   computed: {
     ...mapGetters("user", ["userinfo"]),
   },
+  //가져온 게시글을 필터링
   created() {
       axios({
         method: "get",

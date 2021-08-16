@@ -34,8 +34,8 @@ export default {
   },
   created(){
     //userid 검증
-    console.log(this.$route.params.userid)
-    if(this.$route.params.userid == this.userinfo.userid){
+    //console.log(this.$route.params.userid)
+    if(this.$route.params.userid === this.userinfo.userid){
       //로그인 user == 프로필 확인 user 같음
       this.isUser = true;
 
@@ -43,7 +43,7 @@ export default {
     if(this.$route.params.userid != this.userinfo.userid){
       axios.get(API.url+userAPI.select(this.$route.params.userid))
     .then((res)=>{
-      console.log(res)
+      //console.log(res)
         if(res.data == ""){
             //console.log("다른사람이고 회원가입 안했음")
             this.isUser = false;
@@ -58,9 +58,9 @@ export default {
     this.$store.dispatch("user/getUserInfo");
 
   },
-  mounted(){
-    console.log(new Date(this.userinfo.challengeId.start_date))
-  }
+  // mounted(){
+  //   console.log(new Date(this.userinfo.challengeId.start_date))
+  // }
 
   
 }

@@ -167,6 +167,7 @@ public class ChallengeController {
 		//나의 현재 챌린지 이력 조회 
 		Optional<List<User>> userlist = userDao.findByChallengeIdChallengeId(challenge_id);
 		Challenge challenge = challengeDao.findByChallengeId(challenge_id);
+		
 		//다담을 리스트
 		List<Challenge> totallist = new ArrayList<>();
 		
@@ -182,6 +183,9 @@ public class ChallengeController {
 				totallist.add(ch.getChallengeId());
 			}
 		}
+		
+		//totallist.add(challenge);
+		
 		if(!totallist.isEmpty()) {
 			return new ResponseEntity<>(totallist, HttpStatus.OK);
 		}else {

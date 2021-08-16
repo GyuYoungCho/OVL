@@ -59,8 +59,8 @@
                     </div>
                     <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" class="myParticipation" style="background-color: #CF5555">참여중</button>
-                      <button v-else @click="challengeEnd(challenge.challengeId)" class="myParticipation" style="background-color: #CF5555">참여종료</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd()" class="cancleChallenge">참여취소</button>
+                      <button v-else class="completeChallenge">참여완료</button>
                     </div>
                   </article>
                 </v-container>
@@ -102,9 +102,11 @@
                       ({{challenge.period/7}}주)
                     </div>
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd()"  class="cancleChallenge">참여중</button>
+                      <button v-else class="card completeChallenge" >참여종료</button>
+                      <!-- <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
                       <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                      <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
+                      <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button> -->
                     </div>
                   </article>
                 </v-container>
@@ -146,9 +148,8 @@
                       ({{challenge.period/7}}주)
                     </div>
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
-                      <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                      <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd(challenge.challengeId)"  class="cancleChallenge">참여취소</button>
+                      <button v-else class="completeChallenge" >참여완료</button>
                     </div>
                   </article>
                 </v-container>
@@ -190,9 +191,8 @@
                       ({{challenge.period/7}}주)
                     </div>
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
-                      <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                      <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId"  @click="challengeEnd(challenge.challengeId)" class="cancleChallenge" >참여취소</button>
+                      <button v-else class="completeChallenge" >참여완료</button>
                     </div>
                   </article>
                 </v-container>
@@ -213,6 +213,7 @@ import challengeAPI from '@/api/challenge.js'
 export default {
 data() {
     return {
+      cancleChallenge:false,
       showAll: true,
       btnActive: {0:false,1:false,2:false},
     }
@@ -249,6 +250,8 @@ methods: {
         }).then((res)=>{
           if(res.data === "success"){
             console.log("챌린지 중단")
+            this.cancleChallenge = true;
+            this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
           }
         }).catch((err)=>{
           console.log(err)
@@ -259,15 +262,12 @@ methods: {
 },
 computed: {
     ...mapGetters("challenge", ["userchallengeList", "userfoodChallengeList", "userclothChallengeList", "usercosmeticChallengeList"]),
-    ...mapState("post", (["postList", "postLikeList"])),
     ...mapState("user", (["userinfo"])),
 },
 created() {
     this.$store.dispatch("post/getPostList", this.userinfo.userid);
     this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
-    console.log(this.challengeList)
-    // 1. 컴포넌트가 렌더링 되면 일단 스토어의 전체 챌린지 리스트를 뷰엑스에 업데이트 합니다.
-    //console.log("유젗 챌릸진 정보", this.userinfo.userid);
+
     this.$store.dispatch("challenge/fetchUserChallengeList", {challenge_id: this.userinfo.challengeId.challengeId, user_id: this.userinfo.userid});
 },
 }
