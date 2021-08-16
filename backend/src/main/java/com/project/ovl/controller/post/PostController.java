@@ -1,6 +1,7 @@
 package com.project.ovl.controller.post;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -535,7 +536,7 @@ public class PostController {
 		int cnt = topChList.size()>0?topChList.size():chList.size(); // 상위 5개에 값이 있을 때 (참여 인원이 있을 때)는 topChList 만큼, 아닐 때는 chList 만큼 --> 참여 인원이 없다면 전체 챌린지에서 랜덤으로 값 뽑기
 		int size = cnt>2?2:cnt; // cnt 개수만큼 랜덤 값 뽑기
 		for (int i = 0; i < size; i++) {
-			a[i] = rand.nextInt(cnt)+1;
+			a[i] = rand.nextInt(cnt);
 			for (int j = 0; j < i; j++) {
 				if (a[i] == a[j]) i--;
 			}

@@ -12,7 +12,7 @@
 
       <!-- 캐러셀 영역 -->
       <div>
-      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7">
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7" :show-arrows="false" cycle interval="4000">
         <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
           <!-- 챌린지 일 때 -->
           <div v-if="info.type==0" class="carousel_content">
@@ -34,8 +34,65 @@
             <div style="font-size:20px">채식팟에 참여해보세요! </div> <br>
             <div>클릭 시 채식팟 이동</div>
           </div>
+
+          
+          
         </v-carousel-item>
       </v-carousel>
+      <!-- 커스텀 모달 영역-->
+      <v-dialog v-model="isDetail" max-width="300">
+        <v-card>
+          <!-- 모달 타이틀 영역 -->
+          <v-toolbar dense color="#004627">
+            <v-toolbar-title class="modalTitle">{{detailCh.title}}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon dark @click="isDetail = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <!-- 모달 컨텐츠 영역 -->
+          <v-container>
+          <div class="modalContent">
+            <div class="mb-3">
+              <div>{{detailCh.content}}</div>
+              <br>
+              <!-- 해당 챌린지의 기간 영역 -->
+              <div>
+                <v-icon dense>mdi-run</v-icon>
+                <span v-if="detailCh.cycle === 1">
+                  매일
+                </span>
+                <span v-else>
+                  {{detailCh.cycle}}일마다
+                </span>
+              </div>
+              <!-- 해당 챌린지의 경험치 영역 -->
+              <div>
+                <v-icon dense>mdi-diamond-stone</v-icon>
+                {{detailCh.score}}
+              </div>
+              <!-- 참여 인원을 나타내는 영역 -->
+              <div>
+                <v-icon dense>mdi-account</v-icon>
+                {{detailCh.count}}명 참여 중
+              </div>
+              <!-- 참여 기간을 나타내는 영역 -->
+              <div v-if="detailCh.start_date!=undefined">
+                <v-icon dense>mdi-calendar-blank</v-icon>
+                {{ recalibratedDate(detailCh.start_date, 0) }} ~
+                  {{ recalibratedDate(detailCh.start_date, detailCh.period) }}  ({{detailCh.period/7}}주)
+              </div>
+              <br>
+            </div>
+            <div class="modalContentButtonArea">
+              <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(detailCh.challengeId)" class="beginBtn">참여하기</button>
+              <button v-else-if="detailCh.challengeId === userinfo.challengeId.challengeId" disabled class="myBtn">참여 중</button>
+              <button v-else-if="userinfo.challengeId.challengeId!=1 " disabled class="alreadyBtn ">참여 불가</button>
+            </div>
+          </div>
+          </v-container>
+        </v-card>
+      </v-dialog>
       </div>
 
       <div v-for="(info, idx) in searchPost" :key="idx" class="mt-9">
@@ -98,6 +155,8 @@ export default {
         "User", "Post",
       ],
       recommendList:[],
+      isDetail:false,
+      detailCh:{},
     }
   },
   components: {
@@ -107,11 +166,29 @@ export default {
   methods: {
     ...mapActions('post', ['getPostList', 'getPostLikeList', 'getRecommend']),
     ...mapActions('user', ['getUserList',]),
+    ...mapActions("challenge", ["challengeAttend"]),
+    recalibratedDate(start_date, period) {
+      if (period==0) return start_date.substring(0,10);
+      return moment(start_date).add(period-2, 'days').format('YYYY-MM-DD')
+    },
+    participateClick (challenge_id) {
+      if (this.userinfo.challengeId.challengeId === 1) {
+        // 만약 유저가 챌린지에 참여하고 있지 않은 경우라면?
+        const payload = {
+            user_id: this.userinfo.userid,
+            challenge_id
+          }
+        this.challengeAttend(payload)
+      } 
+    },
     recommendClick(info) {
-      if (info.type==1) { // 레시피 클릭 시
+      if (info.type==0) { // 챌린지 클릭 시 
+        this.isDetail = true;
+        this.detailCh = info.challenge;
+      } else if (info.type==1) { // 레시피 클릭 시
         console.log("recipeId : "+info.recipe.recipeId);
         this.$router.push({name: 'RecipeDetail', params: {recipeId: info.recipe.recipeId}});
-      } else if (info.type==2) { // 채식팟 클릭 시 
+      } else { // 채식팟 클릭 시 
         this.$router.push({name:'VetPartyList'})
       }
     },

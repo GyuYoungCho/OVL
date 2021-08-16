@@ -113,3 +113,28 @@ h3 {
 .detext {
   font-size: 13px;
 }
+
+
+.beginBtn {
+  background-color: $freditgreen;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}
+
+.alreadyBtn {
+  background-color: $hy-grey;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}
+
+.myBtn {
+  background-color: $hy-red;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}
