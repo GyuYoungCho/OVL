@@ -32,4 +32,13 @@ public interface PostPhotoDao extends JpaRepository<PostPhoto, Integer>{
 			"order by time desc like_count desc comment_count desc "
 			, nativeQuery = true)
 	Page<PostPhoto> findByComing(Pageable pageable);
+	
+	
+	// 검색 고고
+	@Query(value="select min(post_photo_id),filepath, time, p.post_id " +  
+			"from post_photo ph join post p on p.post_id = ph.post_id " + 
+			"where TIMESTAMPDIFF(Day, time, now()) < 7) " +
+			"group by p.post_id " +
+			"order by time desc like_count desc comment_count desc ", nativeQuery = true)
+	Page<PostPhoto> findByContentkeyword(String keyword, Pageable pageable);
 }
