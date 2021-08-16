@@ -8,8 +8,12 @@
       <!-- 이메일 -->
       <div class="inputBtnDiv">
         <input type="text" placeholder="이메일" v-model="email">
-        <button class="bg-freditgreen" @click="onEmailBtnClick">인증</button>
+        <button :class="{'bg-freditgreen': email && emailFormValid, 'disabledBtn': !email || !emailFormValid}"
+        :disabled="!email || !emailFormValid" @click="onEmailBtnClick">인증</button>
       </div>
+      <p class="invalidTxt" v-if="!emailFormValid">
+        이메일 양식을 확인해주세요.
+      </p>
       <!-- 인증번호 -->
       <div class="inputBtnDiv" v-if="emailValid">
         <input type="text" placeholder="인증번호" v-model="authNumber">
@@ -31,7 +35,8 @@
       </p>
       <!-- 비밀번호 변경 버튼 -->
       <div v-if="authNumberValid">
-        <button class=" finalBtn" :class="{ 'bg-freditgreen': findPasswordFormValid, 'disabledBtn': !findPasswordFormValid }" @click="onPasswordBtnClick">
+        <button class=" finalBtn" :class="{ 'bg-freditgreen': findPasswordFormValid, 'disabledBtn': !findPasswordFormValid }" 
+        :disabled="!findPasswordFormValid" @click="onPasswordBtnClick">
           비밀번호변경
         </button>
       </div>
@@ -145,6 +150,9 @@ export default {
     }
   },
   computed: {
+    emailFormValid () {
+      return !this.email || /.+@.+\..+/.test(this.email)
+    },
     newPasswordFormValid () {
       return !this.newPassword || ((this.newPassword.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.newPassword))
     },

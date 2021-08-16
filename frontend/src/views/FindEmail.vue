@@ -3,13 +3,17 @@
     <section class="findEmail">
       <img src="@/assets/image/OVL_logo.png" alt="">
       <div>
-        <input type="text" placeholder="이름" v-model="name">
+        <input type="text" placeholder="이름" @change="nameInputChanged">
       </div>
       <div>
-        <input type="text" placeholder="전화번호" v-model="phone">
+        <input type="tel" placeholder="전화번호" v-model="phone" maxlength="11">
+        <p class="invalidTxt" v-if="!phoneFormValid">
+          "-" 없이 숫자로만 적어주세요. 예) 01012345678
+        </p>
       </div>
       <div>
-        <button class=" finalBtn" :class="{ 'bg-freditgreen': allExist, 'disabledBtn': !allExist }" @click="onFindEmailBtnClick">
+        <button class=" finalBtn" :class="{ 'bg-freditgreen': allExist, 'disabledBtn': !allExist }" @click="onFindEmailBtnClick"
+        :disabled="!allExist">
           이메일 찾기
         </button>
       </div>
@@ -52,14 +56,22 @@ export default {
           this.requestSent = true
           if (res.data) {
             this.email = res.data
+          } else {
+            this.email = ''
           }
         })
         .catch(err => console.error(err))
+    },
+    nameInputChanged (event) {
+      this.name = event.target.value
     }
   },
   computed: {
+    phoneFormValid () {
+      return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
+    },
     allExist () {
-      return !!this.name && this.phone
+      return !!this.name && (this.phone.length > 9)
     }
   }
 }
