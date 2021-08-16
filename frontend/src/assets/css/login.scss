@@ -28,6 +28,13 @@
     padding: 10px 10px;
   }
 
+  .disabledBtn {
+    background-color: $hy-grey !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
   .finalBtn {
     margin-top: 2vh;
   }
@@ -43,4 +50,11 @@
       }
     }
   }
+
+  .invalidTxt {
+    color: $hy-red;
+    margin: 0;
+    font-size: small;
+  }
+
 }
