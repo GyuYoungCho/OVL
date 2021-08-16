@@ -125,11 +125,13 @@ export default {
             // formData.append('nickname', this.nickname)
             // formData.append('password', this.password)
             // formData.append const { email, name, nickname, password, phone } = this
-            console.log("챌린지 정보:" , this.userinfo.challengeId)
+            //console.log("챌린지 정보:" , this.userinfo.challengeId)
             let send_account = 0;
+            //비공개 한다.
             if(this.account_open){
                 send_account = 1;
             }
+            //아닐 경우 공개 한다.
             console.log("계정 비공개.공개 정보:", this.account_open)
             let pw = '';
             if(this.password.length > 0){
@@ -165,6 +167,7 @@ export default {
             //     console.error(err)
             // )
             console.log("계정 여부", open)
+            
         }
     },
     watch:{
