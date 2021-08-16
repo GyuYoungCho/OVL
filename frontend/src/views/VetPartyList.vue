@@ -2,49 +2,29 @@
   <div>
     <v-container>
       <section  class="vetparty">
-      <pot-search class="mt-3" @searchKeyword="searchKeyword"
-        @selectOrd="selectOrd"></pot-search>
-        <div class="mt-3 text-center d-flex align-center justify-end">
-        <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn icon
-            color="primary"
-            dark
-            v-bind="attrs"
-            v-on="on" >
-            <v-icon color="#004627">mdi-help-circle</v-icon>
-          </v-btn>
-        </template>
-        <span>팟은 최대 3개까지 참여가능합니다.</span>
-      </v-tooltip>
-      </div>
-
-
-      <map-view class="mt-4" :step="step"></map-view>
-     
-     <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
-        <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
-        @openDetailModal="openDetailModal">
-          
-        </user-pot-list>
-      </v-list>
-
-      
-      
-      <v-list>
-        <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
-        @openDetailModal="openDetailModal" @openAttendModal="openAttendModal">
-            
-        </all-pot-list>
-      </v-list>
-      <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
-      <vet-party-detail :modalDetail="modalDetail"
-          @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
-      <message-modal :modalMessage="modalMessage" :sign="sign"
-              @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
+        <!-- 검색바 -->
+        <pot-search class="mt-3 mb-3" @searchKeyword="searchKeyword" @selectOrd="selectOrd"></pot-search>
+        <!-- 지도 -->
+        <map-view class="mt-4" :step="step"></map-view>
+         <!-- 내가 만들었거나 참여한 곳 -->
+        <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
+          <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
+          @openDetailModal="openDetailModal"></user-pot-list>
+        </v-list>
+        <!-- 다른사람이 만든거 뜨는곳 -->
+        <v-list>
+          <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
+          @openDetailModal="openDetailModal" @openAttendModal="openAttendModal"></all-pot-list>
+        </v-list>
+        <!-- 확인메시지용 -->
+        <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+        <vet-party-detail :modalDetail="modalDetail"
+            @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
+        <message-modal :modalMessage="modalMessage" :sign="sign"
+                @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
+      <!-- 뒤에 눌리는거 방지 -->
       <v-overlay :value="overlay" ></v-overlay>
-      
     </v-container>
   </div>
 </template>
