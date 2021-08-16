@@ -144,7 +144,7 @@
                 </v-tab-item>
             <!-- 챌린지  -->
                 <v-tab-item>
-                        <UserChallenges/>
+                    <UserChallenges/>
                 </v-tab-item>
         </v-tabs>
     </div> 

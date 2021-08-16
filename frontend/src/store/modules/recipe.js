@@ -20,6 +20,7 @@ export default {
     recipeCommentReply: {},
     // 내가 좋아요 누른 대댓글
     recipeReplyLikeList: [],
+    //내 레시피들
     myrecipes: [],
   },
   getters: {

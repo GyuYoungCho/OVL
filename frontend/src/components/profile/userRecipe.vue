@@ -28,7 +28,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['search_myrecipe','fetchRecipeDetail', 'fetchRecipeComments']),
+    ...mapActions('recipe', ['search_myrecipe','fetchRecipeDetail', 'fetchRecipeComments']),
+
     moveDetail(recipe) { // 게시글 상세보기
       this.fetchRecipeDetail(recipe.recipeId)
       this.fetchRecipeComments(recipe.recipeId)
@@ -37,7 +38,7 @@ export default {
 
   },
   computed: {
-    ...mapGetters(['recipes', 'myrecipes']),
+    ...mapGetters('recipe',['myrecipes']),
     ...mapGetters("user", (["userinfo"])),
   },
   created() {

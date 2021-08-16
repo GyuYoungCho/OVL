@@ -221,7 +221,7 @@
             <!-- 챌린지  -->
                 <v-tab-item>
                     <LockImg v-if="this.isLocked"/>
-                    <NoneChallenging v-if="this.isNotChallenging"/>
+                    <NoneChallenging v-else-if="this.isNotChallenging"/>
                     <OtherUserChallenges v-else/>
                 </v-tab-item>
         </v-tabs>
@@ -301,6 +301,8 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
             const now = moment(new Date());
             // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
             if((now.diff(start, 'days') + 1) <= 0){
+                return 0;
+            }else if(this.isNotChallenging){
                 return 0;
             }
             else{
@@ -554,7 +556,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
                         let mount = this.UserfollowingList.length;
                             for(var i = 0; i< mount; i++){
                                 
-                                if(this.UserfollowingList[i] == this.$route.params.userid){
+                                if(this.UserfollowingList[i] === this.$route.params.userid){
                                     this.isFollowing = true;
 
                                     //console.log("팔로잉중 볼 수 있어", this.UserfollowingList)
