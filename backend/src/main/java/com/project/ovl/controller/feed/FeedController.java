@@ -80,21 +80,21 @@ public class FeedController {
 //		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
 //	}
 //	
-	@GetMapping("/following/page/{from_id}")
-	@ApiOperation(value = "내가 팔로우하는 스크롤")
-	public Page<User> findfollowing(@RequestParam int from_id, final Pageable pageable) {
-		Page<User> flist = followDao.findfollwing(from_id, pageable);
-		List<User> ulist = flist.toList();
-		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
-	}
-	
-	@GetMapping("/follower/page/{to_id}")
-	@ApiOperation(value = "나를 팔로우하는 사람들 스크롤")
-	public Page<User> findfollower(@PathVariable int to_id, final Pageable pageable) {
-		
-		Page<User> flist = followDao.findfollwer(to_id, pageable);
-		List<User> ulist = flist.toList();
-		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
-		
-	}
+//	@GetMapping("/following/page/{from_id}")
+//	@ApiOperation(value = "내가 팔로우하는 스크롤")
+//	public Page<User> findfollowing(@RequestParam int from_id, final Pageable pageable) {
+//		Page<User> flist = followDao.findfollwing(from_id, pageable);
+//		List<User> ulist = flist.toList();
+//		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
+//	}
+//	
+//	@GetMapping("/follower/page/{to_id}")
+//	@ApiOperation(value = "나를 팔로우하는 사람들 스크롤")
+//	public Page<User> findfollower(@PathVariable int to_id, final Pageable pageable) {
+//		
+//		Page<User> flist = followDao.findfollwer(to_id, pageable);
+//		List<User> ulist = flist.toList();
+//		return new PageImpl<User>(ulist,pageable,flist.getTotalElements());
+//		
+//	}
 }
