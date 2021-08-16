@@ -22,7 +22,7 @@
                 <v-row>
                 <v-col v-for="(challenge, idx) in filteredotherUserchallengeList" :key="idx" cols="4" class="grid-cell">
                     <!-- 개별 card 영역 : 카드들이 위의 v-for 태그로 인해 그리드로 들어가게 됩니다 -->
-                    <v-container v-if="challenge.challengeId === this.challengingNum" class="card" @click="onClickCard(challenge.challengeId )">
+                    <v-container v-if="challenge.challengeId === otheruserinfo.challengeId.challengeId" class="card" @click="onClickCard(challenge.challengeId )">
                     <article class="cardContent">
                         <!-- (1) 개별 카드에서의 더미 이미지 영역 -->
                         <div class="cardContentArea">
@@ -60,7 +60,7 @@
                         </div>
                         <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                         <div class="cardContentArea">
-                            <button v-if="challenge.challengeId === this.challengingNum" class="cancleChallenge">참여중</button>
+                            <button v-if="challenge.challengeId === otheruserinfo.challengeId.challengeId" class="cancleChallenge">참여중</button>
                             <button v-else class="completeChallenge">참여완료</button>
                         </div>
                         </article>
@@ -104,7 +104,7 @@
                         </div>
                         <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                         <div class="cardContentArea">
-                            <button v-if="challenge.challengeId === this.challengingNum" class="cancleChallenge">참여중</button>
+                            <button v-if="challenge.challengeId === otheruserinfo.challengeId.challengeId" class="cancleChallenge">참여중</button>
                             <button v-else class="completeChallenge">참여완료</button>
                         </div>
                     </article>
@@ -214,6 +214,7 @@ methods: {
             })
 
     },
+    
 
 },
 computed: {
@@ -226,7 +227,7 @@ computed: {
         //console.log("카테고리 넘버:", this.categoryNum)
             return this.otherUserchallengeList.filter((eachChallenge) => eachChallenge.category === parseInt(this.categoryNum) )
         }
-    }
+    },
 },
 created() {
     let user_id = this.$route.params.userid;
@@ -238,8 +239,9 @@ created() {
             url: API.url + userAPI.select(user_id),
         }).then((res) => {
             this.otheruserinfo = res.data;
+            //console.log(this.otheruserinfo.challengeId.challengeId)
             let challenge_id = this.otheruserinfo.challengeId.challengeId
-            this.challengingNum = challenge_id;
+            this.otheruserinfo.challengeId.challengeId = res.data.challengeId.challengeId;
             axios({
                 method: 'get',
                 url: API.url + challengeAPI.search_mychallenge(challenge_id, user_id),
@@ -253,7 +255,6 @@ created() {
         }).catch((err)=>{
             console.log(err);
         })
-
 },
 }
 </script>
