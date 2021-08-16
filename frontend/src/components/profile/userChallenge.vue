@@ -103,7 +103,7 @@
                     </div>
                     <div class="cardContentArea">
                       <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd()"  class="cancleChallenge">참여중</button>
-                      <button v-else class="completeChallenge" >참여종료</button>
+                      <button v-else class="card completeChallenge" >참여종료</button>
                       <!-- <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="participateClick(challenge.challengeId)" class="myParticipation">참여중</button>
                       <button v-else-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
                       <button v-else @click="participateClick(challenge.challengeId)" class="alreadyInParticipation">참여하기</button> -->
@@ -251,23 +251,7 @@ methods: {
           if(res.data === "success"){
             console.log("챌린지 중단")
             this.cancleChallenge = true;
-            var payload = {
-                "userid": this.userinfo.userid,
-                "nickname": this.userinfo.nickname,
-                "password": '',
-                "phone": this.userinfo.phone,
-                "name": '',
-                "email": '',
-                "challengeId": 1,
-                "account_open" : this.userid.account_open,
-            }
-            axios.put(URL, payload).then(res => {
-                console.log("챌린지 정보 초기화 : ",res.data);
-
-                this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
-                })
-                .catch(err => 
-                console.error(err))
+            this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
           }
         }).catch((err)=>{
           console.log(err)
