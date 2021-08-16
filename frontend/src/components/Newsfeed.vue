@@ -12,7 +12,7 @@
 
       <!-- 캐러셀 영역 -->
       <div>
-      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7" :show-arrows="false" cycle interval="4000">
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7 carouselBorder" :show-arrows="false" cycle interval="4000">
         <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
           <!-- 챌린지 일 때 -->
           <div v-if="info.type==0" class="carousel_content">
