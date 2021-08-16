@@ -24,7 +24,7 @@
             <ProfileName :user="post.userId"></ProfileName>
           </v-col>
           <!-- 게시글 좋아요, 댓글 -->
-          <v-col cols="6" md="1" style="text-align:right">
+          <v-col cols="6" md="1" style="text-align:right" class="mt-1">
             <div v-if="postLikeList.includes(post.postId)" class="inline" @click="postLike">
               <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
             </div>
