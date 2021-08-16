@@ -20,7 +20,7 @@
     <!-- 레시피 작성자 정보 -->
     <div class="header">
       <ProfileName :user="recipe.userid"></ProfileName>
-      <div>
+      <div class="mt-1">
         <!-- 좋아요, 댓글수 -->
         <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onRecipeLikeBtnClick">mdi-heart</v-icon>
         <v-icon class="unlikedHeart" v-else @click="onRecipeLikeBtnClick">mdi-heart-outline</v-icon>
