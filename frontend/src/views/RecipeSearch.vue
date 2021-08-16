@@ -4,9 +4,9 @@
       <!-- 레시피 검색 부분 -->
       <div class="recipeSearchHeader">
         <select class="sortSelect" v-model="selectedOption" @change="sortRecipes(selectedOption)">
-          <option value="new" selected>최신순</option>
-          <option value="like">인기순</option>
-          <option value="comment">댓글순</option>
+          <option value="time" selected>최신순</option>
+          <option value="like_count">인기순</option>
+          <option value="comment_count">댓글순</option>
         </select>
         <input type="text" placeholder="검색" v-model="query" class="searchBar" @input="onSearchInput" @keyup.enter="onSearchBtnClick">
         <!-- 검색 아이콘은 아이패드 프로, 갤럭시 폴드에서 위치 깨짐, absolute라 어쩔 수 없나... -->
@@ -33,6 +33,37 @@
           </div>
         </div>
       </div>
+      <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
+        <!-- <div slot="spinner"></div> -->
+        <div slot="no-more" class="mt-4">
+            <v-sheet
+              block
+              class="pa-5 mx-auto d-flex align-center justify-center"
+              rounded="xl"
+              color="rgb(224,229,231)"
+              style="max-width:680px;"
+            >
+              <div class="font-weight-medium d-flex flex-column">
+                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
+                <h4 class="blue-grey--text text--lighten-3">끝</h4>
+              </div>
+            </v-sheet>
+        </div>
+        <div slot="no-results" class="mt-4">
+            <v-sheet
+              block
+              class="pa-5 mx-auto d-flex align-center justify-center"
+              rounded="xl"
+              color="rgb(224,229,231)"
+              style="max-width:680px;"
+            >
+              <div class="font-weight-medium d-flex flex-column">
+                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
+                <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
+              </div>
+            </v-sheet>
+        </div>
+        </infinite-loading>
 
     </section>
 
@@ -40,6 +71,9 @@
 </template>
 
 <script>
+import axios from 'axios'
+import API from '@/api/index.js'
+import recipeAPI from '@/api/recipe.js'
 import moment from 'moment'
 import { mapActions, mapGetters } from 'vuex'
 import ProfileName from '@/components/basic/ProfileName.vue'
@@ -52,9 +86,12 @@ export default {
     query: "",
     selectedOption: "",
     searchClicked: false,
+    pageNumber: 0,
+    pageSize: 2,
+    feedDatas: [],
   }),
   methods: {
-    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes',]),
+    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes','ResetRecipes']),
     
     onImgClick (recipe) {
       this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
@@ -77,18 +114,44 @@ export default {
     },  
     containmentValid (recipe) {
       return this.searchClicked ? recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query) : true
+    },
+    infiniteHandler($state) {
+      
+      var params = new URLSearchParams();
+      params.append("size", this.pageSize);
+      params.append("page", this.pageNumber);
+      params.append("sort", this.selectedOption +',desc');
+      params.append("userId", this.userinfo.userid);
+      console.log(params)
+      axios.get(API.url + recipeAPI.select_all(),{params})
+        .then(res => {
+          console.log(res.data)
+          if (res.data.content.length > 0) {
+              this.feedDatas = this.feedDatas.concat(res.data.content);
+              $state.loaded();
+              this.pageNumber++;
+          } else {
+              $state.complete();
+          }
+      })
+      .catch(err => {
+          console.log(err)
+          alert('에러');
+      })
+      this.fetchRecipes(this.feedDatas)
+      this.fetchRecipeLikeList(this.userinfo.userid)
     }
-    
   },
   computed: {
     ...mapGetters('recipe', ['recipes', 'recipeLikeList', ]),
     ...mapGetters("user", (["userinfo"])),
   },
-
-  created () {
-    this.fetchRecipes()
-    this.fetchRecipeLikeList(this.userinfo.userid)
-  },
+  watch:{
+    query(val){
+      if(val==null) this.query =''
+    }
+  }
+  
 }
 </script>
 

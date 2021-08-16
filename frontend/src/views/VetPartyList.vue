@@ -4,36 +4,23 @@
       <section  class="vetparty">
       <pot-search class="mt-3" @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></pot-search>
-
-        <div class ="mt-7">
-        <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
-          <img src="@/assets/icon/notmeat.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(0)">
-          <img src="@/assets/icon/meat.png" alt="" ></button>
-
-        <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
-          <img src="@/assets/icon/notfish.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(1)">
-          <img src="@/assets/icon/fish.png" alt=""></button>
-
-        <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
-          <img src="@/assets/icon/notmilk.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(2)">
-          <img src="@/assets/icon/milk.png" alt=""></button>
-        
-        <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
-          <img src="@/assets/icon/notegg.png" alt="" ></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(3)">
-          <img src="@/assets/icon/egg.png" alt="" ></button>
-          
-        <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
-          <img src="@/assets/icon/notvege.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(4)">
-          <img src="@/assets/icon/vege.png" alt="" ></button>
+        <div class="mt-3 text-center d-flex align-center justify-end">
+        <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon
+            color="primary"
+            dark
+            v-bind="attrs"
+            v-on="on" >
+            <v-icon color="#004627">mdi-help-circle</v-icon>
+          </v-btn>
+        </template>
+        <span>팟은 최대 3개까지 참여가능합니다.</span>
+      </v-tooltip>
       </div>
 
 
-      <map-view class="mt-6" :step="step"></map-view>
+      <map-view class="mt-4" :step="step"></map-view>
      
      <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
         <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"

@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -274,10 +277,10 @@ public class RecipeController {
 	
 	@GetMapping("/select_all")
 	@ApiOperation(value = "레시피 전체 조회")
-	public ResponseEntity<List<Recipe>> select_all() {
-		List<Recipe> recipeList = recipeDao.findAll();
-		
-		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
+	public Page<Recipe> select_all(Pageable pageable) {
+		Page<Recipe> recipepage = recipeDao.findAll(pageable);
+		List<Recipe> recipeList = recipepage.toList();
+		return new PageImpl<Recipe>(recipeList, pageable ,recipepage.getTotalElements());
 	}
 	
 	@GetMapping("/select_detail/{recipe_id}")

@@ -12,7 +12,7 @@
 
       <!-- 캐러셀 영역 -->
       <div>
-      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7" :show-arrows="false" cycle interval="4000">
+      <v-carousel hide-delimiters height="22vh" data-interval="true" class="mt-7 carouselBorder" :show-arrows="false" cycle interval="4000">
         <v-carousel-item v-for="(info,idx) in recommendList" :key="idx" :src="info.src" @click="recommendClick(info)">
           <!-- 챌린지 일 때 -->
           <div v-if="info.type==0" class="carousel_content">
@@ -93,7 +93,7 @@
       </v-dialog>
       </div>
 
-      <div v-for="(info, idx) in searchPost" :key="idx" class="mt-4">
+      <div v-for="(info, idx) in feedDatas" :key="idx" class="mt-4">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
@@ -108,7 +108,7 @@
 
           <!-- post 대표 사진, 내용-->
           <div @click="moveDetail(idx)">
-            <img :src="searchPost[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
+            <img :src="feedDatas[idx].filepath" width=100%  style="border-radius: 7px;" class="my-1">
             <div class="contentAndTime">
               <div v-html="contentReplace(info.postId.content)"></div>
               <span>{{ calTime(info.postId.time) }}</span>
@@ -133,6 +133,39 @@
         </div>
         
       </div>
+
+
+      <!-- 무한 스크롤 컨트롤 영역-->
+      <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
+        <!-- 더 이상 없는 경우 -->
+        <div slot="no-more" class="mt-4">
+            <v-sheet
+              block
+              class="pa-5 mx-auto d-flex align-center justify-center"
+              rounded="xl"
+              color="rgb(224,229,231)"
+              style="max-width:680px;">
+              <div class="font-weight-medium d-flex flex-column">
+                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
+                <h4 class="blue-grey--text text--lighten-3">끝</h4>
+              </div>
+            </v-sheet>
+          </div>
+          <div slot="no-results" class="mt-4">
+            <v-sheet
+              block
+              class="pa-5 mx-auto d-flex align-center justify-center"
+              rounded="xl"
+              color="rgb(224,229,231)"
+              style="max-width:680px;">
+              <div class="font-weight-medium d-flex flex-column">
+                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
+                <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
+              </div>
+            </v-sheet>
+          </div>
+        </infinite-loading>
+
     </v-container>
   </div>
 </template>
@@ -142,7 +175,10 @@ import FeedSearch from '@/components/basic/FeedSearch.vue';
 import ProfileName from '@/components/basic/ProfileName.vue'
 import {mapGetters, mapActions} from "vuex";
 import moment from 'moment'
-
+import axios from "axios";
+import API from "@/api/index.js";
+import feedAPI from '@/api/feed.js'
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   data(){
@@ -155,9 +191,15 @@ export default {
       recommendList:[],
       isDetail:false,
       detailCh:{},
+
+      feedDatas: [],
+      pageNumber: 0,
+      pageSize: 3,
+      mode : 0,
     }
   },
   components: {
+    InfiniteLoading,
     FeedSearch,
     ProfileName
   },
@@ -224,6 +266,27 @@ export default {
     calTime (time) {
       return moment(time).fromNow()
     },
+    infiniteHandler($state) {
+      
+      var params = new URLSearchParams();
+      params.append("size", this.pageSize);
+      params.append("page", this.pageNumber);
+      params.append("userId", this.userinfo.userid);
+      axios.get( API.url + feedAPI.feedmain(), {params})
+        .then(res => {
+          console.log(res.data)
+          if (res.data.content.length > 0) {
+              this.feedDatas = this.feedDatas.concat(res.data.content);
+              $state.loaded();
+              this.pageNumber++;
+          } else {
+              $state.complete();
+          }
+        })
+        .catch(err => {
+          console.log(err)
+      })
+    }
   },
   computed: {
     ...mapGetters("post", (["postList", "postLikeList", "recommendRe", "recommendCh"])),
