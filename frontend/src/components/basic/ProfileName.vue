@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex" @click="clickProfile" style="max-width:120px;">
-        <v-list-item-avatar class="px-0" size=27>
+        <v-list-item-avatar class="px-0" size=25>
             <v-img
             :src="user.filepath"
             ></v-img>

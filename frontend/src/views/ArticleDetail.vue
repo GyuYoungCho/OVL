@@ -84,23 +84,12 @@
         <!-- 댓글 가져오기 -->
         <div v-for="(info, idx) in commentList" :key="idx" class="my-1 ">
           <!-- 댓글 프로필 사진, 유저 닉네임, 댓글 내용, 하트 -->
-          <v-row>
-            <v-col cols="10" md="1">
-              
-              <img :src="info.userId.filepath" width=10% style="border-radius: 50%;">
-              {{info.userId.nickname}} &nbsp;
-              {{info.content}}
-            </v-col>
-            <v-col cols="2" md="1" style="text-align:right">
-              <!-- 댓글 하트 확인-->
-              <div v-if="commentLikeList.includes(info.postCommentId)" class="inline" @click="commentLike(info.postCommentId)">
-                <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
-              </div>
-              <div v-else class="inline" @click="commentLike(info.postCommentId)">
-                <v-icon style="color:#BABABA; font-size:large">mdi-heart-outline</v-icon> &nbsp;
-              </div>
-            </v-col>
-          </v-row>
+          <div class="commentUserAndContent">
+            <ProfileName :user="info.userId"></ProfileName>
+            <p class="commentContent">{{ info.content }}</p>
+            <v-icon class="likedHeart" v-if="commentLikeList.includes(info.postCommentId)" @click="commentLike(info.postCommentId)">mdi-heart</v-icon>
+            <v-icon class="unlikedHeart" v-else @click="commentLike(info.postCommentId)">mdi-heart-outline</v-icon>
+          </div>
           
           <!-- 댓글 좋아요, 답글 달기 -->
           <div class="ml-5 color-gray smallFont"> 
@@ -128,22 +117,12 @@
               <!-- 게시글의 모든 답글 중 현재 댓글에 해당하는 답글만 출력해야함 -->
               <div v-if="replyInfo.postCommentId.postCommentId==info.postCommentId">
                 <!-- 답글 프로필, 유저 닉네임, 답글 내용, 하트 -->
-                <v-row>
-                  <v-col cols="10" md="1">
-                    <img :src="replyInfo.postCommentId.userId.filepath" width=10% style="border-radius: 50%;">
-                    {{replyInfo.userId.nickname}} &nbsp;
-                    {{replyInfo.content}}
-                  </v-col>
-                  <v-col cols="2" md="1" style="text-align:right">
-                    <!-- 답글 하트 확인-->
-                    <div v-if="replyLikeList.includes(replyInfo.postReplyId)" class="inline" @click="replyLike(replyInfo.postReplyId)">
-                      <v-icon style="color:#20683D; font-size:large">mdi-heart</v-icon> &nbsp;
-                    </div>
-                    <div v-else class="inline" @click="replyLike(replyInfo.postReplyId)">
-                      <v-icon style="color:#BABABA; font-size:large">mdi-heart-outline</v-icon> &nbsp;
-                    </div>
-                  </v-col>
-                </v-row>
+                <div class="commentUserAndContent">
+                  <ProfileName :user="replyInfo.userId"></ProfileName>
+                  <p class="commentContent">{{ replyInfo.content }}</p>
+                  <v-icon class="likedHeart" @click="replyLike(replyInfo.postReplyId)" v-if="replyLikeList.includes(replyInfo.postReplyId)">mdi-heart</v-icon>
+                  <v-icon class="unlikedHeart" @click="replyLike(replyInfo.postReplyId)" v-else>mdi-heart-outline</v-icon>
+                </div>
                 
                 <!-- 답글 좋아요 표시 -->
                 <div class="ml-6 color-gray smallFont"> 
