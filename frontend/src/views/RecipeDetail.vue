@@ -1,73 +1,21 @@
 <template>
 <v-container>
+  <!-- 레시피 답글 삭제 모달 -->
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  @modalConfirmBtnClick="onDeleteReplyModalClick" v-if="deletingReply" @modalCancelBtnClick="deleteModal = false" />
+  <!-- 레시피 댓글 삭제 모달 -->
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  @modalConfirmBtnClick="onDeleteCommentModalClick" v-else-if="deletingComment" @modalCancelBtnClick="deleteModal = false" />
   <!-- 레시피 삭제 모달 -->
-  <v-dialog v-model="deleteModal" hide-overlay max-width="300" persistent>
-    <v-card>
-      <!-- 모달 타이틀 영역 -->
-      <v-toolbar dense color="#004627">
-        <v-toolbar-title class="modalTitle">{{ recipe.title }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon dark @click="deleteModal = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <!-- 모달 컨텐츠 영역 -->
-      <v-container>
-      <div class="modalContent">
-        <div class="mb-3">
-          <span class="modalContentMessage">
-            정말로 삭제하시겠습니까?
-          </span>
-        </div>
-        <div class="modalContentButtonArea">
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="onDeleteReplyModalClick" v-if="deletingReply">확인</button>
-          <button class="modalContentButton" @click="onDeleteCommentModalClick" v-else-if="deletingComment">확인</button>
-          <button class="modalContentButton" @click="onDeleteConfirmClick" v-else>확인</button>
-          <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="deleteModal = false">취소</button>
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-        </div>
-      </div>
-      </v-container>
-    </v-card>
-  </v-dialog>
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  @modalConfirmBtnClick="onDeleteConfirmClick" v-else @modalCancelBtnClick="deleteModal = false" />
+  
 
   <!-- 레시피 수정 모달 -->
-  <v-dialog v-model="updateModal" hide-overlay max-width="300">
-    <v-card>
-      <!-- 모달 타이틀 영역 -->
-      <v-toolbar dense color="#004627">
-        <v-toolbar-title class="modalTitle">{{ recipe.title }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon dark @click="updateModal = false">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <!-- 모달 컨텐츠 영역 -->
-      <v-container>
-      <div class="modalContent">
-        <div class="mb-3">
-          <span class="modalContentMessage">
-            정말로 수정하시겠습니까?
-          </span>
-        </div>
-        <div class="modalContentButtonArea">
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="onUpdateConfirmClick">확인</button>
-          <v-spacer></v-spacer>
-          <button class="modalContentButton" @click="updateModal = false">취소</button>
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-        </div>
-      </div>
-      </v-container>
-    </v-card>
-  </v-dialog>
+  <RecipeDetailModal :modalOpen="updateModal" modalContent="정말로 수정하시겠습니까?" :recipe="recipe"
+  @modalConfirmBtnClick="onUpdateConfirmClick" @modalCancelBtnClick="updateModal = false" />
 
+  <!-- 레시피 디테일 -->
   <section class="recipeDetail">
     <!-- 레시피 작성자 정보 -->
     <div class="header">
@@ -228,11 +176,12 @@
 
 <script>
 import ProfileName from '@/components/basic/ProfileName.vue'
+import RecipeDetailModal from '@/components/recipe/RecipeDetailModal.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    ProfileName,
+    ProfileName, RecipeDetailModal,
   },
   data: () => ({
     tab: "ingredient",
@@ -246,6 +195,7 @@ export default {
     modifyCommentId: -1,
     modifyReplyId: -1,
 
+    // 모달 관련 변수
     deleteModal: false,
     deletingComment: false,
     deletingCommentId: 0,
@@ -271,7 +221,7 @@ export default {
       this.updateModal = true
     },
     onUpdateConfirmClick () {
-      this.$router.push({ name: 'RecipeUpdate' })
+      this.$router.push({ name: 'RecipeUpdate', params: {recipeId: this.recipe.recipeId} })
     },
     onRecipeDeleteClick () {
       this.deleteModal = true
