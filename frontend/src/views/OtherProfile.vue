@@ -51,7 +51,7 @@
                             <div class="d-flex justify-content-center">
                                 
                                 <div v-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
-                                    <button class="requestFollow" @click="onClickRequestBtn()">비공개 계정</button>
+                                    <button class="requestFollow">비공개 계정</button> <!--@click="onClickRequestBtn()"-->
                                 </div>
                                 <div v-else>                                
                                     <div v-if="this.isFollowing" width=""> 
@@ -369,7 +369,7 @@ components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeCo
     },
     methods: {
         onClickRequestBtn(){
-            alert("팔로우 요청이 완료 되었습니다.")
+            //alert("팔로우 요청이 완료 되었습니다.")
         },
         //신고 모달창 열기
         onClickReport(){
