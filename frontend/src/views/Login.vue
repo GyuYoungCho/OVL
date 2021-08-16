@@ -9,13 +9,19 @@
       <div>
         <input type="text" placeholder="이메일" v-model="userinfo.email">
       </div>
+      <p class="invalidTxt" v-if="!emailFormValid">
+        이메일 양식을 확인해주세요.
+      </p>
       <!-- 비밀번호 -->
       <div>
         <input type="password" placeholder="비밀번호" v-model="userinfo.password" @keyup.enter="login(userinfo)">
       </div>
+      <p class="invalidTxt" v-if="!passwordFormValid">
+        숫자와 특수문자를 포함하여 8자 이상입니다.
+      </p>
       <!-- 로그인 버튼 -->
       <div>
-        <button class="bg-freditgreen finalBtn" @click="login(userinfo)">로그인</button>
+        <button class="finalBtn" :class="{'bg-freditgreen': allValid, 'disabledBtn': !allValid}" @click="login(userinfo)">로그인</button>
       </div>
 
       <!-- 로그인창 아래 정보 -->
@@ -54,7 +60,16 @@ export default {
     ...mapActions ("user",["login",]),
  },
  computed: {
-   ...mapGetters('user', ['modalOpen', 'modalContent',])
+   ...mapGetters('user', ['modalOpen', 'modalContent',]),
+   emailFormValid () {
+    return !this.userinfo.email || /.+@.+\..+/.test(this.userinfo.email)
+  },
+  passwordFormValid () {
+    return !this.userinfo.password || ((this.userinfo.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.userinfo.password))
+  },
+  allValid () {
+    return this.emailFormValid && this.passwordFormValid && this.userinfo.email && this.userinfo.password
+  }
  }
 }
 </script>
