@@ -10,10 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.project.ovl.model.post.Post;
+import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.user.User;
 
 public interface PostDao extends JpaRepository<Post, Integer> {
 	Post findPostByPostId(int post_id);
 	List<Post> findByUserId(User user);
 	int countByUserIdAndCategoryAndTimeBetween(User user, int category, Date start, Date end);
+	
+	@Query(value = "select * from post r where " +
+			"(lower(r.title) like :keyword or lower(r.content) like :keyword )", nativeQuery = true)
+	Page<Recipe> findByKeyWord(String keyword, Pageable pageable);
 }

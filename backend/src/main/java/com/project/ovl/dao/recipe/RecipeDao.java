@@ -21,4 +21,8 @@ public interface RecipeDao extends JpaRepository<Recipe, String>{
 	
 	
 	Page<Recipe> findAll(Pageable pageable);
+	
+	@Query(value = "select * from recipe r where " +
+			"(lower(r.title) like :keyword or lower(r.content) like :keyword )", nativeQuery = true)
+	Page<Recipe> findByKeyWord(String keyword, Pageable pageable);
 }

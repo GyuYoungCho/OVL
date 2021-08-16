@@ -584,7 +584,7 @@ public class PostController {
 		if (reList.size()>=1) {
 			// 좋아요 순으로 정렬
 			Collections.sort(reList, (o1, o2)-> {
-				return Integer.compare(o2.getLike_count(), o1.getLike_count());
+				return Integer.compare(o2.getLikecount(), o1.getLikecount());
 			});
 		} else { // 레시피가 없다면 
 			returnList.add(new Recipe(0, "", "", "", new Date(), 0, 0, "", new User(0, "", "", "", "", "", 0, 0, 0, "", new Challenge(0, "", "", new Date(), 0, 0, 0, 0, 0, 0))));
@@ -595,7 +595,7 @@ public class PostController {
 		// 정렬 후 상위 5개 뽑기 (좋아요 있을 경우에만)
 		int size = reList.size()<5?reList.size():5;
 		for (int i=0;i<size;i++) {
-			if (reList.get(i).getLike_count()>0) topReList.add(reList.get(i));
+			if (reList.get(i).getLikecount()>0) topReList.add(reList.get(i));
 			else break;
 		}
 		

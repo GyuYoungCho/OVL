@@ -5,8 +5,8 @@
       <div class="recipeSearchHeader">
         <select class="sortSelect" v-model="selectedOption" @change="sortRecipes(selectedOption)">
           <option value="time" selected>최신순</option>
-          <option value="like_count">인기순</option>
-          <option value="comment_count">댓글순</option>
+          <option value="likecount">인기순</option>
+          <option value="commentcount">댓글순</option>
         </select>
         <input type="text" placeholder="검색" v-model="query" class="searchBar" @input="onSearchInput" @keyup.enter="onSearchBtnClick">
         <!-- 검색 아이콘은 아이패드 프로, 갤럭시 폴드에서 위치 깨짐, absolute라 어쩔 수 없나... -->
@@ -14,7 +14,7 @@
       </div>
 
       <!-- 레시피 목록 -->
-      <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
+      <div v-for="(recipe, idx) in feedDatas" :key="idx" class="oneRecipe">
         <!-- 검색 조건이랑 맞으면 -->
         <div v-if="containmentValid(recipe)">
           <ProfileName :user="recipe.userid"></ProfileName>
@@ -26,10 +26,10 @@
           <div>
             <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe)">mdi-heart</v-icon>
             <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe)">mdi-heart-outline</v-icon>
-            {{ recipe.like_count}}
+            {{ recipe.likecount}}
             
             <v-icon class="chatIcon">mdi-chat-outline</v-icon>
-            {{ recipe.comment_count }}
+            {{ recipe.commentcount }}
           </div>
         </div>
       </div>
@@ -77,14 +77,16 @@ import recipeAPI from '@/api/recipe.js'
 import moment from 'moment'
 import { mapActions, mapGetters } from 'vuex'
 import ProfileName from '@/components/basic/ProfileName.vue'
+import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   components: {
+    InfiniteLoading,
     ProfileName
   },
   data: () => ({
     query: "",
-    selectedOption: "",
+    selectedOption: "time",
     searchClicked: false,
     pageNumber: 0,
     pageSize: 2,
@@ -120,14 +122,14 @@ export default {
       var params = new URLSearchParams();
       params.append("size", this.pageSize);
       params.append("page", this.pageNumber);
-      params.append("sort", this.selectedOption +',desc');
-      params.append("userId", this.userinfo.userid);
-      console.log(params)
+      params.append("cate", this.selectedOption);
+      params.append("keyword", this.query);
       axios.get(API.url + recipeAPI.select_all(),{params})
         .then(res => {
-          console.log(res.data)
           if (res.data.content.length > 0) {
               this.feedDatas = this.feedDatas.concat(res.data.content);
+              this.fetchRecipes(this.feedDatas)
+              this.fetchRecipeLikeList(this.userinfo.userid)
               $state.loaded();
               this.pageNumber++;
           } else {
@@ -138,8 +140,6 @@ export default {
           console.log(err)
           alert('에러');
       })
-      this.fetchRecipes(this.feedDatas)
-      this.fetchRecipeLikeList(this.userinfo.userid)
     }
   },
   computed: {
@@ -147,11 +147,25 @@ export default {
     ...mapGetters("user", (["userinfo"])),
   },
   watch:{
-    query(val){
-      if(val==null) this.query =''
-    }
-  }
-  
+    query(newVal, oldVal){
+      if(newVal==null) this.query =''
+      else if(oldVal=='' && newVal !='') this.selectedOption = 'time'
+
+      this.feedDatas = [];
+      this.pageNumber = 0;
+      this.$refs.infiniteLoading.stateChanger.reset();
+    },
+    selectedOption : function() {
+      this.feedDatas = [];
+      this.pageNumber = 0;
+      this.$refs.infiniteLoading.stateChanger.reset();
+    },
+  },
+  created () {
+    this.fetchRecipes()
+    this.fetchRecipeLikeList(this.userinfo.userid)
+  },
+
 }
 </script>
 
