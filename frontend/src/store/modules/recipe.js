@@ -54,7 +54,7 @@ export default {
   },
   mutations: {
     SET_RECIPES(state, recipes) {
-      state.recipes = recipes;
+      state.recipes = state.recipes.concat(recipes);
     },
     SORT_RECIPES(state, option) {
       const recipes = state.recipes;
@@ -96,6 +96,12 @@ export default {
     },
     SET_USER_RECIPES(state, myrecipes) {
       state.myrecipes = myrecipes;
+    },
+    MODIFY_RECIPE_LIST(state, payload) {
+      state.recipes[payload.idx].recipeId = state.recipe;
+    },
+    RESET_RECIPE_LIST(state) {
+      state.recipes = [];
     },
   },
   actions: {
@@ -285,6 +291,13 @@ export default {
           commit("SET_USER_RECIPES", res.data);
         })
         .catch((err) => console.error(err));
+    },
+
+    resetRecipeList(store) {
+      store.commit("RESET_RECIPE_LIST");
+    },
+    modifyRecipeList(store, payload) {
+      store.commit("MODIFY_RECIPE_LIST", payload);
     },
   },
 };

@@ -84,7 +84,7 @@
       </v-dialog>
       </div>
 
-      <div v-for="(info, idx) in feedDatas" :key="idx" class="mt-4">
+      <div v-for="(info, idx) in postList" :key="idx" class="mt-4">
         
         <div>
           <!-- post header - 프로필 사진, 유저 닉네임, 카테고리 -->
@@ -175,7 +175,7 @@ export default {
     return{
       recommendList:[],
       isDetail:false,
-      feedDatas: [],
+      // feedDatas: [],
       detailCh:{},
       pageNumber: 0,
       pageSize: 3,
@@ -187,7 +187,7 @@ export default {
     ProfileName
   },
   methods: {
-    ...mapActions('post', ['getPostList', 'getPostLikeList', 'getRecommend']),
+    ...mapActions('post', ['resetPostList', 'postLike', 'getPost', 'getPostList', 'getPostLikeList', 'getRecommend','modifyPostList']),
     ...mapActions("challenge", ["challengeAttend"]),
     recalibratedDate(start_date, period) {
       if (period==0) return start_date.substring(0,10);
@@ -217,26 +217,30 @@ export default {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
     iconPath(idx) { // 카테고리 이미지 출력
-      const category = this.feedDatas[idx].postId.category;
+      const category = this.postList[idx].postId.category;
       if (category==1) return require("@/assets/image/meal.png");
       else if (category==2) return require("@/assets/image/clothes.png");
       else return require("@/assets/image/cosmetics.png");
     },
     moveDetail(idx) { // 게시글 상세보기
       // this.$router.push({path:"/article_detail/"+this.searchPost[idx].postId.postId});
-      this.$router.push({name: "ArticleDetail", params: {postId: this.feedDatas[idx].postId.postId}});
+      this.$router.push({name: "ArticleDetail", params: {postId: this.postList[idx].postId.postId}});
     },
     isLike(idx) { // 좋아요 눌렀는지 확인
-      if (this.postLikeList.includes(this.feedDatas[idx].postId.postId)) return true;
+      if (this.postLikeList.includes(this.postList[idx].postId.postId)) return true;
       else return false;
     }, 
-    like(idx) { // 좋아요 버튼 눌렀슴
+    async like(idx) { // 좋아요 버튼 눌렀슴
       var payload = {
         "userId" : this.userinfo.userid,
-        "postId" : this.feedDatas[idx].postId.postId,
-        "type": 1 // 뉴스피드
+        "postId" : this.postList[idx].postId.postId,
+        "type": 1, // 뉴스피드
+        "idx" : idx
       }
-      this.$store.dispatch("post/postLike", payload);
+      await this.postLike(payload);
+      await this.getPostLikeList(this.userinfo.userid);
+      await this.getPost(this.postList[idx].postId.postId);
+      await this.modifyPostList(payload);
     },
     calTime (time) {
       return moment(time).fromNow()
@@ -250,7 +254,8 @@ export default {
         .then(res => {
           console.log(res.data)
           if (res.data.content.length > 0) {
-              this.feedDatas = this.feedDatas.concat(res.data.content);
+              this.getPostList(res.data.content);
+              this.getPostLikeList(this.userinfo.userid)
               $state.loaded();
               this.pageNumber++;
           } else {
@@ -268,8 +273,8 @@ export default {
   },
   created() {
     this.getRecommend() 
-    this.getPostList(this.userinfo.userid)
-    this.getPostLikeList(this.userinfo.userid)
+    this.resetPostList()
+    // this.getPostLikeList(this.userinfo.userid)
 
     // 추천 목록 만들기
     for (var i=0;i<this.recommendCh.length;i++) {
@@ -297,7 +302,7 @@ export default {
       "type":2, // type = 2 -> 채식팟
       "src":require("@/assets/image/map.png")
     })
-  }
+  },
 }
 </script>
 

@@ -5,7 +5,7 @@
       <RecipeSearchBar @searchKeyword="searchKeyword" @selectOrd="selectOrd" />
       
       <!-- 레시피 목록 -->
-      <div v-for="(recipe, idx) in feedDatas" :key="idx" class="oneRecipe">
+      <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
         <!-- 검색 조건이랑 맞으면 -->
         <!-- <div v-if="containmentValid(recipe)"> -->
         <div>  
@@ -83,11 +83,11 @@ export default {
     selectedOption: "time",
     searchClicked: false,
     pageNumber: 0,
-    pageSize: 2,
-    feedDatas: [],
+    pageSize: 3,
   }),
   methods: {
-    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes','ResetRecipes']),
+    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 
+                        'likeRecipe', 'sortRecipes','resetRecipeList', 'modifyRecipeList']),
     
     searchKeyword (query) {
       this.query = query
@@ -107,12 +107,15 @@ export default {
     onImgClick (recipe) {
       this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
     },
-    onHeartIconClick (recipe) {
+    async onHeartIconClick (recipe) {
       const data = {
         userId: this.userinfo.userid,
         recipeId: recipe.recipeId,
       }
-      this.likeRecipe(data)
+      await this.likeRecipe(data)
+      await this.fetchRecipeLikeList(this.userinfo.userid);
+      await this.fetchRecipeDetail(recipe.recipeId);
+      await this.modifyPostList(data);
     },
     calTime (recipe) {
       return moment(recipe.time).fromNow()
@@ -135,9 +138,9 @@ export default {
       params.append("keyword", this.query);
       axios.get(API.url + recipeAPI.select_all(),{params})
         .then(res => {
+          console.log(res.data.content)
           if (res.data.content.length > 0) {
-              this.feedDatas = this.feedDatas.concat(res.data.content);
-              this.fetchRecipes(this.feedDatas)
+              this.fetchRecipes(res.data.content)
               this.fetchRecipeLikeList(this.userinfo.userid)
               $state.loaded();
               this.pageNumber++;
@@ -152,7 +155,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('recipe', ['recipes', 'recipeLikeList', ]),
+    ...mapGetters('recipe', ['recipes', 'recipeLikeList' ]),
     ...mapGetters("user", (["userinfo"])),
   },
   watch:{
@@ -160,19 +163,20 @@ export default {
       if(newVal==null) this.query =''
       else if(oldVal=='' && newVal !='') this.selectedOption = 'time'
 
-      this.feedDatas = [];
+      this.resetRecipeList();
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
     selectedOption : function() {
-      this.feedDatas = [];
+      this.resetRecipeList();
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
   },
   created () {
-    this.fetchRecipes()
-    this.fetchRecipeLikeList(this.userinfo.userid)
+    this.resetRecipeList()
+    // this.fetchRecipes()
+    // this.fetchRecipeLikeList(this.userinfo.userid)
   },
 
 }
