@@ -104,6 +104,8 @@ export default {
         order : [
             "닉네임", "게시글",
         ],
+        pageNumber: 0,
+        pageSize: 3,
     }
   },
   methods: {
@@ -160,7 +162,6 @@ export default {
       
       if(this.ord == '닉네임' && this.search!=''){
         this.pageSize = 10
-        this.pageNumber = 0
         let params = new URLSearchParams();
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
@@ -182,7 +183,6 @@ export default {
         })
       }else if(this.ord=='게시글' && this.search!=''){
         this.pageSize = 5
-        this.pageNumber = 0
         let params = new URLSearchParams();
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
@@ -209,63 +209,19 @@ export default {
  computed: {
     ...mapGetters("user", (["userinfo", "userlist"])),
     ...mapGetters("post", (["postAll", "postLikeList"])),
-    // searchPost() {
-    //   // 대소문자 구분 x
-    //   const search = this.search.toLowerCase()
-    //   if (this.ord == '닉네임' || search=="") return []
-      
-    //   // 포함된 단어 거르기
-    //   let allitems = this.postAll.filter(item => {
-    //     const text = item.postId.content.toLowerCase()
-
-    //     return text.indexOf(search) > -1
-    //   })
-
-    //   // 포함된 단어 위치 인덱스 기준 정렬
-    //   allitems = allitems.sort(function(a, b) {
-    //       let x = a.postId.content.indexOf(search);
-    //       let y = b.postId.content.indexOf(search);
-    //       if (x < y)  return -1;
-    //       if (x > y) return 1;
-    //       return 0;
-    //   });
-    //   return (allitems.length >5) ? allitems.slice(0,5) : allitems
-    // },
-    // searchUser(){ // 위와 같은 원리
-    //   const search = this.search.toLowerCase()
-      
-    //   if(!search || this.ord=='게시글') return []
-      
-    //   let allitems = this.userlist.filter(item => {
-    //     const text = item.nickname.toLowerCase()
-    //     return text.indexOf(search) > -1
-    //   })
-      
-    //   allitems = allitems.sort(function(a, b) {
-    //       let x = a.nickname.indexOf(search);
-    //       let y = b.nickname.indexOf(search);
-    //       if (x < y)  return -1;
-    //       if (x > y) return 1;
-    //       return 0;
-    //   });
-    //    return (allitems.length >3) ? allitems.slice(0,5) : allitems
-    // },
+    
  },
  watch:{
-    search(newVal){
-      if(newVal==null) this.query =''
-      console.log(this.postAll.length)
+    search: function() {
       if(this.ord=="게시글") this.resetPostAll();
       else this.resetUserList();
       this.pageNumber = 0;
+      console.log("엥")
       this.$refs.infiniteLoading.stateChanger.reset();
     },
     ord : function() {
-      this.search = ''
-     
       this.resetUserList();
       this.resetPostAll();
-      
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
