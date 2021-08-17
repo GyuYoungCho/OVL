@@ -1,24 +1,21 @@
 <template>
 <v-container>
     <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
-        
-    <div class="text-right">
-        <v-row justify="end">
-            <span class="mr-3 mt-4">계정 
-                <span v-if="account_open">비공개</span>
-                <span v-else>공개</span>
-            </span>
-            <v-switch class="py-0 " v-model="account_open" color="success"></v-switch>
-        </v-row>
-    </div>
-    
     <section class="modifyuser">
-        
-        
-        
         <div>
         <img src="@/assets/image/OVL_logo.png" alt="">
         </div>
+
+        <div class="text-right">
+            <v-row justify="end">
+                <span class="mr-3 mt-4">계정 
+                    <span v-if="account_open">비공개</span>
+                    <span v-else>공개</span>
+                </span>
+                <v-switch class="py-0 " v-model="account_open" color="success"></v-switch>
+            </v-row>
+        </div>
+
     <!-- 이름 -->
     <div class="inputOnlyRead">
         {{name}}
