@@ -264,13 +264,15 @@ export default {
       if (this.showReply.includes(info.postCommentId)) return "답글 숨기기";
       else return "답글 "+info.reply_count+"개 보기";
     },
-    postLike() { // 게시글 좋아요 버튼 눌렀슴
+    async postLike() { // 게시글 좋아요 버튼 눌렀슴
       var payload = {
         "userId" : this.userinfo.userid,
         "postId" : this.post.postId,
         "type" : 2 // 게시글 디테일
       }
-      this.$store.dispatch("post/postLike", payload);
+      await this.$store.dispatch("post/postLike", payload);
+      await this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
+      await this.$store.dispatch("post/getPost", this.post.postId);
     },
     commentLike(commentId) { // 댓글 좋아요 버튼
       var payload = {

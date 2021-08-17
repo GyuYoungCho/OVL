@@ -5,4 +5,7 @@ export default {
   feedmain() {
     return "/feed/postfeed";
   },
+  postsearch() {
+    return "/postfeed/search";
+  },
 };

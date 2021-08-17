@@ -11,7 +11,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -67,9 +69,11 @@ public class FeedController {
 	@ApiOperation(value = "포스트 검색")
 	public Page<PostPhoto> searchpostkeyword(@RequestParam("keyword") String keyword, final Pageable pageable) {
 		// 페이지 index는 0부터
-		Page<PostPhoto> postpage = postPhotoDao.findByContentkeyword(keyword, pageable);
+		keyword = "%" + keyword + "%";
+		Pageable sortedByTimeDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("time").descending()); 
+		Page<PostPhoto> postpage = postPhotoDao.findByContentkeyword(keyword, sortedByTimeDesc);
 		List<PostPhoto> posts = postpage.toList();
-		return new PageImpl<PostPhoto>(posts,pageable,postpage.getTotalElements());
+		return new PageImpl<PostPhoto>(posts,sortedByTimeDesc,postpage.getTotalElements());
 	}
 	
 //	@GetMapping("/recipe/main")
