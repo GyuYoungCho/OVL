@@ -1,25 +1,25 @@
 <template>
   <v-container class="vet-wrap">
     <!-- 달력 -->
-    <div class="vetIconsWrap">
+    <div class="vetIconsWrap ml-2">
       <v-icon class="veticons mr-2">mdi-calendar-month</v-icon>
-      <span>{{this.meet_date}}</span>    
+      <span class="vetIconsWrapSpan">{{this.meet_date}}</span>    
     </div>
     <v-divider vertical></v-divider>
     <!-- 시간  -->
     <div class="vetIconsWrap">
       <v-icon class="veticons mr-2">mdi-clock-time-nine-outline</v-icon>
-      <span>{{this.meet_time}}</span>
+      <span class="vetIconsWrapSpan">{{this.meet_time}}</span>
     </div>
     <v-divider vertical></v-divider>
     <!-- 인원수 -->
     <div class="vetIconsWrap">
       <v-icon class="veticons mr-2">mdi-account-outline</v-icon>
-      <div>{{this.userpot.pot_count}}명 / {{this.userpot.total_people}}명 </div>
+      <span class="vetIconsWrapSpan">{{this.userpot.pot_count}}명 / {{this.userpot.total_people}}명 </span>
     </div>
     <v-divider vertical></v-divider>
     <!-- 아이콘 -->
-    <div class="test99">
+    <div class="restrictor">
       <img src="@/assets/icon/meat.png" v-if="btnActive[4]" />
       <img src="@/assets/icon/fish.png" v-else-if="btnActive[3]" />
       <img src="@/assets/icon/milk.png" v-else-if="btnActive[2]" />
@@ -31,12 +31,11 @@
     <div @click="openDetailModal(true)">
         <v-icon class="veticons">mdi-dots-horizontal</v-icon>
     </div>
-
+    <div></div>
   </v-container>
 </template>
 
 <script>
-
 import moment from 'moment';
 import { mapGetters, mapActions} from 'vuex';
 

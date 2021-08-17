@@ -3,7 +3,7 @@
   flex-direction: column;
   margin-left: 10px;
   margin-right: 10px;
-  text-align: center;
+  // text-align: center;
   font-size: small;
 
   h4 {
@@ -161,11 +161,61 @@
   justify-content: space-between;
 }
 
-.test99 {
+.restrictor {
   height: 15px;
 }
 
 .vetIconsWrap {
   display: flex;
   align-items: center;
+
+  &Span {
+    padding-top: 2px;
+  }
+}
+
+.allPotList {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5vh;
+
+  &Name {
+    display: flex;
+    align-items: center;
+
+    &Icon {
+      margin-top: 3px;
+    }
+
+    span {
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    &Marker {
+      font-size: 20px !important;
+    }
+  }
+
+  &Content {
+    margin: 1vh 0;
+    margin-left: 5vw;
+    
+
+    span {
+      font-size: small;
+    }
+  }
+
+  &Detail {
+    display: flex;
+    margin-left: 3vw;
+    justify-content: space-between;
+  }
+}
+
+.vetParticipate {
+  background-color: $freditgreen;
+  color: white;
+  padding: 1px 5px;
 }
