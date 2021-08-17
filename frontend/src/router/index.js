@@ -18,7 +18,6 @@ import RecipeSearch from "../views/RecipeSearch.vue";
 import VetPartyCreate from "../views/VetPartyCreate.vue";
 import VetPartyList from "../views/VetPartyList.vue";
 import ModifyUser from "../views/ModifyUser.vue";
-import ModifyPic from "../views/ModifyPic.vue";
 import OtherProfile from "../views/OtherProfile.vue";
 import Tutorial from "../views/Tutorial.vue";
 import UserSearch from "../views/UserSearch.vue";
@@ -89,11 +88,6 @@ const routes = [
     path: "/profile/:userid",
     name: "Profile",
     component: Profile,
-  },
-  {
-    path: "/modify_pic/:userid",
-    name: "ModifyPic",
-    component: ModifyPic,
   },
   {
     path: "/recipe_create",

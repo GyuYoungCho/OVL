@@ -1,5 +1,5 @@
 <template>
-  <v-container class="px-6 mt-5 searchHeader borderRadius">
+  <v-container class="px-6 searchHeader borderRadius">
       <feed-search @searchKeyword="searchKeyword"
         @selectOrd="selectOrd"></feed-search>
       <v-card v-if="searchUser && searchUser.length!=0" click:outside="searchKeyword('')">
@@ -26,7 +26,7 @@
                 <v-col cols="6" md="1">
                 <ProfileName :user="info.postId.userId"></ProfileName>
                 </v-col>
-                <v-col cols="6" md="1" style="text-align:right">
+                <v-col cols="6" md="1" class="mt-2" style="text-align:right">
                 <img :src="iconPath(idx)" width=15%>
                 </v-col>
             </v-row>

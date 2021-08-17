@@ -66,6 +66,10 @@
   margin-right: 10px;
   text-align: center;
 
+  .following {
+    font-size: x-small;
+  }
+
   .icon-btn {
     width: 20px;
     height: 20px;
@@ -90,10 +94,17 @@
   .testarea {
     background-color: $hy-green;
   }
+  .editProfileBtn {
+    border: 1px solid gray;
+    margin-top: 1px;
+    border-radius: 3px;
+    padding: 2px 8px;
+    width: 180px;
+  }
   .bg-freditgreen {
     background-color: $mild-bg !important;
     border: 1px solid gray;
-    border-radius: 5px;
+    border-radius: 3px;
     padding: 2px 8px;
     width: 180px;
   }
@@ -135,5 +146,14 @@
   .ingdate {
     font-size: medium;
     color: $freditgreen;
+  }
+}
+
+.modalContentMessage {
+  div {
+    text-align: center;
+    img {
+      width: 50px;
+    }
   }
 }
