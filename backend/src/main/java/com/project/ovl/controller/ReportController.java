@@ -37,7 +37,8 @@ public class ReportController {
 	
 	@PostMapping("/regist/{user_id}/{report_id}")
 	@ApiOperation(value = "신고 등록")
-	public ResponseEntity<String> regist(@RequestParam String reason, @RequestParam int user_id, @RequestParam int report_id) {
+	public ResponseEntity<String> regist(@RequestBody String reason, @PathVariable int user_id, @PathVariable int report_id) {
+		System.out.println("reason : "+reason+", fromId : "+user_id+", toId : "+report_id);
 		User toUser = userDao.getUserByUserid(report_id);
 		User fromUser = userDao.getUserByUserid(user_id);
 		
@@ -52,7 +53,7 @@ public class ReportController {
 	}
 	
 	@GetMapping("/select/{user_id}")
-	@ApiOperation(value = "신고 조회")
+	@ApiOperation(value = "내가 신고한 사람 조회")
 	public ResponseEntity<Set<Integer>> select(@PathVariable int user_id) {
 		List<Report> list = reportDao.findAll();
 		Set<Integer> reportList = new HashSet<>();

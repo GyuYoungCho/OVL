@@ -9,17 +9,26 @@ export default {
         followingList: [],
         detailFollowUser: [],
     },
+    getters: {
+        followerList(state) {
+            return state.followerList;
+        },
+        followingList(state) {
+            return state.followingList;
+        },
+        detailFollowUser(state) {
+            return state.detailFollowUser;
+        }
+    },
     mutations: {
         GET_FOLLOWER_LIST(state, payload) {
             state.followerList = payload;
         },
         GET_FOLLOWING_LIST(state, payload) {
             state.followingList = payload;
-            //console.log("팔로잉: " + state.followingList);
         },
         GET_DETAIL_FOLLOWLIST(state, payload) {
             state.detailFollowUser = payload;
-            //console.log("상세조회: " + state.detailFollowUser);
         }
     },
     actions: {
@@ -59,7 +68,20 @@ export default {
                 console.log("실패");
                 console.log(err);
             })
+        },
+        follow({dispatch}, payload) {
+            const URL = API.url + followAPI.follow(payload.fromId, payload.toId);
+            axios.post(URL)
+            .then((res)=> {
+                if (res.data=="success") dispatch("getFollowerList", payload.toId);
+            }).catch((err)=>console.error(err));
+        },
+        unfollow({dispatch}, payload) {
+            const URL = API.url + followAPI.unfollow(payload.fromId, payload.toId);
+            axios.delete(URL)
+            .then((res)=>{
+                if (res.data=="success") dispatch("getFollowerList", payload.toId);
+            }).catch((err)=> console.error(err));
         }
-
     }
 }

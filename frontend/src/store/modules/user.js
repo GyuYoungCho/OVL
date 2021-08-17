@@ -27,6 +27,8 @@ export default {
     modalOpen: false,
     modalContent: "",
     userlist: [],
+
+    profileUser:{},
   },
   getters: {
     userinfo(state) {
@@ -49,6 +51,9 @@ export default {
     },
     rank(state) {
       return state.rank;
+    },
+    profileUser(state) {
+      return state.profileUser;
     },
   },
   mutations: {
@@ -120,6 +125,9 @@ export default {
         });
       } else state.userlist = payload;
     },
+    GET_SELECT_USER(state, payload) {
+      state.profileUser = payload;
+    }
   },
   actions: {
     // 토큰으로 유저 확인
@@ -189,10 +197,7 @@ export default {
         headers: { "access-token": token },
       })
         .then((res) => {
-          //console.log(res)
           if (res.data) {
-            // console.log("rank!!!!!!!!!!!!",res.data.rank);
-            // console.log("percent!!!!!!!!!!!!", res.data.percent);
             commit("SET_USER_RANK", res.data.rank);
             commit("SET_USER_PERCENT", res.data.percent);
           } else console.log("랭크 가져오기 실패.");
@@ -232,5 +237,12 @@ export default {
           console.log(err);
         });
     },
+    getSelectUser({commit}, payload) {
+      const URL = API.url + userAPI.select(payload);
+      axios.get(URL)
+      .then((res)=>{
+        commit("GET_SELECT_USER", res.data);
+      }).catch(err=>console.error(err))
+    }
   },
 };

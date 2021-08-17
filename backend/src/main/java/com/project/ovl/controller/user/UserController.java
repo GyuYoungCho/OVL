@@ -227,7 +227,7 @@ public class UserController {
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, user.getEmail(), user.getNickname(), user.getName(), user.getPhone(),
 				passwordEncoder.encode(user.getPassword()), 0, 0, 0, "https://ovl-bucket.s3.ap-northeast-2.amazonaws.com/defaultImg.jpg" ,basic);
-		System.out.println("saveUser : "+saveUser);
+		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
 	}
@@ -363,7 +363,7 @@ public class UserController {
 		Map<String, Float> map = new HashMap<>();
 		
 		List<User> userList = userDao.findAll();
-		System.out.println(userList.toString());
+		
 		Collections.sort(userList, (o1, o2)-> {
 			return Integer.compare(o2.getExperience(),o1.getExperience());
 		});

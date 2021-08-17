@@ -10,6 +10,7 @@ import pot from "./modules/pot.js";
 import follow from "./modules/follow.js";
 import challenge from './modules/challenge.js'
 import createPersistedState from 'vuex-persistedstate';
+import report from './modules/report.js';
 
 Vue.use(Vuex);
 
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     pot,
     follow,
     challenge,
+    report
     )],
   modules: {
     examples,
@@ -33,5 +35,6 @@ export default new Vuex.Store({
     pot,
     follow,
     challenge,
+    report
   }
 })
