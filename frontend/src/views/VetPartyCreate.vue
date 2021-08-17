@@ -5,35 +5,38 @@
       <content-confirm :modalOpen="modalOpen" :modalContent="modalContent"
         @changeNext="changeNext" />
 
-    <h4 v-if="type==0">채식팟 생성</h4>
-    <h4 v-else>채식팟 수정</h4>
-      
-      <div>
-        <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
-          <img src="@/assets/icon/notmeat.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(0)">
-          <img src="@/assets/icon/meat.png" alt="" ></button>
+    <div class="vetpartyHeaderArea">
 
-        <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
-          <img src="@/assets/icon/notfish.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(1)">
-          <img src="@/assets/icon/fish.png" alt=""></button>
-
-        <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
-          <img src="@/assets/icon/notmilk.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(2)">
-          <img src="@/assets/icon/milk.png" alt=""></button>
+      <h4 v-if="type==0">채식팟 생성</h4>
+      <h4 v-else>채식팟 수정</h4>
         
-        <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
-          <img src="@/assets/icon/notegg.png" alt="" ></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(3)">
-          <img src="@/assets/icon/egg.png" alt="" ></button>
+        <div>
+          <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)" >
+            <img class="vetpartyVeganImg" src="@/assets/icon/notmeat.png" alt=""></button>
+          <button class="icon-btn" v-else @click="selectTypeIcon(0)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/meat.png" alt="" ></button>
+
+          <button class="icon-btn" v-if="!btnActive[1]" @click="selectTypeIcon(1)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/notfish.png" alt=""></button>
+          <button class="icon-btn" v-else @click="selectTypeIcon(1)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/fish.png" alt=""></button>
+
+          <button class="icon-btn" v-if="!btnActive[2]" @click="selectTypeIcon(2)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/notmilk.png" alt=""></button>
+          <button class="icon-btn" v-else @click="selectTypeIcon(2)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/milk.png" alt=""></button>
           
-        <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
-          <img src="@/assets/icon/notvege.png" alt=""></button>
-        <button class="icon-btn" v-else @click="selectTypeIcon(4)">
-          <img src="@/assets/icon/vege.png" alt="" ></button>
-      </div>
+          <button class="icon-btn" v-if="!btnActive[3]" @click="selectTypeIcon(3)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/notegg.png" alt="" ></button>
+          <button class="icon-btn" v-else @click="selectTypeIcon(3)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/egg.png" alt="" ></button>
+            
+          <button class="icon-btn" v-if="!btnActive[4]"  @click="selectTypeIcon(4)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/notvege.png" alt=""></button>
+          <button class="icon-btn" v-else @click="selectTypeIcon(4)">
+            <img class="vetpartyVeganImg" src="@/assets/icon/vege.png" alt="" ></button>
+        </div>
+    </div>
 
       <div class="categoryBtn_box">
         <div></div>
