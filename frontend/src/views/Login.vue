@@ -4,7 +4,7 @@
     <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
 
     <section class="login">
-      <img src="@/assets/image/OVL_logo.png" alt="">
+      <img src="@/assets/image/OVL_logo.png" alt="" @click="onClickLogo">
       <!-- 이메일 -->
       <div>
         <input type="text" placeholder="이메일" v-model="userinfo.email">
@@ -58,6 +58,9 @@ export default {
   },
   methods: {
     ...mapActions ("user",["login",]),
+    onClickLogo(){
+      this.$router.push({name: 'Main'})
+    }
  },
  computed: {
    ...mapGetters('user', ['modalOpen', 'modalContent',]),
