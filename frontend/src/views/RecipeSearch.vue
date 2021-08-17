@@ -2,21 +2,13 @@
   <v-container>
     <section class="recipeSearch">
       <!-- 레시피 검색 부분 -->
-      <div class="recipeSearchHeader">
-        <select class="sortSelect" v-model="selectedOption" @change="sortRecipes(selectedOption)">
-          <option value="time" selected>최신순</option>
-          <option value="likecount">인기순</option>
-          <option value="commentcount">댓글순</option>
-        </select>
-        <input type="text" placeholder="검색" v-model="query" class="searchBar" @input="onSearchInput" @keyup.enter="onSearchBtnClick">
-        <!-- 검색 아이콘은 아이패드 프로, 갤럭시 폴드에서 위치 깨짐, absolute라 어쩔 수 없나... -->
-        <v-btn icon absolute right @click="onSearchBtnClick"><v-icon color="white" dark>mdi-magnify</v-icon></v-btn>        
-      </div>
-
+      <RecipeSearchBar @searchKeyword="searchKeyword" @selectOrd="selectOrd" />
+      
       <!-- 레시피 목록 -->
       <div v-for="(recipe, idx) in feedDatas" :key="idx" class="oneRecipe">
         <!-- 검색 조건이랑 맞으면 -->
-        <div v-if="containmentValid(recipe)">
+        <!-- <div v-if="containmentValid(recipe)"> -->
+        <div>  
           <ProfileName :user="recipe.userid"></ProfileName>
           <img :src="recipe.filepath" alt="" @click="onImgClick(recipe)" class="recipePic">
           <div class="oneRecipeContent">
@@ -77,12 +69,14 @@ import recipeAPI from '@/api/recipe.js'
 import moment from 'moment'
 import { mapActions, mapGetters } from 'vuex'
 import ProfileName from '@/components/basic/ProfileName.vue'
+import RecipeSearchBar from '@/components/recipe/RecipeSearchBar.vue'
 import InfiniteLoading from 'vue-infinite-loading';
 
 export default {
   components: {
     InfiniteLoading,
-    ProfileName
+    ProfileName,
+    RecipeSearchBar,
   },
   data: () => ({
     query: "",
@@ -95,6 +89,21 @@ export default {
   methods: {
     ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes','ResetRecipes']),
     
+    searchKeyword (query) {
+      this.query = query
+    },
+
+    selectOrd (option) {
+      if (option==="최신순") {
+        this.selectedOption = "time"
+      } else if (option==="인기순") {
+        this.selectedOption = "like_count"
+      } else { // 댓글순
+        this.selectedOption = "comment_count"
+      }
+    },
+
+
     onImgClick (recipe) {
       this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
     },
@@ -108,15 +117,15 @@ export default {
     calTime (recipe) {
       return moment(recipe.time).fromNow()
     },
-    onSearchInput () {
-      this.searchClicked = false
-    },
-    onSearchBtnClick () {
-      this.searchClicked = true
-    },  
-    containmentValid (recipe) {
-      return this.searchClicked ? recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query) : true
-    },
+    // onSearchInput () {
+    //   this.searchClicked = false
+    // },
+    // onSearchBtnClick () {
+    //   this.searchClicked = true
+    // },  
+    // containmentValid (recipe) {
+    //   return this.searchClicked ? recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query) : true
+    // },
     infiniteHandler($state) {
       
       var params = new URLSearchParams();
