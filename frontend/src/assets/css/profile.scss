@@ -94,17 +94,10 @@
   .testarea {
     background-color: $hy-green;
   }
-  .editProfileBtn {
-    border: 1px solid gray;
-    margin-top: 1px;
-    border-radius: 3px;
-    padding: 2px 8px;
-    width: 180px;
-  }
   .bg-freditgreen {
     background-color: $mild-bg !important;
     border: 1px solid gray;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 2px 8px;
     width: 180px;
   }
@@ -149,11 +142,14 @@
   }
 }
 
-.modalContentMessage {
-  div {
-    text-align: center;
-    img {
-      width: 50px;
-    }
-  }
+.deleteBtn {
+  margin-top: 2vh;
+}
+
+.modifyBtn {
+  margin-top: 2vh;
+  background-color: $freditgreen !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
 }
