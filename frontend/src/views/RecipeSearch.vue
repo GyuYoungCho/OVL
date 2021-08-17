@@ -16,8 +16,8 @@
             <span class="oneRecipeTime">{{ calTime(recipe) }}</span>
           </div>
           <div>
-            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe)">mdi-heart</v-icon>
-            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe)">mdi-heart-outline</v-icon>
+            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe,idx)">mdi-heart</v-icon>
+            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe,idx)">mdi-heart-outline</v-icon>
             {{ recipe.likecount}}
             
             <v-icon class="chatIcon">mdi-chat-outline</v-icon>
@@ -41,20 +41,7 @@
               </div>
             </v-sheet>
         </div>
-        <div slot="no-results" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;"
-            >
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
-              </div>
-            </v-sheet>
-        </div>
+        
         </infinite-loading>
 
     </section>
@@ -107,15 +94,17 @@ export default {
     onImgClick (recipe) {
       this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
     },
-    async onHeartIconClick (recipe) {
+    async onHeartIconClick (recipe , idx) {
       const data = {
         userId: this.userinfo.userid,
         recipeId: recipe.recipeId,
       }
+      
       await this.likeRecipe(data)
       await this.fetchRecipeLikeList(this.userinfo.userid);
+      
       await this.fetchRecipeDetail(recipe.recipeId);
-      await this.modifyPostList(data);
+      this.modifyRecipeList(idx);
     },
     calTime (recipe) {
       return moment(recipe.time).fromNow()
