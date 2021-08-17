@@ -166,6 +166,10 @@
 
 .deleteBtn {
   margin-top: 2vh;
+  background-color: $hy-red !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
 }
 
 .modifyBtn {
