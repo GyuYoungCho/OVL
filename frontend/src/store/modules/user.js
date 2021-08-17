@@ -106,19 +106,10 @@ export default {
       state.modalContent = modalContent;
     },
     SET_USER_LIST(state, payload) {
-      if (payload) {
-        state.userlist = payload.sort(function(user1, user2) {
-          const x = user1.experience;
-          const y = user2.experience;
-          if (x > y) {
-            return -1;
-          }
-          if (x < y) {
-            return 1;
-          }
-          return 0;
-        });
-      } else state.userlist = payload;
+      state.userlist = state.userlist.concat(payload);
+    },
+    RESET_POST_USER(state) {
+      state.userlist = [];
     },
   },
   actions: {
@@ -174,14 +165,14 @@ export default {
         headers: { "access-token": token },
       })
         .then(() => {
-         // alert("탈퇴가 정상적으로 처리 되었습니다.");
+          // alert("탈퇴가 정상적으로 처리 되었습니다.");
           commit("SET_LOGOUT");
         })
         .catch((err) => {
           console.log(err);
         });
     },
-    getUserRank({ commit },  payload ) {
+    getUserRank({ commit }, payload) {
       let token = localStorage.getItem("access-token");
       axios({
         method: "get",
@@ -201,7 +192,7 @@ export default {
           console.log(err);
         });
     },
-    getUpdateUserInfo({ commit },  payload ) {
+    getUpdateUserInfo({ commit }, payload) {
       let token = localStorage.getItem("access-token");
       axios({
         method: "get",
@@ -218,19 +209,11 @@ export default {
           console.log(err);
         });
     },
-    getUserList({ commit }) {
-      let token = localStorage.getItem("access-token");
-      axios({
-        method: "get",
-        url: API.url + userAPI.select_all(),
-        headers: { "access-token": token },
-      })
-        .then((res) => {
-          commit("SET_USER_LIST", res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    getUserList({ commit }, payload) {
+      commit("SET_USER_LIST", payload);
+    },
+    resetUserList(store) {
+      store.commit("RESET_POST_USER");
     },
   },
 };
