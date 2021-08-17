@@ -1,45 +1,39 @@
-/<template>
-    <div style ="text-align:center">
-        <v-container class="d-flex subinfo mb-2 pa-0">
-            
-            <v-divider vertical class="mx-1"></v-divider>
-            <v-col cols="3" class="pa-0 mt-1 ma-0 pr-1">
-                <v-icon>mdi-calendar-month</v-icon>
-                <span>{{this.meet_date}}</span>    
-            </v-col>
-            <v-divider vertical class="mx-1 "></v-divider>
-            <v-col cols="2" class="pa-0 mt-1">
-                <v-icon>mdi-clock-time-nine-outline</v-icon>
-                <span>{{this.meet_time}}</span>
-            </v-col>
-            <v-divider vertical class="ml-1"></v-divider>
+<template>
+  <div class="d-flex">
+    <!-- 달력 -->
+    <div>
+      <v-icon class="veticons">mdi-calendar-month</v-icon>
+      <span>{{this.meet_date}}</span>    
+    </div>
+    
+    <!-- 시간  -->
+    <div>
+      <v-icon class="veticons">mdi-clock-time-nine-outline</v-icon>
+      <span>{{this.meet_time}}</span>
+    </div>
+    
+    <!-- 인원수 -->
+    <div>
+      <v-icon class="veticons">mdi-account-outline</v-icon>
+      <span>{{this.userpot.pot_count}}명/</span>
+      <span>{{this.userpot.total_people}}명</span>
+    </div>
+    
+    <!-- 아이콘 -->
+    <div>
+      <img src="@/assets/icon/meat.png" v-if="btnActive[4]" />
+      <img src="@/assets/icon/fish.png" v-else-if="btnActive[3]" />
+      <img src="@/assets/icon/milk.png" v-else-if="btnActive[2]" />
+      <img src="@/assets/icon/egg.png" v-else-if="btnActive[1]" />
+      <img src="@/assets/icon/vege.png" v-else />
+    </div>
+    
+    <!-- 설정 -->
+    <div @click="openDetailModal(true)">
+        <v-icon class="veticons">mdi-dots-horizontal</v-icon>
+    </div>
 
-            <v-col cols="3" class="pa-0 mt-1 ma-0">
-                <v-icon>mdi-account-outline</v-icon>
-                <span>{{this.userpot.pot_count}}명/</span>
-                <span>{{this.userpot.total_people}}명</span>
-            </v-col>
-            <v-divider vertical class="mx-2"></v-divider>
-            <v-col cols="1" class="pa-0 mt-0">
-            <div class="icon_frame">
-                <v-img src="@/assets/icon/meat.png" alt="" v-if="btnActive[4]"> </v-img>
-                <v-img src="@/assets/icon/fish.png" alt="" v-else-if="btnActive[3]"> </v-img>
-                <v-img src="@/assets/icon/milk.png" alt="" v-else-if="btnActive[2]"> </v-img>
-                <v-img src="@/assets/icon/egg.png" alt="" v-else-if="btnActive[1]"> </v-img>
-                <v-img src="@/assets/icon/vege.png" alt="" v-else> </v-img>
-            </div>
-            </v-col>
-
-            <v-divider vertical class="mx-1"></v-divider>
-            <div class="mt-0">
-                <v-col cols="1" class="pa-0 icon_frame add">
-                    <v-btn small class="pa-0"  icon size="17" @click="openDetailModal(true)">
-                        <v-icon size="17">mdi-message-processing-outline</v-icon>
-                    </v-btn>
-                </v-col>
-            </div>
-        </v-container>
-    </div>  
+  </div>
 </template>
 
 <script>
