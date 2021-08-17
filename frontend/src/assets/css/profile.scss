@@ -66,6 +66,10 @@
   margin-right: 10px;
   text-align: center;
 
+  .following {
+    font-size: x-small;
+  }
+
   .icon-btn {
     width: 20px;
     height: 20px;
@@ -136,4 +140,16 @@
     font-size: medium;
     color: $freditgreen;
   }
+}
+
+.deleteBtn {
+  margin-top: 2vh;
+}
+
+.modifyBtn {
+  margin-top: 2vh;
+  background-color: $freditgreen !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
 }

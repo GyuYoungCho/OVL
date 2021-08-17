@@ -84,9 +84,9 @@
               </div>
               <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation">참여하기</button>
-                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation">참여중</button>
-                <button v-else  @click='participation = true' class="alreadyInParticipation">참여하기</button>
+                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation"><div style="margin-top:1px">참여하기</div></button>
+                <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation"><div style="margin-top:1px">참여 중</div></button>
+                <button v-else  @click='participation = true' class="alreadyInParticipation"><div style="margin-top:1px">참여하기</div></button>
               </div>
             </article>
           </v-container>
