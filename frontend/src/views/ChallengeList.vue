@@ -179,10 +179,10 @@ export default {
     // 스토어엔 전체 챌린지 리스트만 두고, computed를 활용해 필터링 로직을 넣어 줍니다. 카테고리 and 앞으로 진행할 수 있는 챌린지일 것.
     filteredChallengeList () {
       if (!this.nowSelectedCategory.trim()) {
-        return this.challengeList.filter(eachChallenge=> moment(eachChallenge.start_date).isAfter(moment()))
+        return this.challengeList.filter(eachChallenge=> moment(eachChallenge.start_date).isAfter(moment().startOf('day')))
       }
       else {
-        return this.challengeList.filter((eachChallenge) => eachChallenge.category === parseInt(this.nowSelectedCategory) && moment(eachChallenge.start_date).isAfter(moment()))
+        return this.challengeList.filter((eachChallenge) => eachChallenge.category === parseInt(this.nowSelectedCategory) && moment(eachChallenge.start_date).isAfter(moment().startOf('day')))
       }
     },
   },
