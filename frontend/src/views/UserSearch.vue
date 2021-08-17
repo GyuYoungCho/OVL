@@ -14,10 +14,6 @@
       </div>
 
       <div v-if="ordCheck">
-        <div v-if="postAll.length==0 && search.length>0" class="noResult">
-            <img src="@/assets/image/noResult.png" alt="">
-            <div class="mt-3">검색 결과가 존재하지 않습니다</div>
-        </div>
         <div v-for="(info, idx) in postAll" :key="idx" class="mt-4">
             
             <div>
@@ -62,19 +58,16 @@
 
       <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
         <div slot="no-more" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;">
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">끝</h4>
-              </div>
-            </v-sheet>
+            <div class="noResult">
+                <img src="@/assets/image/noResult.png" alt="">
+                <div class="mt-3">불러올 목록이 없어요</div>
+            </div>
           </div>
           <div slot="no-results" class="mt-4">
+            <div v-if="postAll.length==0 && search.length>0" class="noResult">
+                <img src="@/assets/image/noResult.png" alt="">
+                <div class="mt-3">검색 결과가 존재하지 않습니다</div>
+            </div>
           </div>
         </infinite-loading>
 
@@ -168,7 +161,7 @@ export default {
         params.append("keyword", this.search);
         axios.get(API.url + feedAPI.select_alluser(),{params})
           .then(res => {
-            console.log(res.data.content)
+            
             if (res.data.content.length > 0) {
                 this.getUserList(res.data.content)
                 $state.loaded();
@@ -189,7 +182,7 @@ export default {
         params.append("keyword", this.search);
         axios.get(API.url + feedAPI.postsearch(),{params})
           .then(res => {
-            console.log(res.data.content)
+            
             if (res.data.content.length > 0) {
                 this.getPostAll(res.data.content)
                 this.getPostLikeList(this.userinfo.userid)
@@ -216,7 +209,6 @@ export default {
       if(this.ord=="게시글") this.resetPostAll();
       else this.resetUserList();
       this.pageNumber = 0;
-      console.log("엥")
       this.$refs.infiniteLoading.stateChanger.reset();
     },
     ord : function() {
