@@ -9,6 +9,17 @@ export default {
     followingList: [],
     detailFollowUser: [],
   },
+  getters: {
+    followerList(state) {
+        return state.followerList;
+    },
+    followingList(state) {
+        return state.followingList;
+    },
+    detailFollowUser(state) {
+        return state.detailFollowUser;
+    }
+},  
   mutations: {
     GET_FOLLOWER_LIST(state, payload) {
       state.followerList = payload;
@@ -72,11 +83,19 @@ export default {
           console.log(err);
         });
     },
-    // resetFollowing() {
-    //     store.commit("RESET_FOLLOWING_LIST");
-    // },
-    // resetFollower() {
-    //     store.commit("RESET_FOLLOWER_LIST");
-    // }
+    follow({dispatch}, payload) {
+        const URL = API.url + followAPI.follow(payload.fromId, payload.toId);
+        axios.post(URL)
+        .then((res)=> {
+            if (res.data=="success") dispatch("getFollowerList", payload.toId);
+        }).catch((err)=>console.error(err));
+    },
+    unfollow({dispatch}, payload) {
+        const URL = API.url + followAPI.unfollow(payload.fromId, payload.toId);
+        axios.delete(URL)
+        .then((res)=>{
+            if (res.data=="success") dispatch("getFollowerList", payload.toId);
+        }).catch((err)=> console.error(err));
+    }
   },
 };
