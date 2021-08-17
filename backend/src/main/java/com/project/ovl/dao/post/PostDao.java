@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.recipe.Recipe;
@@ -18,7 +17,7 @@ public interface PostDao extends JpaRepository<Post, Integer> {
 	List<Post> findByUserId(User user);
 	int countByUserIdAndCategoryAndTimeBetween(User user, int category, Date start, Date end);
 	
-	@Query(value = "select * from post r where " +
-			"(lower(r.title) like :keyword or lower(r.content) like :keyword )", nativeQuery = true)
-	Page<Recipe> findByKeyWord(String keyword, Pageable pageable);
+	@Query(value = "select * from post p where " +
+			"lower(p.content) like :keyword ", nativeQuery = true)
+	Page<Post> findByKeyWord(String keyword, Pageable pageable);
 }
