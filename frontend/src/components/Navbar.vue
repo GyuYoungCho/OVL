@@ -6,7 +6,7 @@
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <!-- justify content between 해주는 태그가 v-spacer -->
         <v-spacer></v-spacer>
-        <span class="navbarTitle">OVL</span>
+        <span class="navbarTitle" @click="onClickLogo" >OVL</span>
         <v-spacer></v-spacer>
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -125,6 +125,9 @@ import FlashModal from '@/components/signup/FlashModal.vue'
           this.logout()
           this.$router.push({name: 'Main'})
         }, 1000);
+      },
+      onClickLogo(){
+        this.$router.push({name: 'Main'})
       }
     },
   }
