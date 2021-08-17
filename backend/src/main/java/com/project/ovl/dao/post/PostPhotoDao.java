@@ -19,26 +19,25 @@ public interface PostPhotoDao extends JpaRepository<PostPhoto, Integer>{
 			"where p.post_id in " +
 			"(select post_id from post where user_id in " + 
 			"(select to_id from follow where from_id = :user_id )" + 
-			"and TIMESTAMPDIFF(Day, time, now()) < 7) " +
+			"and TIMESTAMPDIFF(Day, time, now()) < 14) " +
 			"group by p.post_id " + 
 			"order by time desc"
 			, nativeQuery = true)
 	Page<PostPhoto> findByUserFollowing(int user_id,Pageable pageable);
 	
-	@Query(value="select min(post_photo_id),filepath, time, p.post_id " +  
+	@Query(value="select * " +  
 			"from post_photo ph join post p on p.post_id = ph.post_id " + 
 			"where TIMESTAMPDIFF(Day, time, now()) < 7) " +
-			"group by p.post_id " +
-			"order by time desc like_count desc comment_count desc "
+			"group by p.post_id "
 			, nativeQuery = true)
 	Page<PostPhoto> findByComing(Pageable pageable);
 	
 	
 	// 검색 고고
-	@Query(value="select min(post_photo_id),filepath, time, p.post_id " +  
+	@Query(value="select * " +
 			"from post_photo ph join post p on p.post_id = ph.post_id " + 
-			"where TIMESTAMPDIFF(Day, time, now()) < 7) " +
+			"where ( lower(content) like :keyword ) "+
 			"group by p.post_id " +
-			"order by time desc like_count desc comment_count desc ", nativeQuery = true)
+			"order by time desc" , nativeQuery = true)
 	Page<PostPhoto> findByContentkeyword(String keyword, Pageable pageable);
 }

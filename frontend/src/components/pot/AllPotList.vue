@@ -1,68 +1,59 @@
 /<template>
-    <div class="mt-3">
-    <div style="text-align: left" :disabled="avail" class="potlist"
-        :class="{ 'abledArea': !avail, 'disabledArea': avail , }"
-        @click="openDetailModal(true)" >
-        <v-divider></v-divider>
-        
-        <v-container class="d-flex pt-0 pb-0 pl-0">
-        
-            <profile-name :user="potitem.userid"></profile-name>
-        
-        <v-row align="center" justify="end">
-        <button v-if="avail" class="py-0 px-3 mt-0 notBtnComp" style="font-size:12px"
-                >마감</button>
-        
-        <v-icon>mdi-map-marker</v-icon>
-        
-            <span class="p">{{this.potitem.restaurant_name}}</span>
-        
-        </v-row>
-        
-        </v-container>
-    
-    <v-row>
-        <v-container class="d-flex pb-1 ml-3">
-            <v-list-item-subtitle v-text="potitem.title"></v-list-item-subtitle>
-        </v-container>
-    </v-row>
-    <v-row class="mt-4">
-        <v-container class="d-flex subinfo mb-2 pt-0 pb-0">
-            <v-col cols="3" class="pa-0">
-                <v-icon>mdi-calendar-month</v-icon>
-                <span>{{this.meet_date}}</span>
-            </v-col>
-            <v-divider vertical class="mx-1"></v-divider>
-            <v-col cols="2" class="pa-0">
-                <v-icon>mdi-clock-time-nine-outline</v-icon>
-                <span>{{this.meet_time}}</span>
-            </v-col>
-            <v-divider vertical class="mx-2"></v-divider>
-            <v-col cols="auto" class="pa-0">
-            <v-icon>mdi-account-outline</v-icon>
-            <span>{{this.potitem.pot_count}}명/</span>
-            <span>{{this.potitem.total_people}}명</span>
-            </v-col>
-            <v-divider vertical class="mx-2"></v-divider>
-            <v-col cols="1" class="pa-0">
-            <div class="icon_frame">
-                <v-img src="@/assets/icon/meat.png" alt="" v-if="btnActive[4]"> </v-img>
-                <v-img src="@/assets/icon/fish.png" alt="" v-else-if="btnActive[3]"> </v-img>
-                <v-img src="@/assets/icon/milk.png" alt="" v-else-if="btnActive[2]"> </v-img>
-                <v-img src="@/assets/icon/egg.png" alt="" v-else-if="btnActive[1]"> </v-img>
-                <v-img src="@/assets/icon/vege.png" alt="" v-else> </v-img>
-            </div>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col cols="2" class="pa-0">
-                <button class="py-0 px-3 BtnComp mt-0" style="font-size:12px"
-                    @click.stop="openAttendModal(true)">참여</button>
-            </v-col>
-        </v-container>
-    </v-row>
-   
+  <section class="allPotList">
+    <v-divider></v-divider>
+    <div :disabled="avail" :class="{'disabledArea': avail}" @click="openDetailModal(true)" >
+      <!-- 1. 프로필 사진, 유저네임, 마커와 장소가 있는 영역 -->
+      <div class="allPotListName">
+        <profile-name :user="potitem.userid"></profile-name>
+        <v-spacer></v-spacer>
+        <div class="allPotListNameIcon">
+          <button v-if="avail" class="notBtnComp mr-2">마감</button>
+          <v-icon class="allPotListNameMarker" small>mdi-map-marker</v-icon>
+        </div>
+        <span>{{this.potitem.restaurant_name}}</span>
+      </div>
+      <!-- 2. 채식팟에 content 가 담기는 영역 -->
+      <div class="allPotListContent">
+        <span>{{potitem.content}}</span>
+      </div>
+      <!-- 3. 달력 / 시간 / 인원수 / 아이콘 / 참여버튼 영역 -->
+      <article class="allPotListDetail">
+        <!-- (1) 달력 -->
+        <div class="vetIconsWrap">
+          <v-icon class="veticons mr-2">mdi-calendar-month</v-icon>
+          <span class="vetIconsWrapSpan">{{this.meet_date}}</span>
+        </div>
+        <v-divider vertical></v-divider>
+        <!-- (2) 시간 -->
+        <div class="vetIconsWrap">
+          <v-icon class="veticons mr-2">mdi-clock-time-nine-outline</v-icon>
+          <span class="vetIconsWrapSpan">{{this.meet_time}}</span>
+        </div>
+        <v-divider vertical></v-divider>
+        <!-- (3) 인원수 -->
+        <div class="vetIconsWrap">
+          <v-icon class="veticons mr-2">mdi-account-outline</v-icon>
+          <span class="vetIconsWrapSpan">{{this.potitem.pot_count}}명 / {{this.potitem.total_people}}명</span>
+        </div>
+        <v-divider vertical></v-divider>
+        <!-- (4) 아이콘 -->
+        <div class="vetIconsWrap">
+          <img src="@/assets/icon/meat.png" v-if="btnActive[4]" /> 
+          <img src="@/assets/icon/fish.png" v-else-if="btnActive[3]" /> 
+          <img src="@/assets/icon/milk.png" v-else-if="btnActive[2]" /> 
+          <img src="@/assets/icon/egg.png" v-else-if="btnActive[1]" /> 
+          <img src="@/assets/icon/vege.png" v-else /> 
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <!-- (5) 참여버튼 -->
+        <div class="vetIconsWrap">
+           <button class="vetParticipate" @click.stop="openAttendModal(true)">참여하기</button>
+        </div>
+      </article>
     </div>  
-    </div>
+  </section>
 </template>
 
 <script>

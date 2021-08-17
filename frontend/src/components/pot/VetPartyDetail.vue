@@ -1,79 +1,61 @@
 <template>
-  <div>
-    <v-dialog
-          v-model="modalDetail"
-          height="500"
-          @click:outside="cancelDetail()"
-          transition="dialog-bottom-transition"
-          scrollable
-          max-height="500px"
-          max-width="1000px">
-        <v-card tile>
-          <v-toolbar color="#004627" dark>
-          <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
-            <profile-name :user="selectpot.userid" class="ml-3 mt-1"></profile-name>
-            <v-spacer></v-spacer>
-            <v-btn icon dark @click="cancelDetail()" justify="end">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-toolbar>
-            <v-col>
-              <v-row class="pl-3">
-                <v-col class="mt-3">
-                  <v-row>
-                    <v-icon>mdi-map-marker</v-icon>
-                    <span>{{this.selectpot.restaurant_name}}</span>
-                  </v-row >
-                  <v-row class="mt-7">
-                    <v-icon>mdi-calendar-month</v-icon>
-                    <span>{{this.meet_date}}</span> 
-                  </v-row>
-                  <v-row class="mt-7">
-                    <v-icon>mdi-clock-time-nine-outline</v-icon>
-                    <span>{{this.meet_time}}</span>
-                  </v-row>
-                </v-col>
-                
-              </v-row>
-              <v-row class="pl-3">
-                <v-col cols="7">
-                  <span>{{this.selectpot.content}}</span>
-                </v-col>
-                <v-col v-if="mypot" justify="end" class="pa-0">
-                  <v-btn dark @click="potModify()"  width="10">
-                    <span>수정</span>
-                  </v-btn>
-                  <v-btn dark @click="openMessageModal('delete')" justify="end" width="10">
-                    <span>삭제</span>
-                  </v-btn>
-                </v-col>
-                <v-col v-else>
-                  <v-btn v-if="attendme" dark @click="openMessageModal('attend')" justify="end">
-                    <span>참여하기</span>
-                  </v-btn>
-                  <v-btn v-else dark @click="openMessageModal('cancel')" justify="end">
-                    <span>참여취소</span>
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-divider class="mt-4" ></v-divider>
-              <v-row class="mt-5 pl-3">
-                <v-icon>mdi-account-outline</v-icon>
-              </v-row>
-              <v-col class="mt-5 pl-3">
-                <profile-name v-for="(auser, index) in potattendusers" :key="index" :user="auser"></profile-name>
-              </v-col>  
-            </v-col>
-          </v-card>
-    </v-dialog>
-    
-  </div>
+  <v-dialog v-model="modalDetail" @click:outside="cancelDetail()" scrollable max-width="300">
+    <v-card>
+      <!-- 모달의 초록색 상단바 영역 -->
+      <v-toolbar color="#004627" dark dense>
+        <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon dark @click="cancelDetail()" justify="end">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <!-- 모달 body 부분 -->
+      <v-container class="vetModal">
+        <div class="vetModalContent">
+          {{this.selectpot.content}}
+        </div>
+        <div class="vetIconsWrap mt-2">
+          <v-icon class="veticons mr-2">mdi-map-marker</v-icon>
+          <span class="vetModalSpan">{{this.selectpot.restaurant_name}}</span>
+        </div>
+        <div class="vetIconsWrap mt-2">
+          <v-icon class="veticons mr-2">mdi-calendar-month</v-icon>
+          <span class="vetModalSpan">{{this.meet_date}}</span> 
+        </div>
+        <div class="vetIconsWrap mt-2">
+          <v-icon class="veticons mr-2">mdi-clock-time-nine-outline</v-icon>
+          <span class="vetModalSpan">{{this.meet_time}}</span>
+        </div>
+        <div class="d-flex mt-2">
+          <div class="mt-2">
+            <v-icon class="veticons mr-2">mdi-account-outline</v-icon>
+          </div>
+          <div>
+            <ProfileName v-for="(auser, index) in potattendusers" :key="index" :user="auser" />
+          </div>
+        </div>
+        <!-- 버튼 영역 -->
+        <article class="vetModalButtonArea mt-2">
+          <div v-if="mypot">
+            <button class="vetModalButton" @click="potModify()">수정</button>
+            <button class="vetModalButton" @click="openMessageModal('delete')">삭제</button>
+          </div>
+          <div v-else>
+            <button class="vetModalButton" v-if="attendme" @click="openMessageModal('attend')">참여하기</button>
+            <button class="vetModalButton" v-else @click="openMessageModal('cancel')">참여취소</button>
+          </div>
+        </article>
+      </v-container>
+              
+           
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 import moment from "moment"
 import { mapGetters} from 'vuex';
-import ProfileName from '@/components/basic/ProfileName.vue';
+import ProfileName from "@/components/basic/ProfileName.vue";
 
 export default {
   data(){
@@ -81,9 +63,10 @@ export default {
       modals : true,
     }
   },
-  components: { 
-    ProfileName,
+  components: {
+    ProfileName
   },
+
   props:{
     modalDetail : Boolean,
   },

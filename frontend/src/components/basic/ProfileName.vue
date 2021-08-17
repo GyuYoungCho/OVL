@@ -6,7 +6,7 @@
             ></v-img>
         </v-list-item-avatar>
         <v-list-item-content class="px-0">
-            <v-list-item-subtitle v-text="user.nickname" style="font-size:17px" min-width="10px">
+            <v-list-item-subtitle v-text="user.nickname" style="font-size:17px; margin-top:2px;" min-width="10px">
             </v-list-item-subtitle>
         </v-list-item-content>
     </div>

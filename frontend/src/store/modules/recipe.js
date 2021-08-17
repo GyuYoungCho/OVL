@@ -53,8 +53,8 @@ export default {
     },
   },
   mutations: {
-    SET_RECIPES(state, recipes) {
-      state.recipes = recipes;
+    SET_RECIPES(state, payload) {
+      state.recipes = state.recipes.concat(payload);
     },
     SORT_RECIPES(state, option) {
       const recipes = state.recipes;
@@ -81,6 +81,7 @@ export default {
     SET_RECIPE_DETAIL(state, recipeDetail) {
       state.recipeDetail = recipeDetail;
       state.recipe = recipeDetail[0].recipeId;
+      console.log(state.recipe);
     },
     SET_RECIPE_COMMENTS(state, recipeComments) {
       state.recipeComments = recipeComments;
@@ -96,6 +97,12 @@ export default {
     },
     SET_USER_RECIPES(state, myrecipes) {
       state.myrecipes = myrecipes;
+    },
+    MODIFY_RECIPE_LIST(state, payload) {
+      state.recipes[payload].likecount = state.recipe.likecount;
+    },
+    RESET_RECIPE_LIST(state) {
+      state.recipes = [];
     },
   },
   actions: {
@@ -116,29 +123,25 @@ export default {
     sortRecipes({ commit }, option) {
       commit("SORT_RECIPES", option);
     },
-    fetchRecipeLikeList({ commit }, userId) {
+    async fetchRecipeLikeList({ commit }, userId) {
       const URL = API.url + recipeAPI.like_list(userId);
-      axios
+      await axios
         .get(URL)
         .then((res) => {
           commit("SET_RECIPE_LIKE_LIST", res.data);
         })
         .catch((err) => console.error(err));
     },
-    likeRecipe({ dispatch }, { userId, recipeId }) {
+    async likeRecipe(store, { userId, recipeId }) {
       const URL = API.url + recipeAPI.like(userId, recipeId);
-      axios
+      await axios
         .get(URL)
-        .then(() => {
-          dispatch("fetchRecipeLikeList", userId);
-          dispatch("fetchRecipes");
-          dispatch("fetchRecipeDetail", recipeId);
-        })
+        .then(() => {})
         .catch((err) => console.error(err));
     },
-    fetchRecipeDetail({ commit }, recipeId) {
+    async fetchRecipeDetail({ commit }, recipeId) {
       const URL = API.url + recipeAPI.select_detail(recipeId);
-      axios
+      await axios
         .get(URL)
         .then((res) => {
           commit("SET_RECIPE_DETAIL", res.data);
@@ -285,6 +288,13 @@ export default {
           commit("SET_USER_RECIPES", res.data);
         })
         .catch((err) => console.error(err));
+    },
+
+    resetRecipeList(store) {
+      store.commit("RESET_RECIPE_LIST");
+    },
+    modifyRecipeList(store, payload) {
+      store.commit("MODIFY_RECIPE_LIST", payload);
     },
   },
 };

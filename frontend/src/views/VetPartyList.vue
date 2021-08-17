@@ -5,17 +5,18 @@
         <!-- 검색바 -->
         <pot-search class="mt-3 mb-3" @searchKeyword="searchKeyword" @selectOrd="selectOrd"></pot-search>
         <!-- 지도 -->
-        <map-view class="mt-4" :step="step"></map-view>
+        <map-view class="mt-2" :step="step"></map-view>
          <!-- 내가 만들었거나 참여한 곳 -->
-        <v-list class="user-potlist mt-5 px-0" v-if="userpots && userpots.length!=0" color="#EBF4ED">
+        <div class="mt-5 mb-2 vet-background" v-if="userpots && userpots.length!=0">
           <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
           @openDetailModal="openDetailModal"></user-pot-list>
-        </v-list>
+        </div>
         <!-- 다른사람이 만든거 뜨는곳 -->
-        <v-list>
+        <div>
           <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
           @openDetailModal="openDetailModal" @openAttendModal="openAttendModal"></all-pot-list>
-        </v-list>
+          <v-divider class="mt-2"></v-divider>
+        </div>
         <!-- 확인메시지용 -->
         <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
         <vet-party-detail :modalDetail="modalDetail"

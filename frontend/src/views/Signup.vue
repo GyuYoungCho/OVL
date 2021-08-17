@@ -4,7 +4,7 @@
     <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
 
     <section class="signup">
-      <img src="@/assets/image/OVL_logo.png" alt="">
+      <img src="@/assets/image/OVL_logo.png" alt="" @click="onClickLogo">
       <!-- 이름 -->
       <div>
         <input type="text" placeholder="이름" v-model="name">
@@ -91,6 +91,9 @@ export default {
     passwordCheck: '',
   }),
   methods: {
+    onClickLogo(){
+      this.$router.push({name: 'Main'})
+    },
     nothing () {
       console.log('Nothing!')
     },

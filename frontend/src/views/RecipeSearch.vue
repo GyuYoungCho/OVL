@@ -5,7 +5,7 @@
       <RecipeSearchBar @searchKeyword="searchKeyword" @selectOrd="selectOrd" />
       
       <!-- 레시피 목록 -->
-      <div v-for="(recipe, idx) in feedDatas" :key="idx" class="oneRecipe">
+      <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
         <!-- 검색 조건이랑 맞으면 -->
         <!-- <div v-if="containmentValid(recipe)"> -->
         <div>  
@@ -16,8 +16,8 @@
             <span class="oneRecipeTime">{{ calTime(recipe) }}</span>
           </div>
           <div>
-            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe)">mdi-heart</v-icon>
-            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe)">mdi-heart-outline</v-icon>
+            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe,idx)">mdi-heart</v-icon>
+            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe,idx)">mdi-heart-outline</v-icon>
             {{ recipe.likecount}}
             
             <v-icon class="chatIcon">mdi-chat-outline</v-icon>
@@ -41,20 +41,7 @@
               </div>
             </v-sheet>
         </div>
-        <div slot="no-results" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;"
-            >
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
-              </div>
-            </v-sheet>
-        </div>
+        
         </infinite-loading>
 
     </section>
@@ -83,11 +70,11 @@ export default {
     selectedOption: "time",
     searchClicked: false,
     pageNumber: 0,
-    pageSize: 2,
-    feedDatas: [],
+    pageSize: 3,
   }),
   methods: {
-    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 'likeRecipe', 'sortRecipes','ResetRecipes']),
+    ...mapActions('recipe', ['fetchRecipes', 'fetchRecipeLikeList', 'fetchRecipeDetail', 'fetchRecipeComments', 
+                        'likeRecipe', 'sortRecipes','resetRecipeList', 'modifyRecipeList']),
     
     searchKeyword (query) {
       this.query = query
@@ -107,12 +94,17 @@ export default {
     onImgClick (recipe) {
       this.$router.push({name: 'RecipeDetail', params: {recipeId: recipe.recipeId}})
     },
-    onHeartIconClick (recipe) {
+    async onHeartIconClick (recipe , idx) {
       const data = {
         userId: this.userinfo.userid,
         recipeId: recipe.recipeId,
       }
-      this.likeRecipe(data)
+      
+      await this.likeRecipe(data)
+      await this.fetchRecipeLikeList(this.userinfo.userid);
+      
+      await this.fetchRecipeDetail(recipe.recipeId);
+      this.modifyRecipeList(idx);
     },
     calTime (recipe) {
       return moment(recipe.time).fromNow()
@@ -135,9 +127,9 @@ export default {
       params.append("keyword", this.query);
       axios.get(API.url + recipeAPI.select_all(),{params})
         .then(res => {
+          console.log(res.data.content)
           if (res.data.content.length > 0) {
-              this.feedDatas = this.feedDatas.concat(res.data.content);
-              this.fetchRecipes(this.feedDatas)
+              this.fetchRecipes(res.data.content)
               this.fetchRecipeLikeList(this.userinfo.userid)
               $state.loaded();
               this.pageNumber++;
@@ -152,7 +144,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('recipe', ['recipes', 'recipeLikeList', ]),
+    ...mapGetters('recipe', ['recipes', 'recipeLikeList' ]),
     ...mapGetters("user", (["userinfo"])),
   },
   watch:{
@@ -160,19 +152,20 @@ export default {
       if(newVal==null) this.query =''
       else if(oldVal=='' && newVal !='') this.selectedOption = 'time'
 
-      this.feedDatas = [];
+      this.resetRecipeList();
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
     selectedOption : function() {
-      this.feedDatas = [];
+      this.resetRecipeList();
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
   },
   created () {
-    this.fetchRecipes()
-    this.fetchRecipeLikeList(this.userinfo.userid)
+    this.resetRecipeList()
+    // this.fetchRecipes()
+    // this.fetchRecipeLikeList(this.userinfo.userid)
   },
 
 }
