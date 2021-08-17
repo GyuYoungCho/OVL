@@ -82,7 +82,7 @@ public class FeedController {
 	}
 	
 	@ApiOperation(value = "모든 회원 조회")
-	@GetMapping("/feed/user/select_all")
+	@GetMapping("/user/select_all")
 	public Page<User> select_all(@RequestParam(required = false, defaultValue = "") String keyword, Pageable pageable) {
 		keyword = "%" + keyword + "%";
 		Pageable sortedByExpDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("experience").descending()); 

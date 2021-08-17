@@ -85,7 +85,7 @@ export default {
       state.postList[payload.idx].postId = state.post;
     },
     MODIFY_POST_ALL(state, payload) {
-      state.postList[payload.idx].postId = state.post;
+      state.postAll[payload.idx].postId = state.post;
     },
     RESET_POST_LIST(state) {
       state.postList = [];
@@ -216,7 +216,7 @@ export default {
     modifyPostList(store, payload) {
       store.commit("MODIFY_POST_LIST", payload);
     },
-    modifyPostALL(store, payload) {
+    modifyPostAll(store, payload) {
       store.commit("MODIFY_POST_ALL", payload);
     },
   },

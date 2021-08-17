@@ -107,7 +107,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('post', ['resetPostAll', 'getPostAll', 'getPostLikeList', 'getRecommend']),
+    ...mapActions('post', ['resetPostAll', 'getPost', 'getPostAll', 'getPostLikeList',
+                          'getRecommend','modifyPostAll', 'postLike']),
     ...mapActions('user', ['resetUserList','getUserList']),
     recalibratedDate(start_date, period) {
       if (period==0) return start_date.substring(0,10);
@@ -140,13 +141,17 @@ export default {
       if (this.postLikeList.includes(this.postAll[idx].postId.postId)) return true;
       else return false;
     }, 
-    like(idx) { // 좋아요 버튼 눌렀슴
+    async like(idx) { // 좋아요 버튼 눌렀슴
       var payload = {
         "userId" : this.userinfo.userid,
         "postId" : this.postAll[idx].postId.postId,
-        "type": 1 // 뉴스피드
+        "type": 1, // 뉴스피드
+        "idx" : idx
       }
-      this.$store.dispatch("post/postLike", payload);
+      await this.postLike(payload);
+      await this.getPostLikeList(this.userinfo.userid);
+      await this.getPost(this.postAll[idx].postId.postId);
+      await this.modifyPostAll(payload);
     },
     calTime (time) {
       return moment(time).fromNow()
@@ -154,8 +159,8 @@ export default {
     infiniteHandler($state) {
       
       if(this.ord == '닉네임' && this.search!=''){
-        this.pageSize = 0
-        this.pageNumber = 10
+        this.pageSize = 10
+        this.pageNumber = 0
         let params = new URLSearchParams();
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
@@ -164,8 +169,7 @@ export default {
           .then(res => {
             console.log(res.data.content)
             if (res.data.content.length > 0) {
-                this.fetchRecipes(res.data.content)
-                this.fetchRecipeLikeList(this.userinfo.userid)
+                this.getUserList(res.data.content)
                 $state.loaded();
                 this.pageNumber++;
             } else {
@@ -177,10 +181,9 @@ export default {
             alert('에러');
         })
       }else if(this.ord=='게시글' && this.search!=''){
-        this.pageSize = 0
-        this.pageNumber = 5
+        this.pageSize = 5
+        this.pageNumber = 0
         let params = new URLSearchParams();
-        console.log("게시")
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
         params.append("keyword", this.search);
@@ -248,6 +251,25 @@ export default {
     //    return (allitems.length >3) ? allitems.slice(0,5) : allitems
     // },
  },
+ watch:{
+    search(newVal){
+      if(newVal==null) this.query =''
+      console.log(this.postAll.length)
+      if(this.ord=="게시글") this.resetPostAll();
+      else this.resetUserList();
+      this.pageNumber = 0;
+      this.$refs.infiniteLoading.stateChanger.reset();
+    },
+    ord : function() {
+      this.search = ''
+     
+      this.resetUserList();
+      this.resetPostAll();
+      
+      this.pageNumber = 0;
+      this.$refs.infiniteLoading.stateChanger.reset();
+    },
+  },
  created() {
     this.resetUserList()
     this.resetPostAll()
