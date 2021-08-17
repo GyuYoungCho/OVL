@@ -58,7 +58,7 @@ export default {
       state.postList = state.postList.concat(payload);
     },
     GET_POST_ALL(state, payload) {
-      state.postAll = payload;
+      state.postAll = state.postAll.concat(payload);
     },
     GET_POST_LIKE_LIST(state, payload) {
       state.postLikeList = payload;
@@ -84,8 +84,14 @@ export default {
     MODIFY_POST_LIST(state, payload) {
       state.postList[payload.idx].postId = state.post;
     },
+    MODIFY_POST_ALL(state, payload) {
+      state.postAll[payload.idx].postId = state.post;
+    },
     RESET_POST_LIST(state) {
       state.postList = [];
+    },
+    RESET_POST_ALL(state) {
+      state.postAll = [];
     },
   },
   actions: {
@@ -99,14 +105,8 @@ export default {
       //     console.log(err);
       // })
     },
-    getPostAll(store) {
-      const URL = API.url + postAPI.select_all();
-      axios
-        .get(URL)
-        .then((res) => {
-          store.commit("GET_POST_ALL", res.data);
-        })
-        .catch((err) => console.error(err));
+    getPostAll(store, payload) {
+      store.commit("GET_POST_ALL", payload);
     },
     getUserPostList(store, payload) {
       axios({
@@ -210,8 +210,14 @@ export default {
     resetPostList(store) {
       store.commit("RESET_POST_LIST");
     },
+    resetPostAll(store) {
+      store.commit("RESET_POST_ALL");
+    },
     modifyPostList(store, payload) {
       store.commit("MODIFY_POST_LIST", payload);
+    },
+    modifyPostAll(store, payload) {
+      store.commit("MODIFY_POST_ALL", payload);
     },
   },
 };

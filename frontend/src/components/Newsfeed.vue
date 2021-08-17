@@ -143,7 +143,7 @@
             </v-sheet>
           </div>
           <div slot="no-results" class="mt-4">
-            <v-sheet
+            <!-- <v-sheet
               block
               class="pa-5 mx-auto d-flex align-center justify-center"
               rounded="xl"
@@ -153,7 +153,7 @@
                 <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
                 <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
               </div>
-            </v-sheet>
+            </v-sheet> -->
           </div>
         </infinite-loading>
 

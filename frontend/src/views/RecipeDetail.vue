@@ -119,7 +119,7 @@
           </div>
           <div class="infoBelowOneComment">
             <div class="infoFirstLine">
-              <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
+              <span class="oneInfo">좋아요{{ recipeComment.likecount }}개</span>
               <span class="oneInfo" @click="onReplyClick(recipeComment)">{{ replyCommentId!==recipeComment.recipeCommentId ? '답글달기' : '답글취소' }}</span>
               <div class="oneInfo">
                 <!-- 댓글 수정 -->
@@ -205,17 +205,19 @@ export default {
     updateModal: false,
   }),
   methods: {
-    ...mapActions('recipe', ['fetchRecipeDetail', 'fetchRecipeComments', 'registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
+    ...mapActions('recipe', ['fetchRecipeDetail', 'fetchRecipeComments', 'fetchRecipeLikeList', 'registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
     'registRecipeCommentReply', 'likeRecipeCommentReply', 'fetchRecipeReplyLikeList', 'modifyRecipeReply', 'deleteRecipeReply',]),
     changeLine (content) {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />');
     },
-    onRecipeLikeBtnClick () {
+    async onRecipeLikeBtnClick () {
       const data = {
         userId: this.userinfo.userid,
         recipeId: this.recipe.recipeId,
       }
-      this.likeRecipe(data)
+      await this.likeRecipe(data)
+      await this.fetchRecipeLikeList(this.userinfo.userid);
+      await this.fetchRecipeDetail(this.recipe.recipeId);
     },
     onRecipeUpdateClick () {
       this.updateModal = true
