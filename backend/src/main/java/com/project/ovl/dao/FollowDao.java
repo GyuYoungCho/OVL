@@ -21,7 +21,7 @@ public interface FollowDao extends JpaRepository<Follow, Integer>{
 	@Transactional
 	int deleteByfromIdUseridAndToIdUserid(int fromIdUserid, int toIdUserid);
 	
-	Page<User> findFromIdByToIdUserid(int user_id, Pageable pageable);
-	Page<User> findToIdByFromIdUserid(int user_id, Pageable pageable);
+	Page<Follow> findByToIdUserid(int user_id, Pageable pageable);
+	Page<Follow> findByFromIdUserid(int user_id, Pageable pageable);
 
 }

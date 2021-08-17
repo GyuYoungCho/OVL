@@ -14,10 +14,6 @@
       </div>
 
       <div v-if="ordCheck">
-        <div v-if="postAll.length==0 && search.length>0" class="noResult">
-            <img src="@/assets/image/noResult.png" alt="">
-            <div class="mt-3">검색 결과가 존재하지 않습니다</div>
-        </div>
         <div v-for="(info, idx) in postAll" :key="idx" class="mt-4">
             
             <div>
@@ -62,19 +58,16 @@
 
       <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
         <div slot="no-more" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;">
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">끝</h4>
-              </div>
-            </v-sheet>
+            <div class="noResult">
+                <img src="@/assets/image/noResult.png" alt="">
+                <div class="mt-3">불러올 목록이 없어요</div>
+            </div>
           </div>
           <div slot="no-results" class="mt-4">
+            <div v-if="postAll.length==0 && search.length>0" class="noResult">
+                <img src="@/assets/image/noResult.png" alt="">
+                <div class="mt-3">검색 결과가 존재하지 않습니다</div>
+            </div>
           </div>
         </infinite-loading>
 
@@ -104,6 +97,8 @@ export default {
         order : [
             "닉네임", "게시글",
         ],
+        pageNumber: 0,
+        pageSize: 3,
     }
   },
   methods: {
@@ -160,14 +155,13 @@ export default {
       
       if(this.ord == '닉네임' && this.search!=''){
         this.pageSize = 10
-        this.pageNumber = 0
         let params = new URLSearchParams();
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
         params.append("keyword", this.search);
         axios.get(API.url + feedAPI.select_alluser(),{params})
           .then(res => {
-            console.log(res.data.content)
+            
             if (res.data.content.length > 0) {
                 this.getUserList(res.data.content)
                 $state.loaded();
@@ -182,14 +176,13 @@ export default {
         })
       }else if(this.ord=='게시글' && this.search!=''){
         this.pageSize = 5
-        this.pageNumber = 0
         let params = new URLSearchParams();
         params.append("size", this.pageSize);
         params.append("page", this.pageNumber);
         params.append("keyword", this.search);
         axios.get(API.url + feedAPI.postsearch(),{params})
           .then(res => {
-            console.log(res.data.content)
+            
             if (res.data.content.length > 0) {
                 this.getPostAll(res.data.content)
                 this.getPostLikeList(this.userinfo.userid)
@@ -209,63 +202,18 @@ export default {
  computed: {
     ...mapGetters("user", (["userinfo", "userlist"])),
     ...mapGetters("post", (["postAll", "postLikeList"])),
-    // searchPost() {
-    //   // 대소문자 구분 x
-    //   const search = this.search.toLowerCase()
-    //   if (this.ord == '닉네임' || search=="") return []
-      
-    //   // 포함된 단어 거르기
-    //   let allitems = this.postAll.filter(item => {
-    //     const text = item.postId.content.toLowerCase()
-
-    //     return text.indexOf(search) > -1
-    //   })
-
-    //   // 포함된 단어 위치 인덱스 기준 정렬
-    //   allitems = allitems.sort(function(a, b) {
-    //       let x = a.postId.content.indexOf(search);
-    //       let y = b.postId.content.indexOf(search);
-    //       if (x < y)  return -1;
-    //       if (x > y) return 1;
-    //       return 0;
-    //   });
-    //   return (allitems.length >5) ? allitems.slice(0,5) : allitems
-    // },
-    // searchUser(){ // 위와 같은 원리
-    //   const search = this.search.toLowerCase()
-      
-    //   if(!search || this.ord=='게시글') return []
-      
-    //   let allitems = this.userlist.filter(item => {
-    //     const text = item.nickname.toLowerCase()
-    //     return text.indexOf(search) > -1
-    //   })
-      
-    //   allitems = allitems.sort(function(a, b) {
-    //       let x = a.nickname.indexOf(search);
-    //       let y = b.nickname.indexOf(search);
-    //       if (x < y)  return -1;
-    //       if (x > y) return 1;
-    //       return 0;
-    //   });
-    //    return (allitems.length >3) ? allitems.slice(0,5) : allitems
-    // },
+    
  },
  watch:{
-    search(newVal){
-      if(newVal==null) this.query =''
-      console.log(this.postAll.length)
+    search: function() {
       if(this.ord=="게시글") this.resetPostAll();
       else this.resetUserList();
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
     ord : function() {
-      this.search = ''
-     
       this.resetUserList();
       this.resetPostAll();
-      
       this.pageNumber = 0;
       this.$refs.infiniteLoading.stateChanger.reset();
     },
