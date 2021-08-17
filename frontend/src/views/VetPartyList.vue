@@ -7,7 +7,7 @@
         <!-- 지도 -->
         <map-view class="mt-2" :step="step"></map-view>
          <!-- 내가 만들었거나 참여한 곳 -->
-        <div class="mt-5" v-if="userpots && userpots.length!=0">
+        <div class="mt-5 vet-background" v-if="userpots && userpots.length!=0">
           <user-pot-list v-for="(userpot, index) in userpots" :key="index" :userpot="userpot"
           @openDetailModal="openDetailModal"></user-pot-list>
         </div>

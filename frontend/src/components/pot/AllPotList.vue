@@ -15,7 +15,7 @@
         
         <v-icon>mdi-map-marker</v-icon>
         
-            <span class="p">{{this.potitem.restaurant_name}}</span>
+            <span>{{this.potitem.restaurant_name}}</span>
         
         </v-row>
         

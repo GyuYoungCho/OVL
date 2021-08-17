@@ -1,39 +1,38 @@
 <template>
-  <div class="d-flex">
+  <v-container class="vet-wrap">
     <!-- 달력 -->
-    <div>
-      <v-icon class="veticons">mdi-calendar-month</v-icon>
+    <div class="vetIconsWrap">
+      <v-icon class="veticons mr-2">mdi-calendar-month</v-icon>
       <span>{{this.meet_date}}</span>    
     </div>
-    
+    <v-divider vertical></v-divider>
     <!-- 시간  -->
-    <div>
-      <v-icon class="veticons">mdi-clock-time-nine-outline</v-icon>
+    <div class="vetIconsWrap">
+      <v-icon class="veticons mr-2">mdi-clock-time-nine-outline</v-icon>
       <span>{{this.meet_time}}</span>
     </div>
-    
+    <v-divider vertical></v-divider>
     <!-- 인원수 -->
-    <div>
-      <v-icon class="veticons">mdi-account-outline</v-icon>
-      <span>{{this.userpot.pot_count}}명/</span>
-      <span>{{this.userpot.total_people}}명</span>
+    <div class="vetIconsWrap">
+      <v-icon class="veticons mr-2">mdi-account-outline</v-icon>
+      <div>{{this.userpot.pot_count}}명 / {{this.userpot.total_people}}명 </div>
     </div>
-    
+    <v-divider vertical></v-divider>
     <!-- 아이콘 -->
-    <div>
+    <div class="test99">
       <img src="@/assets/icon/meat.png" v-if="btnActive[4]" />
       <img src="@/assets/icon/fish.png" v-else-if="btnActive[3]" />
       <img src="@/assets/icon/milk.png" v-else-if="btnActive[2]" />
       <img src="@/assets/icon/egg.png" v-else-if="btnActive[1]" />
       <img src="@/assets/icon/vege.png" v-else />
     </div>
-    
+    <v-divider vertical></v-divider>
     <!-- 설정 -->
     <div @click="openDetailModal(true)">
         <v-icon class="veticons">mdi-dots-horizontal</v-icon>
     </div>
 
-  </div>
+  </v-container>
 </template>
 
 <script>

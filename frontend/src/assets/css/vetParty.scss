@@ -54,7 +54,7 @@
   }
 
   img {
-    width: 24px;
+    width: 15px;
   }
 
   .BtnComp {
@@ -143,6 +143,29 @@
   }
 }
 
+.vet-background {
+  background-color: $hy-green;
+  border-radius: 8px;
+}
+
+// 수술된 클래스들
+
 .veticons {
-  font-size: 17px !important;
+  font-size: 19px !important;
+}
+
+.vet-wrap {
+  padding: 6px !important;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.test99 {
+  height: 15px;
+}
+
+.vetIconsWrap {
+  display: flex;
+  align-items: center;
 }
