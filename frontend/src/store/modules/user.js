@@ -166,15 +166,15 @@ export default {
     logout({ commit }) {
       commit("SET_LOGOUT");
     },
-    deleteUser({ commit, state }) {
+    deleteUser({ commit }, userid) {
       let token = localStorage.getItem("access-token");
       axios({
         method: "delete",
-        url: API.url + userAPI.delete(state.userinfo.userid),
+        url: API.url + userAPI.delete(userid),
         headers: { "access-token": token },
       })
         .then(() => {
-          alert("탈퇴가 정상적으로 처리 되었습니다.");
+         // alert("탈퇴가 정상적으로 처리 되었습니다.");
           commit("SET_LOGOUT");
         })
         .catch((err) => {
