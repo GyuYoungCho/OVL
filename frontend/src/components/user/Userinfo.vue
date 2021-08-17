@@ -1,6 +1,6 @@
 <template>
 <v-container>
-    
+    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
         
     <div class="text-right">
         <v-row justify="end">
@@ -52,7 +52,8 @@
     </p>
     <!-- 회원가입 버튼 -->
     <div>
-        <button class="finalBtn" @click="onModifyUserBtnClick">회원 정보 수정</button>
+        <button class="modifyBtn" @click="onModifyUserBtnClick">회원 정보 수정</button>
+        <button class="deleteBtn" @click="onClickDeleteUser">회원 탈퇴</button>
     </div>
     </section>
     </v-container>
@@ -63,8 +64,12 @@ import {mapGetters, mapState} from "vuex"
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+    components: {
+        FlashModal,
+    },
     data() {
         return {
             nicknameValid: false,
@@ -74,7 +79,9 @@ export default {
             phone: '',
             password: '',
             passwordCheck: '',
-            account_open: false,
+            account_open: '',
+            modalOpen: false,
+            modalContent: '',
         }
     },
     created() {
@@ -130,9 +137,13 @@ export default {
             //비공개 한다.
             if(this.account_open){
                 send_account = 1;
+            }else if(this.account_open === 1){
+                send_account = 1;
             }
             //아닐 경우 공개 한다.
-            console.log("계정 비공개.공개 정보:", this.account_open)
+            console.log("계정 비공개.공개 정보:", typeof this.account_open)
+            console.log("계정 비공개.공개 정보2:", typeof send_account)
+            
             let pw = '';
             if(this.password.length > 0){
                 pw = this.password;
@@ -144,7 +155,6 @@ export default {
                 "phone": this.phone,
                 "name": '',
                 "email": "string",
-                "challengeId": this.userinfo.challengeId,
                 "account_open" : send_account,
             }
 
@@ -157,25 +167,38 @@ export default {
                 .catch(err => 
                 console.error(err))
         },
+        onClickDeleteUser(){
+            this.$store.dispatch('user/deleteUser', this.userinfo.userid);
 
-        onModifyAccountOpenToggle(open) {
-            // axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
-            // .then(res => {
-            //     console.log(res.data)
-            //     })
-            // .catch(err => 
-            //     console.error(err)
-            // )
-            console.log("계정 여부", open)
+            this.modalContent = "탈퇴가 정상적으로 처리 되었습니다."
+            this.modalOpen = true
+            setTimeout(() => {
+            this.modalOpen = false
+            this.logout()
+            this.$router.push({name: 'Main'})
+            }, 1000);
+        },
+        // onModifyAccountOpenToggle(open) {
+        //     // axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
+        //     // .then(res => {
+        //     //     console.log(res.data)
+        //     //     })
+        //     // .catch(err => 
+        //     //     console.error(err)
+        //     // )
+        //     console.log("계정 여부", open)
             
-        }
+        // }
     },
-    watch:{
-        account_open(val){
-            let open = val? 0 : 1
-            this.onModifyAccountOpenToggle(open)
-        }
-    }
+    // watch:{
+    //     account_open(val){
+    //        // let open = val? 0 : 1
+    //         //this.onModifyAccountOpenToggle(open)
+
+    //         console.log("계정 여부",val)
+    //         console.log("account-open", this.account_open)
+    //     }
+    // }
 }
 </script>
 

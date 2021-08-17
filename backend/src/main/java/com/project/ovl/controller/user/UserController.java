@@ -224,12 +224,10 @@ public class UserController {
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
 	public ResponseEntity<String> join(@RequestBody User user){
-		
 		Challenge basic = challengedao.findByChallengeId(1);
 		User saveUser = new User(0, user.getEmail(), user.getNickname(), user.getName(), user.getPhone(),
 				passwordEncoder.encode(user.getPassword()), 0, 0, 0, "https://ovl-bucket.s3.ap-northeast-2.amazonaws.com/defaultImg.jpg" ,basic);
-		
-		userDao.save(saveUser);
+		System.out.println("saveUser : "+saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
 	}

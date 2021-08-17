@@ -124,7 +124,7 @@ export default {
   created() {
       axios({
         method: "get",
-        url: API.url + postAPI.select_all(this.$route.params.userid),
+        url: API.url + postAPI.select_my(this.$route.params.userid),
       }).then((res)=>{
         if(res.data){
           this.otherpostList = res.data

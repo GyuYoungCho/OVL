@@ -166,6 +166,9 @@ export default {
       const { email, name, nickname, password, phone } = this
       const data = { email, name, nickname, password, phone }
 
+      console.log("비밀번호 ; "+this.password);
+      console.log("data : ",data);
+
       axios.post(url, data)
         .then((res)=>{
           if (res.data=="success") {
