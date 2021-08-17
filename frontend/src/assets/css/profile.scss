@@ -137,3 +137,15 @@
     color: $freditgreen;
   }
 }
+
+.deleteBtn {
+  margin-top: 2vh;
+}
+
+.modifyBtn {
+  margin-top: 2vh;
+  background-color: $freditgreen !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
+}

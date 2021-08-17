@@ -33,7 +33,7 @@ public class User {
     private String name;
     private String phone;
     
-    @JsonIgnore
+//    @JsonIgnore
     private String password;
     private int experience;
     private int account_open;
