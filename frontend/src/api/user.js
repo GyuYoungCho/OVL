@@ -40,9 +40,6 @@ export default {
   select(user_id) {
     return `/user/select/${user_id}`;
   },
-  select_all() {
-    return `/user/select_all`;
-  },
   delete(user_id) {
     return `/user/delete/${user_id}`;
   },
