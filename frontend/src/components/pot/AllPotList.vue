@@ -7,7 +7,7 @@
         <profile-name :user="potitem.userid"></profile-name>
         <v-spacer></v-spacer>
         <div class="allPotListNameIcon">
-          <button v-if="avail" class="notBtnComp">마감</button>
+          <button v-if="avail" class="notBtnComp mr-2">마감</button>
           <v-icon class="allPotListNameMarker" small>mdi-map-marker</v-icon>
         </div>
         <span>{{this.potitem.restaurant_name}}</span>
