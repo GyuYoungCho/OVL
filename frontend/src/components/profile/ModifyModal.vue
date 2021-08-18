@@ -4,7 +4,7 @@
     <v-card>
       <!-- 모달 타이틀 영역 -->
       <v-toolbar dense color="#004627">
-        <v-toolbar-title class="modalTitle">프로필 사진 수정</v-toolbar-title>
+        <v-toolbar-title class="modalTitle">{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="modalCancelBtnClick">
           <v-icon>mdi-close</v-icon>
@@ -39,6 +39,7 @@ export default {
     modalOpen: Boolean,
     modalContent: String,
     type: String, // 1 : 수정 안내, 2 : 수정 완료
+    title:String, 
   },
   methods: {
     modalConfirmBtnClick () {
