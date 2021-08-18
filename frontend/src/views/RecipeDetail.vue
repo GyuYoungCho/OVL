@@ -332,7 +332,8 @@ export default {
         }
       }
       const recipeCommentId = this.modifyCommentId
-      this.modifyRecipeReply({ data, recipeCommentId })
+      const recipeId = this.recipe.recipeId
+      this.modifyRecipeReply({ data, recipeCommentId, recipeId })
       this.contentMode = "comment"
       this.content = ""
       this.modifyReplyId = -1
