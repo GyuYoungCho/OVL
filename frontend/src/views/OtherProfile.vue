@@ -8,7 +8,7 @@
         <!-- 신고 모달 -->
         <ReportModal :modalOpen="isReportOpen" :isReport="isReport" :title="reportModalTitle" :fromId="userinfo.userid" :toId="profileUser.userid"
         @onCancelBtnClick="isReportOpen = false" @onConfirmBtnClick="reportRegistOrCancel"/>
-        <!-- <ChallengeConfirm :user="profileUser" :isCertOpen="isCertOpen" @openCertDialog="openCertDialog"/> -->
+        <ChallengeConfirm :user="profileUser" :isCertOpen="isCertOpen" @openCertDialog="openCertDialog"/>
 
         <div centered class="container d-flex justify-content-center">
             <div class="card p-3">

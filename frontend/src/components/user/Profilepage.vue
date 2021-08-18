@@ -2,10 +2,10 @@
 <v-container>
     <section  class="profilepage">
         <!-- 프로필 사진 수정 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicModal" modalContent="사진을 수정하시겠습니까?" type=1
+        <ModifyModal :modalOpen="isModifyPicModal" title="프로필 사진 수정" modalContent="사진을 수정하시겠습니까?" type=1
         @modalConfirmBtnClick="onUploadPicModalClick" @modalCancelBtnClick="isModifyPicModal = false" />
         <!-- 프로필 사진 수정 완료 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicComplete" modalContent="수정이 완료되었습니다" type=2 />
+        <ModifyModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
         <!-- Rank 선택 시 등급 안내 모달 -->
         <RankModal :modalOpen="isRankModalOpen" :user="userinfo" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />
         <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
