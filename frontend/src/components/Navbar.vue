@@ -68,7 +68,7 @@
 
             <RouterLink :to="{name:'UserSearch'}">
               <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-map-marker-radius-outline</v-icon>
+                <v-icon>mdi-account-search-outline</v-icon>
                 <v-list-item-title class="ms-4">유저 검색</v-list-item-title>
               </v-list-item>
             </RouterLink>

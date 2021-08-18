@@ -17,10 +17,12 @@
           @openDetailModal="openDetailModal" @openAttendModal="openAttendModal"></all-pot-list>
           <v-divider class="mt-2"></v-divider>
         </div>
-        <!-- 확인메시지용 -->
+        <!-- 확인메시지용 조그만거 -->
         <confirm-snack :snackbar="snackbar" :text="message"></confirm-snack>
+        <!-- 모듈화된 모달 -->
         <vet-party-detail :modalDetail="modalDetail"
             @openMessageModal="openMessageModal" @openDetailModal="openDetailModal"></vet-party-detail>
+        <!-- axios 들어있는데 지워야할 모달 -->
         <message-modal :modalMessage="modalMessage" :sign="sign"
                 @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
       </section>
