@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <FlashModal :modalOpen="isRecipeUpdate" title="레시피 수정" modalContent="레시피가 수정되었습니다" />
     <section class="recipeCreate">
       <h1>레시피 수정</h1>
       <!-- 요리 이름 -->
@@ -71,8 +72,10 @@ import axios from 'axios'
 import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
 import fileUpload from '@/api/fileUpload.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+  components: {FlashModal},
   data () {
     return {
       isIngredient: true,
@@ -97,6 +100,7 @@ export default {
       modifyContentObj: {},
       plusContentList: [],
 
+      isRecipeUpdate:false
     }
   },
 
@@ -218,7 +222,12 @@ export default {
         if (response.data=="success") {
           this.fetchRecipeDetail(this.recipe.recipeId)
           this.fetchRecipeComments(this.recipe.recipeId)
-          this.$router.push({ name: 'RecipeDetail', params: {recipeId: this.recipe.recipeId} })
+          this.isRecipeUpdate = true;
+          setTimeout(() => {
+            this.isRecipeUpdate = false
+            this.$router.push({ name: 'RecipeDetail', params: {recipeId: this.recipe.recipeId} })
+          }, 1000)
+          
         }
       })
       .catch((error) => {

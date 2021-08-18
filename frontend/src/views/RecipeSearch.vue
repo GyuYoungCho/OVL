@@ -3,11 +3,18 @@
     <section class="recipeSearch">
       <!-- 레시피 검색 부분 -->
       <RecipeSearchBar @searchKeyword="searchKeyword" @selectOrd="selectOrd" />
+
+      <div v-if="recipes.length==0 && query.length!=0" class="noResult">
+        <img src="@/assets/image/noResult.png" alt="">
+        <div class="mt-3">검색 결과가 존재하지 않습니다</div>
+      </div>
+      <div v-else-if="recipes.length==0" class="noResult">
+        <img src="@/assets/image/noResult.png" alt="">
+        <div class="mt-3">레시피가 존재하지 않습니다 <br> 레시피를 새로 등록해보세요!</div>
+      </div>
       
       <!-- 레시피 목록 -->
       <div v-for="(recipe, idx) in recipes" :key="idx" class="oneRecipe">
-        <!-- 검색 조건이랑 맞으면 -->
-        <!-- <div v-if="containmentValid(recipe)"> -->
         <div>  
           <ProfileName :user="recipe.userid"></ProfileName>
           <img :src="recipe.filepath" alt="" @click="onImgClick(recipe)" class="recipePic">
@@ -28,18 +35,10 @@
       <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
         <!-- <div slot="spinner"></div> -->
         <div slot="no-more" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;"
-            >
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">끝</h4>
-              </div>
-            </v-sheet>
+          <hr>
+          <div class="mt-2">레시피 끝</div>
+        </div>
+        <div slot="no-results" class="mt-4">
         </div>
         
         </infinite-loading>
@@ -109,15 +108,6 @@ export default {
     calTime (recipe) {
       return moment(recipe.time).fromNow()
     },
-    // onSearchInput () {
-    //   this.searchClicked = false
-    // },
-    // onSearchBtnClick () {
-    //   this.searchClicked = true
-    // },  
-    // containmentValid (recipe) {
-    //   return this.searchClicked ? recipe.title.includes(this.query) || recipe.userid.name.includes(this.query) || recipe.content.includes(this.query) : true
-    // },
     infiniteHandler($state) {
       
       var params = new URLSearchParams();
@@ -164,8 +154,6 @@ export default {
   },
   created () {
     this.resetRecipeList()
-    // this.fetchRecipes()
-    // this.fetchRecipeLikeList(this.userinfo.userid)
   },
 
 }

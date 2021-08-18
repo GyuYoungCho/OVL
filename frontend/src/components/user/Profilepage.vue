@@ -5,11 +5,11 @@
         <ModifyModal :modalOpen="isModifyPicModal" title="프로필 사진 수정" modalContent="사진을 수정하시겠습니까?" type=1
         @modalConfirmBtnClick="onUploadPicModalClick" @modalCancelBtnClick="isModifyPicModal = false" />
         <!-- 프로필 사진 수정 완료 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
+        <FlashModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
         <!-- Rank 선택 시 등급 안내 모달 -->
         <RankModal :modalOpen="isRankModalOpen" :user="userinfo" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />
         <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
-        <FollowModal :modalOpen="isFollowModalOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="isFollowModalOpen = false" />
+        <FollowModal v-if="detailFollowUser.length>0" :modalOpen="isFollowModalOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="followModalCancel" />
 
         <ChallengeConfirm :user="userinfo" :certdialog="certdialog" @openCertDialog="openCertDialog"/>
             <div centered class="container d-flex justify-content-center">
@@ -146,10 +146,11 @@ import userAPI from '@/api/user.js'
 import ModifyModal from '@/components/profile/ModifyModal.vue'
 import RankModal from '@/components/profile/RankModal.vue'
 import FollowModal from '@/components/profile/FollowModal.vue'
+import FlashModal from '@/components/signup/FlashModal.vue'
 import filepath from '@/api/fileUpload.js';
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChallenging, ModifyModal, RankModal, FollowModal},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChallenging, ModifyModal, RankModal, FollowModal, FlashModal},
 
     data () {
         
@@ -176,6 +177,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
 
             isRankModalOpen: false, // 랭크 모달 클릭
             isFollowModalOpen: false, // 팔로우 모달 클릭
+            isFollowModalClick: false, // 팔로우 모달 클릭 했니?
 
             followModalTitle:"Follow", // 팔로우 모달 타이틀
         }
@@ -200,6 +202,13 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
         following() {
             return this.followingList;
         },
+        detailFollow() {
+            return this.detailFollowUser;
+        },
+        profileUser() {
+            // console.log("userinfo : ", this.userinfo)
+            return this.userinfo;
+        }
     },
     watch: {
         follower(val) {
@@ -208,6 +217,12 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
         following(val) {
             this.followingCnt = val.length
         },
+        detailFollow(val) {
+            if (this.isFollowModalClick && val.length>0) this.isFollowModalOpen = true;
+        },
+        profileUser(val) {
+            if (val.challengeId.challengeId==1) this.isNotChallenging = true;
+        }
     },
     created() {
         this.nickname = this.userinfo.nickname;
@@ -235,8 +250,11 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
             this.step = 3;
         }
     },
-
     methods: {
+        followModalCancel() {
+            this.isFollowModalOpen = false;
+            this.isFollowModalClick = false;
+        },
         onClickDefaultImg() {
             this.isDefaultImg = true
             this.userinfo.filepath = this.defailtImgFilePath
@@ -295,16 +313,16 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
             this.isRankModalOpen = true;
         },
         onClickFollow(num) { // Dialog 열리는 동작
+            this.isFollowModalClick = true;
             if(num == 0){ // following
                 this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
-            }else{ // follower
+            }else { // follower
                 this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
                 this.followModalTitle = "Follower" // 팔로우 모달 타이틀
-            }
-            this.isFollowModalOpen = true;
+            } 
         },
         openCertDialog(val){
-            console.log("챌린지 선택 !")
+            console.log("챌린지 선택 ! ", this.userinfo.challengeId.challengeId)
             if(this.userinfo.challengeId.challengeId!=1)
                 this.certdialog = val
         },

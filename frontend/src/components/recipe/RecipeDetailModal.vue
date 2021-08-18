@@ -2,8 +2,8 @@
   <v-dialog v-model="modalOpen" max-width="300" persistent>
     <v-card>
       <!-- 모달 타이틀 영역 -->
-      <v-toolbar dense color="#004627">
-        <v-toolbar-title class="modalTitle">{{ recipe.title }}</v-toolbar-title>
+      <v-toolbar dense color="#49784B">
+        <v-toolbar-title class="modalTitle">{{ modalTitle }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="modalCancelBtnClick">
           <v-icon>mdi-close</v-icon>
@@ -20,14 +20,9 @@
         <div class="modalContentButtonArea">
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
-          <!-- <button class="modalContentButton" @click="onDeleteReplyModalClick" v-if="deletingReply">확인</button>
-          <button class="modalContentButton" @click="onDeleteCommentModalClick" v-else-if="deletingComment">확인</button>
-          <button class="modalContentButton" @click="onDeleteConfirmClick" v-else>확인</button> -->
           <button class="modalContentButton" @click="modalConfirmBtnClick">확인</button>
-          <v-spacer></v-spacer>
+          &nbsp;&nbsp;&nbsp;
           <button class="modalContentButton" @click="modalCancelBtnClick">취소</button>
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
         </div>
       </div>
       </v-container>
@@ -40,7 +35,7 @@ export default {
   props: {
     modalOpen: Boolean,
     modalContent: String,
-    recipe: Object,
+    modalTitle: String, 
   },
   methods: {
     modalConfirmBtnClick () {

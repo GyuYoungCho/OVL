@@ -2,7 +2,7 @@
   <v-dialog v-model="modalDetail" @click:outside="cancelDetail()" scrollable max-width="300">
     <v-card>
       <!-- 모달의 초록색 상단바 영역 -->
-      <v-toolbar color="#004627" dark dense>
+      <v-toolbar color="#49784B" dark dense>
         <v-toolbar-title >{{this.selectpot.title}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="cancelDetail()" justify="end">

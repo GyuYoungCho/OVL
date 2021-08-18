@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+    <FlashModal :modalOpen="modalOpen" title="로그아웃" :modalContent="modalContent" />
     <!-- dense 하면 좀더 좁은 nav bar (48px 이 가능함) -->
       <v-app-bar color="white" dense class="navBar">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -118,7 +118,7 @@ import FlashModal from '@/components/signup/FlashModal.vue'
       ...mapActions ("user", ["getTokenUserInfo", "logout"]),
 
       onClickLogout(){
-        this.modalContent = "로그아웃 되었습니다."
+        this.modalContent = "로그아웃 되었습니다"
         this.modalOpen = true
         setTimeout(() => {
           this.modalOpen = false

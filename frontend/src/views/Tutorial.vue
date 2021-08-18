@@ -27,8 +27,8 @@
     <v-dialog v-model="willYouJoin" max-width="300">
       <v-card>
         <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
-          <v-toolbar-title class="modalTitle">회원가입하기</v-toolbar-title>
+        <v-toolbar dense color="#49784B">
+          <v-toolbar-title class="modalTitle">회원가입</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="willYouJoin = false">
             <v-icon>mdi-close</v-icon>
@@ -39,11 +39,8 @@
         <div class="modalContent">
           <div class="mb-3">
             <span class="modalContentMessage">
-              회원 가입 페이지로 이동하시겠습니까?
+              회원가입 페이지로 이동합니다
             </span>
-          </div>
-          <div class="modalContentButtonArea">
-            <button class="modalContentButton" @click="finallyJoin">확인</button>
           </div>
         </div>
         </v-container>
@@ -87,6 +84,10 @@ export default {
     clickRight () {
       if (this.page === 5 ) {
         this.willYouJoin = true
+        setTimeout(()=>{
+          this.willYouJoin = false
+          this.$router.push({name:'Signup'})
+        }, 1000)
       } else {
         this.page++
       }

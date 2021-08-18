@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    <!-- 레시피 등록 성공 시 -->
+    <FlashModal :modalOpen="isRecipeRegist" title="레시피 등록" modalContent="레시피가 등록되었습니다" />
     <section class="recipeCreate">
       <h1>레시피 작성</h1>
       <!-- 요리 이름 -->
@@ -22,8 +24,8 @@
 
       <!-- 재료와 과정 구분 탭 -->
       <article>
-        <button :class="{ 'tabBtn': isIngredient, 'unselectedTabBtn': !isIngredient }" @click="onTabBtnClick">재료</button>
-        <button :class="{ 'tabBtn': !isIngredient, 'unselectedTabBtn': isIngredient }" @click="onTabBtnClick">과정</button>
+        <button :class="{ 'tabBtn': isIngredient, 'unselectedTabBtn': !isIngredient }" @click="onTabBtnClick"><span style="font-size:large">재료</span></button>
+        <button :class="{ 'tabBtn': !isIngredient, 'unselectedTabBtn': isIngredient }" @click="onTabBtnClick"><span style="font-size:large">과정</span></button>
       </article>
       <div class="tab-div">
         <!-- 재료 탭 -->
@@ -59,7 +61,7 @@
       </div>
       <div>
         <button @click="onRecipeBtnClick" class="finalBtn" :class="{ 'bg-freditgreen': valid, 'disabledBtn': !valid }">
-          레시피 작성 완료
+          레시피 등록
         </button>
       </div>
     </section>
@@ -74,8 +76,10 @@ import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
 import { mapGetters } from 'vuex'
 import fileUpload from '@/api/fileUpload.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+  components: {FlashModal},
   data: () => ({
     isIngredient: true,
     title: "",
@@ -85,6 +89,8 @@ export default {
     processImgFiles: [],
     processLastIdx: 0,
     changeProcessPhotoIdx: -1,
+
+    isRecipeRegist:false, 
 
     tab: null,
   }),
@@ -162,7 +168,13 @@ export default {
       axios.post(URL, params)
       .then((response) => {
         // alert("보냈슴!");
-        if (response.data.job=="success") this.$router.push({name:"RecipeSearch"});
+        if (response.data.job=="success") {
+          this.isRecipeRegist = true
+          setTimeout(() => {
+            this.isRecipeRegist = false
+            this.$router.push({name:"RecipeSearch"});
+          }, 1000);
+        }
       })
       .catch((error) => {
         // alert("못보냈슴!");

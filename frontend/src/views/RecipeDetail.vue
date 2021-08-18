@@ -1,19 +1,21 @@
 <template>
 <v-container>
   <!-- 레시피 답글 삭제 모달 -->
-  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="답글을 삭제하시겠습니까?" modalTitle="답글 삭제"
   @modalConfirmBtnClick="onDeleteReplyModalClick" v-if="deletingReply" @modalCancelBtnClick="deleteModal = false" />
   <!-- 레시피 댓글 삭제 모달 -->
-  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="댓글을 삭제하시겠습니까?" modalTitle="댓글 삭제"
   @modalConfirmBtnClick="onDeleteCommentModalClick" v-else-if="deletingComment" @modalCancelBtnClick="deleteModal = false" />
   <!-- 레시피 삭제 모달 -->
-  <RecipeDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :recipe="recipe"
+  <RecipeDetailModal :modalOpen="deleteModal" modalContent="레시피를 삭제하시겠습니까?" modalTitle="레시피 삭제"
   @modalConfirmBtnClick="onDeleteConfirmClick" v-else @modalCancelBtnClick="deleteModal = false" />
   
 
   <!-- 레시피 수정 모달 -->
-  <RecipeDetailModal :modalOpen="updateModal" modalContent="정말로 수정하시겠습니까?" :recipe="recipe"
+  <RecipeDetailModal :modalOpen="updateModal" modalContent="레시피를 수정하시겠습니까?" modalTitle="레시피 수정"
   @modalConfirmBtnClick="onUpdateConfirmClick" @modalCancelBtnClick="updateModal = false" />
+  <!-- 레시피 삭제 모달 -->
+  <FlashModal :modalOpen="isRecipeDelete" title="레시피 삭제" modalContent="레시피가 삭제되었습니다" />
 
   <!-- 레시피 디테일 -->
   <section class="recipeDetail">
@@ -46,13 +48,13 @@
         </v-menu>
       </div>
     </div>
-    <div>
+    <div class="mx-1 my-2" style="font-size:large">
       {{ recipe.title}}
     </div>
     <!-- 대표 사진 -->
     <img :src="recipe.filepath" alt="" class="recipePic">
     
-    <div class="recipeContent" v-html="changeLine(recipe.content)">
+    <div class="recipeContent mx-1" v-html="changeLine(recipe.content)">
     </div>
 
     <!-- 탭 버튼 부분 -->
@@ -177,11 +179,12 @@
 <script>
 import ProfileName from '@/components/basic/ProfileName.vue'
 import RecipeDetailModal from '@/components/recipe/RecipeDetailModal.vue'
+import FlashModal from '@/components/signup/FlashModal.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   components: {
-    ProfileName, RecipeDetailModal,
+    ProfileName, RecipeDetailModal, FlashModal
   },
   data: () => ({
     tab: "ingredient",
@@ -203,6 +206,7 @@ export default {
     deletingReplyId: 0,
 
     updateModal: false,
+    isRecipeDelete: false
   }),
   methods: {
     ...mapActions('recipe', ['fetchRecipeDetail', 'fetchRecipeComments', 'fetchRecipeLikeList', 'registComment', 'likeRecipe', 'deleteRecipe', 'fetchRecipeCommentLikeList', 'likeRecipeComment', 'modifyRecipeComment', 'deleteRecipeComment', 
@@ -230,7 +234,12 @@ export default {
     },
     onDeleteConfirmClick () {
       this.deleteRecipe(this.recipe.recipeId)
-      this.$router.push({ name: 'RecipeSearch' })
+      this.deleteModal = false
+      this.isRecipeDelete = true
+      setTimeout(() => {
+        this.isRecipeDelete = false
+        this.$router.push({ name: 'RecipeSearch' })
+      }, 1000)
     },
     onRecipeTagBtnClick (option) {
       this.tab = option

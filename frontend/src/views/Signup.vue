@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <!-- 모달 -->
-    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+    <FlashModal :modalOpen="modalOpen" :title="modalTitle" :modalContent="modalContent" />
 
     <section class="signup">
       <img src="@/assets/image/OVL_logo.png" alt="" @click="onClickLogo">
@@ -82,6 +82,7 @@ export default {
 
     modalOpen: false,
     modalContent: "",
+    modalTitle:"",
 
     name: '',
     nickname: '',
@@ -98,19 +99,22 @@ export default {
       console.log('Nothing!')
     },
     onNicknameBtnClick () {
-      this.modalContent = "닉네임 중복 여부 확인 중입니다."
+      this.modalTitle = "닉네임 중복 확인"
+      this.modalContent = "닉네임 중복 여부 확인 중입니다"
       this.modalOpen = true
       const URL = API.url + userAPI.nickname_check(this.nickname)
       axios.get(URL)
         .then(res => {
           if (res.data === "success") {
             this.nicknameValid = true
-            this.modalContent = '사용 가능한 닉네임입니다.'
+            this.modalTitle = "닉네임 중복 확인"
+            this.modalContent = '사용 가능한 닉네임입니다'
             setTimeout(() => {
               this.modalOpen = false
             }, 1000)
           } else {
-            this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임입니다.`
+            this.modalTitle = "닉네임 중복 확인"
+            this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임입니다`
             setTimeout(() => {
               this.modalOpen = false
             }, 1000)
@@ -121,20 +125,23 @@ export default {
         })
     },
     onEmailBtnClick () {
-      this.modalContent = '인증번호를 보내고 있습니다. 잠시만 기다려주세요.'
+      this.modalTitle = "이메일 인증"
+      this.modalContent = '인증번호를 보내고 있습니다 잠시만 기다려주세요'
       this.modalOpen = true
       const URL = API.url + userAPI.email_auth('join', this.email)
       axios.get(URL)
         .then(res => {
           console.log(res)
           if (res.data === "success") {
-            this.modalContent = '인증번호가 이메일로 전송되었습니다.'
+            this.modalTitle = "이메일 인증"
+            this.modalContent = '인증번호가 이메일로 전송되었습니다'
             setTimeout(() => {
               this.modalOpen = false
               this.emailAuthNumberSent = true
             }, 1000);
           } else {
-            this.modalContent = '이미 존재하는 이메일입니다.'
+            this.modalTitle = "이메일 인증"
+            this.modalContent = '이미 존재하는 이메일입니다'
             setTimeout(() => {
               this.modalOpen = false
             }, 1000);
@@ -147,14 +154,16 @@ export default {
     axios.get(URL)
       .then(res => {
         if (res.data === "success") {
-          this.modalContent = '이메일 인증이 완료되었습니다.'
+          this.modalTitle = "이메일 인증 확인"
+          this.modalContent = '이메일 인증이 완료되었습니다'
           this.modalOpen = true
           setTimeout(() => {
             this.modalOpen = false
             this.emailValid = true
           }, 1000)
         } else {
-          this.modalContent = '인증번호가 일치하지 않습니다. 다시 인증번호를 전송해주세요.'
+          this.modalTitle = "이메일 인증 확인"
+          this.modalContent = '인증번호가 일치하지 않습니다. 다시 인증번호를 확인해주세요'
           this.modalOpen = true
           setTimeout(() => {
             this.modalOpen = false
@@ -175,7 +184,8 @@ export default {
       axios.post(url, data)
         .then((res)=>{
           if (res.data=="success") {
-              this.modalContent = "회원가입이 완료되었습니다."
+              this.modalTitle = "회원가입"
+              this.modalContent = "회원가입이 완료되었습니다"
               this.modalOpen = true
               setTimeout(() => {
                 this.modalOpen = false

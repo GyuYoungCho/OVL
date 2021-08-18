@@ -3,7 +3,7 @@
   <v-dialog v-model="modalOpen" hide-overlay max-width="300">
     <v-card>
       <!-- 모달 타이틀 영역 -->
-      <v-toolbar dense color="#004627">
+      <v-toolbar dense color="#49784B">
         <v-toolbar-title class="modalTitle">{{title}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="modalCancelBtnClick">
@@ -22,10 +22,8 @@
           <v-spacer></v-spacer>
           <v-spacer></v-spacer>
           <button class="modalContentButton" @click="modalConfirmBtnClick">확인</button>
-          <v-spacer></v-spacer>
+          &nbsp;&nbsp;&nbsp;
           <button class="modalContentButton" @click="modalCancelBtnClick">취소</button>
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
         </div>
       </div>
       </v-container>

@@ -4,11 +4,11 @@
         <!-- Rank 선택 시 등급 안내 모달 -->
         <RankModal :modalOpen="isRankModalOpen" :user="profileUser" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />    
         <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
-        <FollowModal v-if="detailFollowUser.length>0" :modalOpen="isFollowOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="isFollowOpen = false" />
+        <FollowModal v-if="detailFollowUser.length>0" :modalOpen="isFollowOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="followModalCancel" />
         <!-- 신고 모달 -->
         <ReportModal :modalOpen="isReportOpen" :isReport="isReport" :title="reportModalTitle" :fromId="userinfo.userid" :toId="profileUser.userid"
         @onCancelBtnClick="isReportOpen = false" @onConfirmBtnClick="reportRegistOrCancel"/>
-        <ChallengeConfirm :user="profileUser" :isCertOpen="isCertOpen" @openCertDialog="openCertDialog"/>
+        <ChallengeConfirm :user="profileUser" :certdialog="isCertOpen" @openCertDialog="openCertDialog"/>
 
         <div centered class="container d-flex justify-content-center">
             <div class="card p-3">
@@ -141,6 +141,7 @@ export default {
             isCertOpen: false, // 챌린지 인증 모달 오픈
             isFollowOpen: false, // 팔로우 모달 오픈
             isReportOpen: false, // 신고 모달 오픈
+            isFollowModalClick:false,
 
             isNotChallenging: false, // 챌린지 진행 여부
 
@@ -184,6 +185,9 @@ export default {
         proFileUser() {
             console.log("profileUser 변화 : ", this.proFileUser);
             return this.proFileUser;
+        },
+        detailFollow() {
+            return this.detailFollowUser;
         }
     },
     watch: {
@@ -196,6 +200,8 @@ export default {
         follower(val) {
             if (val.includes(this.userinfo.userid)) this.isFollowing = true;
             else this.isFollowing = false;
+
+            if (this.profileUser.account_open==1 && !val.includes(this.userinfo.userid)) this.isLocked = true;
             
             this.followerCnt = val.length;
         },
@@ -205,14 +211,21 @@ export default {
         profileUser(val) {
             if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
             else this.isLocked = false;
+        },
+        detailFollow(val) {
+            if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
         }
     }, 
     methods: {
         ...mapActions('user', ["getSelectUser", "getUserRank"]),
         ...mapActions('follow', ["getFollowerList", "getFollowingList", "getDetailFollowUser", "follow", "unfollow"]),
         ...mapActions('report', ["reportRegist", "selectReport", "reportCancel"]),
+        followModalCancel() {
+            this.isFollowOpen = false;
+            this.isFollowModalClick = false;
+        },
         openCertDialog(val){
-            console.log("챌린지 선택 !")
+            console.log("챌린지 선택 ! ", this.profileUser.challengeId.challengeId)
             if(this.profileUser.challengeId.challengeId!=1)
                 this.isCertOpen = val
         },
@@ -220,14 +233,15 @@ export default {
             this.isRankModalOpen = true
         },
         onClickFollow(num) { // follow Dialog 열리는 동작
-            if (this.profileUser.account_open==1) return // 비공개 계정 -> 팔로우, 팔로워 보이면 안됨
+            if (this.isLocked) return // 비공개 계정 -> 팔로우, 팔로워 보이면 안됨
 
-            if(num == 0) this.getDetailFollowUser(this.followingList)
-            else {
-                this.getDetailFollowUser(this.followerList)
-                this.followModalTitle = "Follower"
-            }
-            this.isFollowOpen = true
+            this.isFollowModalClick = true;
+            if(num == 0){ // following
+                this.getDetailFollowUser(this.followingList)
+            }else { // follower
+                this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
+                this.followModalTitle = "Follower" // 팔로우 모달 타이틀
+            } 
         },
         onClickFollowBtn() { // 팔로우 등록
             var payload = {
@@ -245,9 +259,9 @@ export default {
         },
         onClickReport() { 
             if (!this.isReport) { // 신고 안했음 이제 해야됨
-                this.reportModalTitle = "신고"
+                this.reportModalTitle = "회원 신고"
             } else { // 신고 했음 이제 취소 해야됨
-                this.reportModalTitle = "신고 취소"
+                this.reportModalTitle = "회원 신고 취소"
             }
             this.isReportOpen = true;
         },

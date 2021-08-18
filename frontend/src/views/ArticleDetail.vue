@@ -2,19 +2,22 @@
   <div>
     <v-container class="px-7 mt-4">
       <!-- 게시글 답글 삭제 모달 -->
-      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      <ArticleDetailModal :modalOpen="deleteModal" modalTitle="답글 삭제" modalContent="답글을 삭제하시겠습니까?" :post="post"
       @modalConfirmBtnClick="onDeleteReplyModalClick" v-if="deletingReply" @modalCancelBtnClick="deleteModal = false" />
       <!-- 게시글 댓글 삭제 모달 -->
-      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      <ArticleDetailModal :modalOpen="deleteModal" modalTitle="댓글 삭제" modalContent="댓글을 삭제하시겠습니까?" :post="post"
       @modalConfirmBtnClick="onDeleteCommentModalClick" v-else-if="deletingComment" @modalCancelBtnClick="deleteModal = false" />
       <!-- 게시글 삭제 모달 -->
-      <ArticleDetailModal :modalOpen="deleteModal" modalContent="정말로 삭제하시겠습니까?" :post="post"
+      <ArticleDetailModal :modalOpen="deleteModal" modalTitle="게시글 삭제" modalContent="게시글을 삭제하시겠습니까?" :post="post"
       @modalConfirmBtnClick="onDeleteConfirmClick" v-else @modalCancelBtnClick="deleteModal = false" />
       
 
       <!-- 게시글 수정 모달 -->
-      <ArticleDetailModal :modalOpen="updateModal" modalContent="정말로 수정하시겠습니까?" :post="post"
+      <ArticleDetailModal :modalOpen="updateModal" modalTitle="게시글 수정" modalContent="게시글을 수정하시겠습니까?" :post="post"
       @modalConfirmBtnClick="onUpdateConfirmClick" @modalCancelBtnClick="updateModal = false" />
+
+      <!-- 게시글 삭제 확인 -->
+      <FlashModal :modalOpen="isPostDelete" title="게시글 삭제" modalContent="게시글이 삭제되었습니다" />
       
       <!-- 게시글 시작 -->
       <div>
@@ -67,7 +70,7 @@
         </v-carousel>
 
         <!-- 내용 -->
-        <div class="my-2">{{post.content}}</div>
+        <div class="my-2 mx-1">{{post.content}}</div>
       </div>
       <!-- 게시글 끝 -->
 
@@ -146,10 +149,11 @@
 <script>
 import ProfileName from '@/components/basic/ProfileName.vue'
 import ArticleDetailModal from '@/components/article/ArticleDetailModal.vue'
+import FlashModal from '@/components/signup/FlashModal.vue'
 import {mapGetters, mapActions} from "vuex";
 export default {
   components: {
-    ProfileName, ArticleDetailModal,
+    ProfileName, ArticleDetailModal, FlashModal
   },
   data() {
     return {
@@ -174,6 +178,7 @@ export default {
       deletingReplyId: 0,
 
       updateModal: false,
+      isPostDelete:false
     }
   },
   methods: {
@@ -251,7 +256,14 @@ export default {
         "postId" : this.post.postId
       }
       var move = this.$store.dispatch("post/postDelete", payload);
-      if (move) this.$router.push({path:"/"});
+      this.deleteModal = false;
+      this.isPostDelete = true;
+      setTimeout(() => {
+        this.isPostDelete = false
+        if (move) this.$router.push({path:"/"});
+      }, 1000);
+
+      
     },
     replyClick(info) { // 답글 보기 or 숨기기
       if (this.showReply.includes(info.postCommentId)) { // 답글 이제 숨겨주자!!
