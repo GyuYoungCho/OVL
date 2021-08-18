@@ -182,7 +182,7 @@ export default {
         following() {
             return this.followingList;
         },
-        proFileUser() {
+        ProFileUser() {
             return this.proFileUser;
         },
         detailFollow() {
@@ -210,9 +210,12 @@ export default {
         following(val) {
             this.followingCnt = val.length
         },
-        profileUser(val) {
+        ProFileUser(val) {
             if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
             else this.isLocked = false;
+
+            if (val.challengeId.challengeId==1) this.isNotChallenging = true;
+            else this.isNotChallenging = false;
         },
         detailFollow(val) {
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;

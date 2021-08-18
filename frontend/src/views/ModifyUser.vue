@@ -1,8 +1,11 @@
 <template>
 <v-container>
-    <!-- 프로필 사진 수정 완료 안내 모달 -->
-    <FlashModal :modalOpen="isModifyComplete" title="회원 정보 수정" modalContent="수정이 완료되었습니다" type=2 />
-    <FlashModal :modalOpen="isUserDelete" title="회원 탈퇴" modalContent="탈퇴가 정상적으로 처리되었습니다" type=2 />
+    <!-- 회원 정보 수정 완료 안내 모달 -->
+    <FlashModal :modalOpen="isModifyComplete" title="회원 정보 수정" modalContent="수정이 완료되었습니다" />
+    <!-- 회원 삭제 완료 안내 모달 -->
+    <FlashModal :modalOpen="isUserDelete" title="회원 탈퇴" modalContent="탈퇴가 정상적으로 처리되었습니다" />
+    <!-- 닉네임 중복 확인 안내 모달 -->
+    <FlashModal :modalOpen="isNickNameCheck" title="닉네임 중복 확인" :modalContent="modalContent" />
 
         <div style="text-align:center">
             <img src="@/assets/image/OVL_logo.png" alt="">
@@ -26,16 +29,23 @@
     <!-- 닉네임 -->
     <div class="inputBtnDiv">
         <input type="text" v-model="nickname">
-        <button class="bg-freditgreen" @click="onClickNicknameValidate()" style="width:60px">확인</button>
+        <button :class="{'bg-freditgreen': nicknameFormValid && !!this.nickname, 'disabledBtn': !nicknameFormValid || !this.nickname }" 
+        @click="onClickNicknameValidate" :disabled="!nicknameFormValid || !this.nickname" style="width:60px">확인</button>
     </div>
+    <p class="invalidTxt" v-if="!nicknameFormValid">
+        닉네임은 영어와 숫자만 포함하여 10글자 이내로 적어주세요.
+    </p>
     <!-- 이메일 -->
     <div class="inputOnlyRead">
         {{email}}
     </div>
     <!-- 전화번호 -->
     <div>
-        <input type="text" v-model="phone">
+        <input type="tel" placeholder="전화번호" v-model="phone" maxlength="11">
     </div>
+    <p class="invalidTxt" v-if="!phoneFormValid">
+        "-" 없이 숫자로만 적어주세요. 예) 01012345678
+    </p>
     <!-- 비밀번호 -->
     <div>
         <input type="password" v-model="password" style="font-size:small" placeholder="비밀번호 변경 시 입력, 아닐 경우 빈칸으로 두셔도 됩니다.">
@@ -52,7 +62,8 @@
     </p>
     <!-- 회원가입 버튼 -->
     <div>
-        <button class="modifyBtn" @click="onModifyUserBtnClick">회원 정보 수정</button>
+        <button :class="{ 'bg-freditgreen': modifyFormValid, 'disabledBtn': !modifyFormValid }" :disabled="!modifyFormValid" @click="onModifyUserBtnClick">회원 정보 수정</button>
+        
         <button class="deleteBtn" @click="onClickDeleteUser">회원 탈퇴</button>
     </div>
     </section>
@@ -82,7 +93,8 @@ export default {
             account_open: '',
             isUserDelete: false,
             modalContent: '',
-            isModifyComplete: false
+            isModifyComplete: false,
+            isNickNameCheck: false,
         }
     },
     created() {
@@ -97,11 +109,26 @@ export default {
         ...mapGetters("user", ["userinfo"]),
         ...mapState("user", ["isLogin"]),
 
+        nicknameFormValid () {
+            return !this.nickname || (this.nickname.length < 10 && /^[a-zA-Z0-9]*$/.test(this.nickname))
+        }, 
         passwordFormValid () {
             return !this.password || ((this.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.password))
         },
         passwordCheckFormValid () {
             return !this.passwordCheck || (this.password===this.passwordCheck)
+        },
+        modifyFormValid() {
+            if (this.nickname!=this.userinfo.nickname && !this.nicknameValid) return false;
+            if (this.phone.length==0 || !this.phoneFormValid || this.phone.length!=11) return false;
+            if (this.password.length>0 && !this.passwordFormValid) return false;
+            if (this.password.length>0 && !this.passwordCheck) return false;
+            if (!this.passwordCheckFormValid) return false;
+
+            return true;
+        },
+        phoneFormValid() {
+            return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
         },
         accountopen(){
             return this.userinfo.account_open == 1
@@ -109,14 +136,22 @@ export default {
     },
     methods: {
         onClickNicknameValidate () {
-        const URL = API.url + userAPI.nickname_check(this.nickname)
+            this.isNickNameCheck = true
+            this.modalContent = "닉네임 중복 여부를 확인 중입니다"
+            const URL = API.url + userAPI.nickname_check(this.nickname)
             axios.get(URL)
             .then(res => {
                 if (res.data === "success") {
-                this.nicknameValid = true
-                alert('사용 가능한 닉네임입니다.')
+                    this.nicknameValid = true
+                    this.modalContent = "사용 가능한 닉네임 입니다"
+                    setTimeout(() => {
+                        this.isNickNameCheck = false
+                    }, 1000)
                 } else {
-                alert(`${this.nickname}은(는) 이미 사용중인 닉네임입니다.`)
+                    this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임 입니다`
+                    setTimeout(() => {
+                        this.isNickNameCheck = false
+                    }, 1000)
                 }
             })
             .catch(err => {

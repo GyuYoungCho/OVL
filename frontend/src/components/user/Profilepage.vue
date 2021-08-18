@@ -225,6 +225,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
         },
         profileUser(val) {
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
+            else this.isNotChallenging = false;
         },
         userPercent(val) {
             if(val < 31 ){
