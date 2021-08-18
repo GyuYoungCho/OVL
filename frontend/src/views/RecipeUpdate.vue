@@ -47,13 +47,16 @@
               <textarea cols="30" rows="10" v-model="processFile.content" @input="onProcessFileContentChange(processFile)"></textarea>
             </div>
           </div>
-          <div>
+          <div v-if="processFiles.length<15">
             <p># next</p>
             <div class="process-input">
               <label for="processImgInput"><v-icon>mdi-plus</v-icon></label>
               <input type="file" id="processImgInput" ref="files" multiple @change="onProcessInputChange">
               <textarea name="" id="" cols="30" rows="10"></textarea>
             </div>
+          </div>
+          <div v-if="processImgFiles.length==15">
+            <p>과정은 15개만 등록할 수 있습니다</p>
           </div>
         </div>
       </div>
@@ -130,7 +133,9 @@ export default {
     onProcessInputChange(event) {
       if (this.changeProcessPhotoIdx===-1) {
         const inputFiles = this.$refs.files.files
-        for(let i=0; i < inputFiles.length; i++) {
+        const limitInputFilesCount = inputFiles.length <=15 ? inputFiles.length : 15 
+
+        for(let i=0; i < limitInputFilesCount; i++) {
           let inputFile = inputFiles[i]
           inputFile.previewURL = URL.createObjectURL(inputFile)
           inputFile.number = this.processLastIdx

@@ -79,7 +79,8 @@
         <!-- 입력 폼 -->
         <div>
           <v-icon>mdi-subdirectory-arrow-right</v-icon>
-          <input type="text" class="pa-1" style="width:80%; font-size:small" :placeholder="holder" v-model="commentInput" @keyup.enter="regist">
+          <input type="text" class="pa-1" style="width:80%; font-size:small" :placeholder="holder" 
+                              v-model="commentInput" @keyup.enter="regist" maxlength="30">
           <button @click="regist"><span style="color:#004627">{{inputBtn}}</span></button>
           <hr class="mt-1">
         </div>
@@ -158,7 +159,7 @@ export default {
   data() {
     return {
       commentInput:"", // 댓글 입력 창
-      holder:"댓글 입력..", // 댓글 입력 창 placeholder
+      holder:"댓글 입력(30자 제한)", // 댓글 입력 창 placeholder
       isComment:true, // 댓글 입력? or 답글 입력?
       commentId:0, // 댓글 아이디
       replyId:0, // 답글 아이디
