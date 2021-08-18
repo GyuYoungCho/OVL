@@ -12,6 +12,14 @@
           @openDetailModal="openDetailModal"></user-pot-list>
         </div>
         <!-- 다른사람이 만든거 뜨는곳 -->
+        <div v-if="searchpots.length==0 && (search!=null && search.length>0)" class="noResult" style="margin-top:25px">
+          <img src="@/assets/image/noResult.png" alt="">
+          <div class="mt-3">검색 결과가 존재하지 않습니다</div>
+        </div>
+        <div v-else-if="searchpots.length==0" class="noResult" style="margin-top:25px">
+          <img src="@/assets/image/noResult.png" alt="">
+          <div class="mt-3">채식팟이 존재하지 않습니다 <br> 팟을 만들어보세요!</div>
+        </div>
         <div>
           <all-pot-list v-for="(potitem, index) in searchpots" :key="index" :potitem="potitem"
           @openDetailModal="openDetailModal" @openAttendModal="openAttendModal"></all-pot-list>
@@ -79,7 +87,8 @@ export default {
     ...mapGetters("user", ['userinfo']),
 
     searchpots() {
-      const search = this.search.toLowerCase()
+      const search = this.search
+      if (search!=null) search.toLowerCase()
       const allitems = [
         ...this.potitems,
         ...this.passpotitems

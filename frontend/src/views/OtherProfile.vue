@@ -130,10 +130,10 @@ import NoneChallenging from '@/components/profile/NoneChallenging.vue'
 import RankModal from '@/components/profile/RankModal.vue'
 import FollowModal from '@/components/profile/FollowModal.vue'
 import ReportModal from '@/components/profile/ReportModal.vue'
-// import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
+import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 
 export default {
-    components: {RankModal, LockImg, OtherUserPosts, OtherUserRecipes, OtherUserChallenges, NoneChallenging, FollowModal, ReportModal},
+    components: {RankModal, LockImg, OtherUserPosts, OtherUserRecipes, OtherUserChallenges, NoneChallenging, FollowModal, ReportModal, ChallengeConfirm},
     data() {
         return {
             // 모달 관련

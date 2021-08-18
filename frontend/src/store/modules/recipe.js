@@ -224,6 +224,7 @@ export default {
             finalData.recipeCommentReply = res.data;
             commit("SET_RECIPE_COMMENT_REPLY", finalData);
             dispatch("fetchRecipeComments", recipeId);
+            dispatch("fetchRecipeDetail", recipeId);
           })
           .catch((err) => console.error(err));
       });
@@ -260,11 +261,12 @@ export default {
         })
         .catch((err) => console.error(err));
     },
-    modifyRecipeReply({ dispatch }, { data, recipeCommentId }) {
+    modifyRecipeReply({ dispatch }, { data, recipeCommentId, recipeId }) {
       const URL = API.url + recipeReplyAPI.modify();
       axios
         .put(URL, null, data)
         .then(() => {
+          dispatch("fetchRecipeComments", recipeId);
           dispatch("fetchRecipeCommentReply", recipeCommentId);
         })
         .catch((err) => console.error(err));
@@ -274,8 +276,9 @@ export default {
       axios
         .delete(URL)
         .then(() => {
-          dispatch("fetchRecipeCommentReply", recipeCommentId);
+          dispatch("fetchRecipeDetail", recipeId);
           dispatch("fetchRecipeComments", recipeId);
+          dispatch("fetchRecipeCommentReply", recipeCommentId);
         })
         .catch((err) => console.error(err));
     },

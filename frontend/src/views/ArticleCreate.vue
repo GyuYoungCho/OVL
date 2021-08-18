@@ -21,7 +21,7 @@
         <div v-if="type==0">
           <div class='articlePic' v-if="!sendList.length">
             <label for="file"><v-icon>mdi-plus</v-icon></label>
-            <input id="file" type="file" ref="files" multiple @input="fileUpload">
+            <input id="file" type="file" ref="files" multiple @input="fileUpload(0)">
           </div>
           <!-- 캐러셀 영역 -->
           <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
@@ -44,8 +44,8 @@
         <!-- 수정 시 캐러셀 영역 -->
         <div v-else>
           <div class='articlePic' v-if="!photoList.length">
-            <label for="newFile"><v-icon>mdi-plus</v-icon></label>
-            <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(1)" style="width:0; height:0">
+            <label for="file"><v-icon>mdi-plus</v-icon></label>
+            <input id="file" type="file" ref="files" multiple @input="fileUpload(1)" style="width:0; height:0">
           </div>
           <v-carousel v-else class="carouselBorder" hide-delimiters height="30vh">
             <v-carousel-item v-for="(info,idx) in photoList" :key="idx" :src="photoPath(idx)" style="text-align:right">
@@ -71,7 +71,9 @@
         <div v-if="type==0" :class="{'buttonDiv': articleCreateFormValid, 'disabledBtnDiv': !articleCreateFormValid}">
           <button @click="send" :disabled="!articleCreateFormValid">등록</button>
         </div>
-        <div v-else class=buttonDiv><button @click="modify">수정</button></div>
+        <div v-else :class="{'buttonDiv': articleModifyFormValid, 'disabledBtnDiv': !articleModifyFormValid}">
+          <button @click="modify" :disabled="!articleModifyFormValid">수정</button>
+        </div>
       </section>
     </v-container>
   </div>
@@ -126,6 +128,9 @@
       },
       articleCreateFormValid () {
         return !!this.category && !!this.content && !!this.sendList.length
+      },
+      articleModifyFormValid() {
+        return !!this.category && !!this.content && !!this.photoList.length
       }
     },
     watch: {
@@ -162,15 +167,19 @@
         this.category = '3'
         // console.log(this.category)
       },
-      fileUpload () {
-        console.log("files : ", this.$refs.files.files);
-        for (let i = 0; i < this.$refs.files.files.length; i++) {
-          console.log(this.$refs.files.files[i]);
-          // 1. 파일 업로드를 클릭 했을 시, 백에 보낼 sendList 를 포문 돌려 완성해 줍니다.
-          this.sendList.push(this.$refs.files.files[i])
-          // 2. 이번엔 preview 로 띄울 URL 을 포문 돌면서 생성해주고 캐러셀에 붙여 줍니다.
+      fileUpload (type) {
+        for (let i = 0; i < this.$refs.files.files.length; i++)  {
           const previewUrl = URL.createObjectURL(this.$refs.files.files[i])
-          this.previewItems.push({src:previewUrl})
+          if (type==0) {
+            this.sendList.push(this.$refs.files.files[i])
+            this.previewItems.push({src:previewUrl})
+          } else {
+            this.plusPhotoList.push(this.$refs.files.files[i])
+            this.photoList.push({
+              "filesize":0,
+              "url":previewUrl
+            })
+          }
         }
       },
       photoPath(idx) {
@@ -267,7 +276,6 @@
         this.photoList.splice(this.photoList.length-1, 1);
       },
       newFileUpload(type) {
-        console.log(this.$refs.plusFiles)
         for (let i = 0; i < this.$refs.plusFiles[0].files.length; i++) {
           const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
           if (type==0) {
