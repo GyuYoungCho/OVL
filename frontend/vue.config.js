@@ -1,5 +1,4 @@
 module.exports = {
-  transpileDependencies: [
-    'vuetify'
-  ]
+  outputDir:"../backend/src/main/resources/static",
+  indexPath:"../static/index.html"
 }
