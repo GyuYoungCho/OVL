@@ -17,7 +17,7 @@
                         <div>
                             <div v-if="step==1" class="number1" >
                                 <img src="@/assets/image/OVLKoongya.png" alt=""/>
-                                <div> 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요! </div>
+                                <div> 쿵야가 다 자랐어요! 지금도 충분히 잘하고 있으니 더 열심히 참여해주세요! </div>
                             </div>
                             <div v-else-if="step==2" class="number1" >
                                 <img src="@/assets/image/OVLoongya.png" alt=""/>
@@ -25,7 +25,7 @@
                             </div>
                             <div v-else-if="step==3" class="number1" >
                                 <img src="@/assets/image/OVLoong.png" alt=""/>
-                                <div> 쿵야가 다 자랐어요! 지금도 충분히 잘하고 있으니 더 열심히 참여해주세요! </div>
+                                <div> 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요! </div>
                             </div>
                                     
                         </div>

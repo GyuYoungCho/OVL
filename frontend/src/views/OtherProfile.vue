@@ -183,11 +183,13 @@ export default {
             return this.followingList;
         },
         proFileUser() {
-            console.log("profileUser 변화 : ", this.proFileUser);
             return this.proFileUser;
         },
         detailFollow() {
             return this.detailFollowUser;
+        },
+        userPercent() {
+            return this.percent;
         }
     },
     watch: {
@@ -214,6 +216,15 @@ export default {
         },
         detailFollow(val) {
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
+        },
+        userPercent(val) {
+            if(val < 31 ){
+                this.step = 1;
+            }else if( val > 30 && val < 61){
+                this.step = 2;
+            }else{
+                this.step = 3;
+            }
         }
     }, 
     methods: {
