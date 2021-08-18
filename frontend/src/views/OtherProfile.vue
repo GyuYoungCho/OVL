@@ -182,12 +182,14 @@ export default {
         following() {
             return this.followingList;
         },
-        proFileUser() {
-            console.log("profileUser 변화 : ", this.proFileUser);
+        ProFileUser() {
             return this.proFileUser;
         },
         detailFollow() {
             return this.detailFollowUser;
+        },
+        userPercent() {
+            return this.percent;
         }
     },
     watch: {
@@ -208,12 +210,24 @@ export default {
         following(val) {
             this.followingCnt = val.length
         },
-        profileUser(val) {
+        ProFileUser(val) {
             if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
             else this.isLocked = false;
+
+            if (val.challengeId.challengeId==1) this.isNotChallenging = true;
+            else this.isNotChallenging = false;
         },
         detailFollow(val) {
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
+        },
+        userPercent(val) {
+            if(val < 31 ){
+                this.step = 1;
+            }else if( val > 30 && val < 61){
+                this.step = 2;
+            }else{
+                this.step = 3;
+            }
         }
     }, 
     methods: {

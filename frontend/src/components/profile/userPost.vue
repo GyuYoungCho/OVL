@@ -109,17 +109,7 @@ export default {
   },
   created() {
     this.$store.dispatch("post/getUserPostList", this.userinfo.userid);
-    //this.$store.dispatch("post/getPostLikeList", this.userinfo.userid);
-    // console.log(typeof this.clothPostList.length)
-    // if(this.postMyList.length === 0){
-    //   this.NoPost = true;
-    // }else if(this.foodPostList.length === 0){
-    //   this.NoFoodPost = true;
-    // }else if(this.clothPostList.length === 0){
-    //   this.NoClothPost = true; 
-    // }else{
-    //   this.NoCosmeticPost = true;
-    // }
+    console.log("postMyList : ", this.postMyList);
   },
 }
 </script>

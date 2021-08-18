@@ -114,29 +114,51 @@
             </v-container>
                                 <!-- 커스텀 모달 -->
                 <v-dialog v-model="challengedialog" max-width="300" @click:outside="challengedialog = false">
-                    <v-card>
-                        <!-- 모달 타이틀 영역 -->
-                        <v-toolbar dense color="#49784B">
-                        <v-toolbar-title class="modalTitle">Challenge 상세 내용</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-btn icon dark @click="challengedialog = false">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                        </v-toolbar>
-                        <!-- 모달 컨텐츠 영역 -->
-                        <v-container>
-                        <div class="modalContent">
-                        <div class="mb-3">
-                            <span class="modalContentMessage">
-                                {{detailContents}}
-                            </span>
+                <v-card>
+                    <!-- 모달 타이틀 영역 -->
+                    <v-toolbar dense color="#49784B">
+                    <v-toolbar-title class="modalTitle">챌린지 상세 내용</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon dark @click="challengedialog = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    </v-toolbar>
+                    <!-- 모달 컨텐츠 영역 -->
+                    <v-container>
+                    <div class="modalContent">
+                    <div class="mb-3">
+                        <div>{{detailCh.content}}</div>
+                        <br>
+                        <!-- 해당 챌린지의 기간 영역 -->
+                        <div>
+                          <v-icon dense>mdi-run</v-icon>
+                          <span v-if="detailCh.cycle === 1">
+                            매일
+                          </span>
+                          <span v-else>
+                            {{detailCh.cycle}}일마다
+                          </span>
                         </div>
-                        <div class="modalContentButtonArea">
-                            <button class="modalContentButton" @click="challengedialog = false">확인</button>
+                        <!-- 해당 챌린지의 경험치 영역 -->
+                        <div>
+                          <v-icon dense>mdi-diamond-stone</v-icon>
+                          {{detailCh.score}}
                         </div>
+                        <!-- 참여 인원을 나타내는 영역 -->
+                        <div>
+                          <v-icon dense>mdi-account</v-icon>
+                          {{detailCh.count}}명 참여 중
                         </div>
-                        </v-container>
-                    </v-card>
+                        <!-- 참여 기간을 나타내는 영역 -->
+                        <div v-if="detailCh.start_date!=undefined">
+                          <v-icon dense>mdi-calendar-blank</v-icon>
+                          {{ recalibratedDate(detailCh.start_date, 0) }} ~
+                            {{ recalibratedDate(detailCh.start_date, detailCh.period) }}  ({{detailCh.period/7}}주)
+                        </div>
+                    </div>
+                    </div>
+                    </v-container>
+                </v-card>
                 </v-dialog>
 
             </div>
@@ -149,6 +171,7 @@ import {mapState, mapActions} from "vuex";
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 import challengeAPI from '@/api/challenge.js'
+import moment from 'moment'
 
 export default {
 data() {
@@ -167,12 +190,17 @@ data() {
         btnActive: {0:false,1:false,2:false},
         challengedialog: false,
         categoryNum: '',
-        detailContents: '',
         challengingNum: '',
+
+        detailCh: '',
     }
 },
 methods: {
     ...mapActions("challenge", ["fetchUserChallengeList", "challengeAttend"]),
+    recalibratedDate(start_date, period) {
+      if (period==0) return start_date.substring(0,10);
+      return moment(start_date).add(period-2, 'days').format('YYYY-MM-DD')
+    },
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
@@ -207,7 +235,7 @@ methods: {
             }).then((res)=>{
             if(res.data!== null){
                 console.log(res.data.content);
-                this.detailContents = res.data.content;
+                this.detailCh = res.data;
             }
             }).catch((err)=>{
             console.log(err)

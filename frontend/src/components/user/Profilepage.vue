@@ -206,8 +206,11 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
             return this.detailFollowUser;
         },
         profileUser() {
-            // console.log("userinfo : ", this.userinfo)
             return this.userinfo;
+        },
+        userPercent() {
+            console.log("percent : ", this.percent);
+            return this.percent;
         }
     },
     watch: {
@@ -222,6 +225,16 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
         },
         profileUser(val) {
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
+            else this.isNotChallenging = false;
+        },
+        userPercent(val) {
+            if(val < 31 ){
+                this.step = 1;
+            }else if( val > 30 && val < 61){
+                this.step = 2;
+            }else{
+                this.step = 3;
+            }
         }
     },
     created() {
