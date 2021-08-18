@@ -166,7 +166,7 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
             rankOpen: false,
             isNotChallenging: false,
             experience:'',
-            step:'',
+            step:0,
 
             isModifyPicModal:false, // 프로필 수정 확인 모달창
             isModifyPic:false, // 프로필 사진 수정
