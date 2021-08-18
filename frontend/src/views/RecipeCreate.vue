@@ -1,71 +1,71 @@
 <template>
-  <div>
-    <h1>레시피 생성 페이지</h1>
-    <input type="text" v-model="title" placeholder="요리 이름">
-    <div>
-      <label for="pictureImageInput" v-if="!picture">대표 사진 추가</label>
-      <input type="file" ref="file" multiple @change="pictureInputChange" id="pictureImageInput">
-      <img :src="picture.previewURL" v-if="!!picture" alt="" class="preview-img">
-      
-    </div>
-    <textarea cols="30" rows="10" placeholder="요리 간단 설명" v-model="content"></textarea>
-    <v-tabs
-      v-model="tab"
-      align-with-title
-      color="green darken-4"
-      centered
-    >
-      <v-tabs-slider color="green darken-4"></v-tabs-slider>
-      <v-tab>재료</v-tab>
-      <v-tab>과정</v-tab>
-
-    </v-tabs>
-    <v-tabs-items v-model="tab">
-      <!-- 재료 탭 내용 -->
-      <v-tab-item>
-        <!-- 재료는 글로만 처리할 수도, 사진을 첨부할 수도 있음 -->
-        <!-- 일단 사진 첨부 안 한다고 가정! -->
-        <textarea name="" id="" cols="30" rows="10" v-model="ingredient" placeholder="재료 쓰는 곳"></textarea>
-
-        <!-- 재료에 사진을 첨부할 경우 -->
-        <!-- <div class="py-6">
-          <label for="previewIngredientImageInput">재료 이미지 추가</label>
-          <input type="file" ref="files" multiple @change="onIngredientInputChange" id="previewIngredientImageInput">
-        </div> -->
-
-        <!-- 사진 미리보기 -->
-        <!-- <div v-for="(ingredientImgFile, index) in ingredientImgFiles" :key="index" >
-          <img class="preview-img" :src="ingredientImgFile.previewURL" alt="" @click="deleteIngredientImg(ingredientImgFile.number)">
-        </div> -->
-
-      </v-tab-item>
-      
-      <!-- 과정 탭 내용 -->
-      <v-tab-item>
-        <!-- 과정에 사진을 첨부(필수) -->
-        <div class="py-6">
-          <label for="previewProcessImageInput">과정 이미지 추가</label>
-          <input type="file" ref="files" multiple @change="onProcessInputChange" id="previewProcessImageInput">
+  <v-container>
+    <!-- 레시피 등록 성공 시 -->
+    <FlashModal :modalOpen="isRecipeRegist" title="레시피 등록" modalContent="레시피가 등록되었습니다" />
+    <section class="recipeCreate">
+      <h1>레시피 작성</h1>
+      <!-- 요리 이름 -->
+      <div>
+        <input type="text" v-model="title" placeholder="요리 이름">
+      </div>
+      <!-- 대표 사진 -->
+      <div class="recipeCreatePic" v-show="!picture">
+        <label for="pictureImageInput"><v-icon>mdi-plus</v-icon></label>
+        <input type="file" ref="file" multiple @change="pictureInputChange" id="pictureImageInput">
+      </div>
+      <label for="pictureImageInput">
+        <div v-if="!!picture" class="img-container">
+            <img :src="picture.previewURL" alt="">
         </div>
+      </label>
 
-        <!-- 과정 사진 미리보기 -->
-        <div v-for="(processImgFile, index) in processImgFiles" :key="index" >
-          <img class="preview-img" :src="processImgFile.previewURL" alt="" @click="deleteProcessImg(processImgFile.number)">
-          <textarea cols="30" rows="10" v-model="processImgFile.text"></textarea>
+      <!-- 요리 설명 -->
+      <textarea cols="30" rows="10" placeholder="요리 간단 설명" v-model="content"></textarea>
+
+      <!-- 재료와 과정 구분 탭 -->
+      <article>
+        <button :class="{ 'tabBtn': isIngredient, 'unselectedTabBtn': !isIngredient }" @click="onTabBtnClick"><span style="font-size:large">재료</span></button>
+        <button :class="{ 'tabBtn': !isIngredient, 'unselectedTabBtn': isIngredient }" @click="onTabBtnClick"><span style="font-size:large">과정</span></button>
+      </article>
+      <div class="tab-div">
+        <!-- 재료 탭 -->
+        <div v-if="isIngredient">
+          <textarea name="" id="" cols="30" rows="10" placeholder="재료를 적어주세요." class="ingredient-text" v-model="ingredient">
+          </textarea>
         </div>
-
-      </v-tab-item>
-    </v-tabs-items>
-
-    <div>
-      <v-btn
-        @click="onRecipeBtnClick"
-        :disabled="!valid"
-      >
-        <button >레시피 작성 완료</button>
-      </v-btn>
-    </div>
-  </div>
+        <!-- 과정 탭 -->
+        <div class="process-tab" v-else>
+          <div v-for="(processImgFile, index) in processImgFiles" :key="index" >
+            <div class="process-index">
+              <span># {{ index + 1 }}</span>
+              <button class="cancelBtn" @click="deleteProcessImg(processImgFile.number)">X</button>
+            </div>
+            <div class="process-data">
+              <label for="processImgInput" @click="onExistingProcessPicClick(index)">
+                <div class="preivew-img-container">
+                  <img class="preview-img" :src="processImgFile.previewURL" alt="" >
+                </div>
+              </label>
+              <textarea cols="30" rows="10" v-model="processImgFile.text"></textarea>
+            </div>
+          </div>
+          <div>
+            <p># next</p>
+            <div class="process-input">
+              <label for="processImgInput"><v-icon>mdi-plus</v-icon></label>
+              <input type="file" id="processImgInput" ref="files" multiple @change="onProcessInputChange">
+              <textarea name="" id="" cols="30" rows="10"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button @click="onRecipeBtnClick" class="finalBtn" :class="{ 'bg-freditgreen': valid, 'disabledBtn': !valid }">
+          레시피 등록
+        </button>
+      </div>
+    </section>
+  </v-container>
 </template>
 
 
@@ -74,75 +74,116 @@
 import axios from 'axios'
 import API from '@/api/index.js'
 import recipeAPI from '@/api/recipe.js'
+import { mapGetters } from 'vuex'
+import fileUpload from '@/api/fileUpload.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+  components: {FlashModal},
   data: () => ({
+    isIngredient: true,
     title: "",
     picture: null,
     content: "",
     ingredient: "",
     processImgFiles: [],
     processLastIdx: 0,
+    changeProcessPhotoIdx: -1,
+
+    isRecipeRegist:false, 
 
     tab: null,
   }),
   methods: {
+    onTabBtnClick () {
+      this.isIngredient = !this.isIngredient
+    },
+
     pictureInputChange () {
       const picture = this.$refs.file.files[0]
       picture.previewURL = URL.createObjectURL(picture)
       this.picture = picture
     },
 
+    onExistingProcessPicClick (index) {
+      this.changeProcessPhotoIdx = index
+    },
+
     onProcessInputChange(event) {
-      const inputFiles = this.$refs.files.files
-      for(let i=0; i < inputFiles.length; i++) {
-        let inputFile = inputFiles[i]
-        inputFile.previewURL = URL.createObjectURL(inputFile)
-        inputFile.number = this.processLastIdx
-        inputFile.text = ''
+      if (this.changeProcessPhotoIdx===-1) {
+        const inputFiles = this.$refs.files.files
+        for(let i=0; i < inputFiles.length; i++) {
+          let inputFile = inputFiles[i]
+          inputFile.previewURL = URL.createObjectURL(inputFile)
+          inputFile.number = this.processLastIdx
+          inputFile.text = ''
+          this.processLastIdx++
+          this.processImgFiles.push(inputFile)
+        }
+      } else {
+        const newFile = this.$refs.files.files[0]
+        newFile.previewURL = URL.createObjectURL(newFile)
+        newFile.number = this.processLastIdx
+        newFile.text = ''
         this.processLastIdx++
-        this.processImgFiles.push(inputFile)
+        this.processImgFiles[this.changeProcessPhotoIdx] = newFile
+        // 리스트가 업데이트됐다는 이벤트가 발생하도록 임의의 값을 push하고 pop
+        this.processImgFiles.push(0)
+        this.processImgFiles.pop()
       }
       event.target.value = ""
+      this.changeProcessPhotoIdx = -1
     },
 
     deleteProcessImg(number) {
       this.processImgFiles = this.processImgFiles.filter(data => data.number !== number)
     },
     
-    onRecipeBtnClick() {
+    async onRecipeBtnClick() {
       let contentList = []
-      let formData = new FormData()
+      let tempPic = []
+      var params = new URLSearchParams();
+      tempPic.push(this.picture);
 
-      formData.append('title', this.title)
-      formData.append('picture', this.picture)
-      formData.append('content', this.content)
-      formData.append('ingredient', this.ingredient)
-      formData.append('userId', 7) // 임의로 넣은 값
+      var picPathList = await fileUpload.upload(tempPic, 'recipe');
+      var processPathList = await fileUpload.upload(this.processImgFiles, 'recipe');
+
+      params.append('title', this.title);
+      params.append('content', this.content)
+      params.append('ingredient', this.ingredient)
+      params.append('userId', this.userinfo.userid)
+
+      params.append('picPathList', picPathList)
+      contentList.push('0')
       for(let i=0; i < this.processImgFiles.length; i++ ) {
         contentList.push(this.processImgFiles[i].text)
-        formData.append('files', this.processImgFiles[i])
       }
 
+      params.append('processPathList', processPathList)
+      params.append('contentList', contentList)
 
+      
       const URL = API.url + recipeAPI.regist()
-      axios.post(URL, formData, 
-        { headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
-        .then(res => {
-          console.log(res)
-          axios.post(API.url + recipeAPI.contentList, contentList)
-          .then(res => console.log(res))
-          .catch(err => console.error(err))
-        })
-        .catch(err => console.error(err))
 
-      // this.$router.push({ name: 'Profile' })
+      axios.post(URL, params)
+      .then((response) => {
+        // alert("보냈슴!");
+        if (response.data.job=="success") {
+          this.isRecipeRegist = true
+          setTimeout(() => {
+            this.isRecipeRegist = false
+            this.$router.push({name:"RecipeSearch"});
+          }, 1000);
+        }
+      })
+      .catch((error) => {
+        // alert("못보냈슴!");
+        console.log(error);
+      })
     }
   },
   computed: {
+    ...mapGetters('user', ['userinfo',]),
     valid () {
       return !!this.title & !!this.picture & !!this.content & !!this.ingredient & !!this.processImgFiles.length
     }
@@ -153,27 +194,5 @@ export default {
 
 
 
-<style scoped>
-  input[type='file'] {
-      position: absolute;
-      width: 0;
-      height: 0;
-      padding: 0;
-      overflow: hidden;
-      border: 0;
-  }
-  label {
-    cursor: pointer;
-    /* padding: 10px 20px;
-    background-color: darkgreen;
-    color: #fff;
-    vertical-align: middle;
-    font-size: 15px;
-    cursor: pointer;
-    border-radius: 5px; */
-  }
-  .preview-img {
-    height: 100px;
-    display: inline-block;
-  }
+<style>
 </style>

@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.ReportDao;
@@ -32,9 +35,10 @@ public class ReportController {
 	@Autowired
     ReportDao reportDao;
 	
-	@GetMapping("/regist/{user_id}/{report_id}")
+	@PostMapping("/regist/{user_id}/{report_id}")
 	@ApiOperation(value = "신고 등록")
-	public ResponseEntity<String> regist(@PathVariable int user_id, @PathVariable int report_id) {
+	public ResponseEntity<String> regist(@RequestBody String reason, @PathVariable int user_id, @PathVariable int report_id) {
+		System.out.println("reason : "+reason+", fromId : "+user_id+", toId : "+report_id);
 		User toUser = userDao.getUserByUserid(report_id);
 		User fromUser = userDao.getUserByUserid(user_id);
 		
@@ -42,14 +46,14 @@ public class ReportController {
 		toUser.setWarning(toUser.getWarning()+1);
 		
 		// Report 테이블에 추가
-		Report newReport = new Report(0, fromUser, toUser);
+		Report newReport = new Report(0, reason, fromUser, toUser);
 		reportDao.save(newReport);		
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
 	@GetMapping("/select/{user_id}")
-	@ApiOperation(value = "신고 조회")
+	@ApiOperation(value = "내가 신고한 사람 조회")
 	public ResponseEntity<Set<Integer>> select(@PathVariable int user_id) {
 		List<Report> list = reportDao.findAll();
 		Set<Integer> reportList = new HashSet<>();
@@ -72,6 +76,7 @@ public class ReportController {
 		
 		// Report 테이블 삭제
 		Report report = reportDao.findReportByFromIdAndToId(fromUser, toUser);
+		System.out.println(report);
 		reportDao.delete(report);
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);

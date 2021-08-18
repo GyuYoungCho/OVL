@@ -1,0 +1,181 @@
+.modifyuser {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vh;
+  }
+
+  img {
+    max-width: 50vw;
+    align-self: center;
+  }
+
+  .inputOnlyRead {
+    background-color: $hy-green;
+    border-radius: 15px;
+    padding: 10px 10px;
+    min-width: 75vw;
+    color: $hy-grey;
+  }
+
+  input {
+    // margin-top: 20px;
+    background-color: $hy-green;
+    border-radius: 15px;
+    padding: 10px 10px;
+    min-width: 75vw;
+  }
+
+  .bg-freditgreen {
+    background-color: $freditgreen !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .disabledBtn {
+    background-color: $hy-grey !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .inputBtnDiv {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .finalBtn {
+    margin-top: 2vh;
+  }
+
+  .invalidTxt {
+    color: $hy-red;
+    margin: 0;
+    font-size: small;
+  }
+}
+//프로필 scss
+.profilepage {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
+
+  .following {
+    font-size: x-small;
+  }
+
+  .icon-btn {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+  }
+  .profile-img2 {
+    border-radius: 50%;
+    border: 4px dotted gray;
+  }
+  input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+  }
+  .icon-btn-img {
+    width: 20px;
+    height: 20px;
+  }
+  .testarea {
+    background-color: $hy-green;
+  }
+  .editProfileBtn {
+    border: 1px solid gray;
+    margin-top: 1px;
+    border-radius: 3px;
+    padding: 2px 8px;
+    width: 180px;
+  }
+  .bg-freditgreen {
+    background-color: $mild-bg !important;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 2px 8px;
+    width: 180px;
+  }
+  .requestFollow {
+    border: 1px solid purple;
+    color: purple;
+    border-radius: 5px;
+    padding: 2px 10px;
+    width: 126px;
+    height:20px;
+  }
+  .followBtn {
+    background-color: #28a0ff;
+    margin-top: 1px;
+    color: $mild-bg;
+    border-radius: 5px;
+    padding: 2px 10px;
+    width: 126px;
+    height:20px;
+  }
+  .unfollowBtn {
+    background-color: $hy-red;
+    margin-top: 1px;
+    color: $mild-bg;
+    border-radius: 5px;
+    padding: 2px 10px;
+    width: 126px;
+    height:20px;
+  }
+  .reportBtn {
+    margin-top: 1px;
+    border: 0.5px solid gray;
+    border-radius: 5px;
+    padding: 2px 8px;
+    width: 50px;
+  }
+  .postArea {
+    .wrapper {
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-gap: 10px;
+      background-color: #fff;
+    }
+  }
+  .ingdate {
+    font-size: medium;
+    color: $freditgreen;
+  }
+}
+
+.modalContentMessage {
+  div {
+    text-align: center;
+    img {
+      width: 50px;
+    }
+  }
+}
+
+.deleteBtn {
+  margin-top: 2vh;
+  background-color: $hy-red !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
+}
+
+.modifyBtn {
+  margin-top: 2vh;
+  background-color: $freditgreen !important;
+  color: white !important;
+  border-radius: 15px;
+  padding: 10px 10px;
+}

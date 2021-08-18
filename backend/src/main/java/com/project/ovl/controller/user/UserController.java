@@ -1,6 +1,5 @@
 package com.project.ovl.controller.user;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -12,13 +11,18 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.project.ovl.controller.post.PostCommentController;
+import com.project.ovl.controller.post.PostReplyController;
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.ReportDao;
 import com.project.ovl.dao.challenge.ChallengeDao;
@@ -40,6 +46,7 @@ import com.project.ovl.dao.post.PostCommentDao;
 import com.project.ovl.dao.post.PostCommentLikeDao;
 import com.project.ovl.dao.post.PostDao;
 import com.project.ovl.dao.post.PostLIkeDao;
+import com.project.ovl.dao.post.PostPhotoDao;
 import com.project.ovl.dao.post.PostReplyDao;
 import com.project.ovl.dao.post.PostReplyLikeDao;
 import com.project.ovl.dao.pot.PotDao;
@@ -52,6 +59,7 @@ import com.project.ovl.dao.recipe.RecipeProcessDao;
 import com.project.ovl.dao.recipe.RecipeReplyDao;
 import com.project.ovl.dao.recipe.RecipeReplyLikeDao;
 import com.project.ovl.dao.user.UserDao;
+import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.dto.UserDto;
 import com.project.ovl.model.challenge.Challenge;
 import com.project.ovl.model.challenge.ChallengeHistory;
@@ -64,6 +72,7 @@ import com.project.ovl.model.like.RecipeCommentLike;
 import com.project.ovl.model.like.RecipeLike;
 import com.project.ovl.model.like.RecipeReplyLike;
 import com.project.ovl.model.mail.mailService;
+import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
 import com.project.ovl.model.post.PostReply;
@@ -74,8 +83,8 @@ import com.project.ovl.model.recipe.RecipeComment;
 import com.project.ovl.model.recipe.RecipeProcess;
 import com.project.ovl.model.recipe.RecipeReply;
 import com.project.ovl.model.report.Report;
-import com.project.ovl.model.user.SignupRequest;
 import com.project.ovl.model.user.User;
+import com.project.ovl.model.user.UserLog;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -85,6 +94,7 @@ import io.swagger.annotations.ApiOperation;
 public class UserController {
 	private static final String SUCCESS = "success";
 	private static final String FAIL = "fail";
+	private HttpSession session;
 	
 	@Autowired
 	private JwtService jwtService;
@@ -112,6 +122,9 @@ public class UserController {
 	
 	@Autowired
 	PostCommentDao postCommentDao;
+	
+	@Autowired
+	PostPhotoDao postPhotoDao;
 	
 	@Autowired
 	PostDao postDao;
@@ -152,6 +165,18 @@ public class UserController {
 	@Autowired
 	ChallengeHistoryDao challengeHistoryDao;
 	
+	@Autowired
+	UserLogDao userLogDao;
+	
+	@Autowired
+	PostCommentController postCommentController;
+
+	@Autowired
+	PostReplyController postReplyController;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	@GetMapping("/nickname_check/{nickname}")
 	@ApiOperation(value = "닉네임 중복 체크")
 	public ResponseEntity<String> nickname_check(@PathVariable String nickname) {
@@ -164,22 +189,22 @@ public class UserController {
 	@ApiOperation(value = "이메일 인증")
 	public ResponseEntity<String> join_auth(@PathVariable String type, @PathVariable String email, HttpServletRequest request) throws UnsupportedEncodingException {
 		User isEmail = userDao.getUserByEmail(email);
-		if (isEmail==null) {
-	    	HttpSession session = request.getSession();
+		if ((isEmail==null && type.equals("join")) || (isEmail!=null && type.equals("password"))) {
+			session = request.getSession();
 	    	int authorization = mService.mailSend(email, type);
 	    	session.setAttribute(email, authorization);
-	    	System.out.println("join_auth email : "+email+", session : "+session.getAttribute(email));
 			if (authorization!=0) return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-		}
+		} 
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
 	}
 	
 	@GetMapping("/email_auth_check/{email}/{confirm}")
 	@ApiOperation(value = "이메일 인증번호 확인")
-	public ResponseEntity<String> join_auth_check( @PathVariable String email, @PathVariable String confirm, HttpSession session) throws UnsupportedEncodingException {
+	public ResponseEntity<String> join_auth_check(@PathVariable String email, @PathVariable String confirm) throws UnsupportedEncodingException {
     	try {
     		int authorization = (int) session.getAttribute(email);
-    		if (authorization>0) {
+    		if (authorization==Integer.parseInt(confirm)) {
+    			session.setAttribute(email, null);
     			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
     		} else {
     			return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
@@ -194,7 +219,7 @@ public class UserController {
 	public ResponseEntity<String> modify_pw(@PathVariable String email, @PathVariable String password){
 		try {
 			User isEmail = userDao.getUserByEmail(email);
-			isEmail.setPassword(password);
+			isEmail.setPassword(passwordEncoder.encode(password));
 			userDao.save(isEmail);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		} catch (Exception e) {
@@ -204,10 +229,10 @@ public class UserController {
 	
 	@PostMapping("/join")
 	@ApiOperation(value = "회원가입")
-	public ResponseEntity<String> join(@Valid @RequestBody SignupRequest request){
+	public ResponseEntity<String> join(@RequestBody User user){
 		Challenge basic = challengedao.findByChallengeId(1);
-		User saveUser = new User(0, request.getEmail(), request.getNickname(), request.getName(), request.getPhone(),
-				 request.getPassword(), request.getExperience(), request.getAccount_open(), request.getWarning(), null,null,basic);
+		User saveUser = new User(0, user.getEmail(), user.getNickname(), user.getName(), user.getPhone(),
+				passwordEncoder.encode(user.getPassword()), 0, 0, 0, "https://ovl-bucket.s3.ap-northeast-2.amazonaws.com/defaultImg.jpg" ,basic);
 		userDao.save(saveUser);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 
@@ -223,19 +248,23 @@ public class UserController {
 		String token = "";
 		
 		try {
-			User userlogin = userDao.findUserByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword()).get();
-			token = jwtService.create(userlogin);
-			
-			resultMap.putAll(jwtService.get(token));
-			
-			resultMap.put("status", true);
-			resultMap.put("data", userlogin);
-			resultMap.put("token", token);
-			
-			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
-			
+			User userlogin = userDao.getUserByEmail(loginDto.getEmail());
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+			if (encoder.matches(loginDto.getPassword(), userlogin.getPassword())) {
+				token = jwtService.create(userlogin);
+				
+				resultMap.putAll(jwtService.get(token));
+				
+				resultMap.put("status", true);
+				resultMap.put("data", userlogin);
+				resultMap.put("token", token);
+				
+				entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+			} else {
+				resultMap.put("message", "로그인 실패");
+				entity = ResponseEntity.badRequest().body(resultMap);
+			}
 		}catch(RuntimeException e){
-			//Logger.info("로그인 실패",e);
 			resultMap.put("message", e.getMessage());
 			entity = ResponseEntity.badRequest().body(resultMap);
 		}
@@ -253,19 +282,47 @@ public class UserController {
 
 		try {
 			resultMap.putAll(jwtService.get(req.getHeader("access-token")));
-			System.out.println(jwtService.get(req.getHeader("access-token")));
 			resultMap.put("status", true);
 
 			status = HttpStatus.ACCEPTED;
 			
 		}catch(RuntimeException e){
-			//Logger.info("로그인 실패",e);
 			System.out.println("여기서 실패");
 			resultMap.put("message", e.getMessage());
 			status = HttpStatus.INTERNAL_SERVER_ERROR;
 		}
 		
 		return new ResponseEntity<Map<String,Object>>(resultMap, status);
+		
+	}
+	
+	@Transactional
+	@GetMapping("/tokenUpdate/{userid}")
+	@ApiOperation(value = "유저 업데이트 후 토큰 갱신")
+	public ResponseEntity<Map<String, Object>> gettokenValid(@PathVariable int userid) throws Exception{
+		User user = userDao.getUserByUserid(userid);
+		
+	   	String token = "";
+    	Map<String, Object> resultMap = new HashMap<>();
+		ResponseEntity<Map<String, Object>> entity = null;
+    	try {
+    		token = jwtService.create(user);
+			
+			resultMap.putAll(jwtService.get(token));
+			
+			resultMap.put("status", true);
+			resultMap.put("data", user);
+			resultMap.put("token", token);
+			
+			entity = ResponseEntity.accepted().header("access-token", token).body(resultMap);
+    	}catch(RuntimeException e){
+			//Logger.info("로그인 실패",e);
+			resultMap.put("message", e.getMessage());
+			entity = ResponseEntity.badRequest().body(resultMap);
+		}
+    	
+		
+		return entity;
 		
 	}
 	
@@ -285,6 +342,7 @@ public class UserController {
 	@GetMapping("/select/{user_id}")
 	public ResponseEntity<User> select(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
+		
 		if (user!=null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
@@ -299,6 +357,7 @@ public class UserController {
 		Map<String, Float> map = new HashMap<>();
 		
 		List<User> userList = userDao.findAll();
+		
 		Collections.sort(userList, (o1, o2)-> {
 			return Integer.compare(o2.getExperience(),o1.getExperience());
 		});
@@ -314,60 +373,32 @@ public class UserController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
-	@ApiOperation(value = "회원 수정", response = String.class)
-    @PutMapping(value = "/modify_user/{user_id}")
-	public ResponseEntity<String> modify(@PathVariable int user_id, @RequestPart("picture") MultipartFile pic,
-			@RequestParam("nickname") String nickname,
-			@RequestParam("phone") String phone) throws IOException {
+	@ApiOperation(value = "회원 프로필 사진 수정", response = String.class)
+    @PostMapping(value = "/modify_pic/{user_id}")
+	public ResponseEntity<String> modify_pic(@PathVariable int user_id, @RequestBody List<String> pic) throws IOException {
     	User useropt = userDao.getUserByUserid(user_id);
-    	useropt.setNickname(nickname);
-    	useropt.setPhone(phone);
-    	String originalFileExtension;
-    	
-    	if(pic!=null) {
-    		
-    		File file = new File(useropt.getStored_file_path());
-    		if(file.exists() == true){
-    			file.delete();
-    		}
-            String absolutePath = new File("").getAbsolutePath() + File.separator + File.separator;
-            String path = "src/main/resources/static/profile" + useropt.getUserid();
-            file = new File(path);
-            
-            if(!file.exists()){
-                file.mkdirs();
-            }
-            String contentType = pic.getContentType();
+    	useropt.setFilepath(pic.get(1));
+    	userDao.save(useropt);
 
-            if(!ObjectUtils.isEmpty(contentType)) {
-
-                if(contentType.contains("image/jpeg"))
-                    originalFileExtension = ".jpg";
-                else if(contentType.contains("image/png"))
-                    originalFileExtension = ".png";
-              
-                else {
-                	userDao.save(useropt);
-            		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-                }
-                String new_file_name = System.nanoTime() + originalFileExtension;
-                useropt.setStored_file_path(path + "/" + new_file_name);
-                useropt.setOriginal_file_name(pic.getOriginalFilename());
-                
-                userDao.save(useropt);
-                
-                file = new File(absolutePath + path + File.separator + new_file_name);
-                pic.transferTo(file);
-                
-                file.setWritable(true);
-                file.setReadable(true);
-            }
-            
-    	}
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
+	
+	@ApiOperation(value = "회원 정보 수정", response = String.class)
+    @PutMapping(value = "/modify_user")
+	public ResponseEntity<String> modify_user(@RequestBody User request) throws IOException {
 
-    //
+    	User user = userDao.getUserByUserid(request.getUserid());
+    	
+    	user.setChallengeId(request.getChallengeId());
+    	user.setAccount_open(request.getAccount_open());
+    	user.setNickname(request.getNickname());
+    	user.setPhone(request.getPhone());
+    	if(request.getPassword().length()>0) user.setPassword(passwordEncoder.encode(request.getPassword()));
+    	userDao.save(user);
+
+    	return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+	}
+
     @ApiOperation(value = "회원 탈퇴", response = String.class)
 	@DeleteMapping("/delete/{user_id}")
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
@@ -403,20 +434,15 @@ public class UserController {
 				for (PostLike pl : plList) {
 					postLikeDao.delete(pl);
 				}
+				
+				List<PostPhoto> photoList = postPhotoDao.findPostPhotoByPostId(p);
+				for (PostPhoto pp : photoList) {
+					postPhotoDao.delete(pp);
+				}
 				postDao.delete(p);
 			}
 			
 			// 내가 다른 곳에서 쓴 거 삭제
-			List<PostReplyLike> prlList = postReplyLikeDao.findByUserId(user);
-			for (PostReplyLike prl : prlList) {
-				postReplyLikeDao.delete(prl);
-			}
-			
-			List<PostCommentLike> pclList = postCommentLikeDao.findByUserId(user);
-			for (PostCommentLike pcl : pclList) {
-				postCommentLikeDao.delete(pcl);
-			}
-			
 			List<PostLike> plList = postLikeDao.findByUserId(user);
 			for (PostLike pl : plList) {
 				postLikeDao.delete(pl);
@@ -424,12 +450,12 @@ public class UserController {
 			
 			List<PostReply> prList = postReplyDao.findByUserId(user);
 			for (PostReply pr : prList) {
-				postReplyDao.delete(pr);
+				postReplyController.delete(pr.getPostReplyId());
 			}
 			
 			List<PostComment> pcList = postCommentDao.findByUserId(user);
 			for (PostComment pc : pcList) {
-				postCommentDao.delete(pc);
+				postCommentController.delete(pc.getPostCommentId());
 			}
 			
 			
@@ -543,9 +569,26 @@ public class UserController {
 				}
 			}
 			
+			List<UserLog> logList = userLogDao.findTop300ByUserIdOrderByLogDateDesc(user);
+			for (UserLog ul : logList) {
+				userLogDao.delete(ul);
+			}
+			
 			userDao.delete(user);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		}
 		return new ResponseEntity<String>(FAIL, HttpStatus.NO_CONTENT);
+	}
+    
+    @ApiOperation(value = "계정 공개 비공개", response = String.class)
+    @PutMapping(value = "/lock/{user_id}/{account_open}")
+	public ResponseEntity<String> lock(@PathVariable int user_id,@PathVariable int account_open) throws IOException {
+
+    	User user = userDao.getUserByUserid(user_id);
+    	
+    	user.setAccount_open(account_open);
+    	userDao.save(user);
+
+    	return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 }

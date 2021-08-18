@@ -10,6 +10,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,11 +23,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.challenge.ChallengeCertificationDao;
 import com.project.ovl.dao.recipe.RecipeCommentDao;
@@ -36,7 +39,6 @@ import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.like.RecipeLike;
 import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.recipe.RecipeComment;
-import com.project.ovl.model.recipe.RecipePhotoHandler;
 import com.project.ovl.model.recipe.RecipeProcess;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
@@ -66,23 +68,21 @@ public class RecipeController {
 	RecipeCommentDao recipeCommentDao;
 	
 	@Autowired
+	RecipeProcessDao recipeProcessDao;
+	
+	@Autowired
 	RecipeProcessDao processDao;
 	
 	@Autowired
 	RecipeCommentController commentController;
 	
 	@Autowired
-	RecipePhotoHandler photoHandler;
-	
-	@Autowired
 	ChallengeCertificationDao challengeCertificationDao;
-	
-	private List<String> processContent;
 	
 	@PostMapping("/regist")
 	@ApiOperation(value = "레시피 등록")
-	public ResponseEntity<Map<String,String>> regist(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient, @RequestPart("userId") String userId,
-										@RequestPart("picture") MultipartFile pic, @RequestPart("files") List<MultipartFile> files) throws Exception {
+	public ResponseEntity<Map<String,String>> regist(@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("ingredient") String ingredient, @RequestParam("userId") String userId,
+			@RequestParam("picPathList") List<String> picPathList, @RequestParam("processPathList") List<String> processPathList, @RequestParam("contentList") List<String> contentList) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
@@ -93,17 +93,13 @@ public class RecipeController {
 		user.setExperience(user.getExperience()+20);
 		
 		// 레시피 등록
-		Recipe recipe = new Recipe(0, title, content, ingredient, new Date(), 0, 0, null, null, user);
+		Recipe recipe = new Recipe(0, title, content, ingredient, new Date(), 0, 0, picPathList.get(1), user);
 		recipeDao.save(recipe);
 		
-		photoHandler.saveProfile(pic, recipe.getRecipeId());
-		
-		
 		// 레시피 과정 등록
-		List<RecipeProcess> processList = photoHandler.getProcessList(files, processContent, recipe.getRecipeId());
-		
-		for (RecipeProcess rp : processList) {
-			processDao.save(rp);
+		for (int i=1;i<processPathList.size();i++) {
+			RecipeProcess process = new RecipeProcess(0, contentList.get(i), processPathList.get(i), recipe);
+			recipeProcessDao.save(process);
 		}
 		
 		// 챌린지 중일 경우 인증
@@ -139,40 +135,50 @@ public class RecipeController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
-	@PostMapping("/regist/contentList")
-	@ApiOperation(value = "레시피 과정 설명 등록 또는 수정")
-	public ResponseEntity<String> contentList(@RequestBody List<String> contentList) {
-		processContent = contentList;
-		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
-	}
-	
 	@PutMapping("/modify")
 	@ApiOperation(value = "레시피 수정")
-	public ResponseEntity<String> modify(@RequestPart("title") String title, @RequestPart("content") String content, @RequestPart("ingredient") String ingredient,
-			@RequestPart("picture") MultipartFile pic, @RequestPart("files") List<MultipartFile> files, @RequestPart("recipeId") String recipeId) throws Exception {
+	public ResponseEntity<String> modify(@RequestParam("title") String title, @RequestParam("content") String content, @RequestParam("ingredient") String ingredient, @RequestParam("recipeId") String recipeId,
+			@RequestParam("picPathList") List<String> picPathList, @RequestParam("modifyPathList") List<String> modifyPathList, @RequestParam("plusPathList") List<String> plusPathList,
+			@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam("modifyPhotoIdList") List<Integer> modifyPhotoIdList, 
+			@RequestParam("modifyContentIdList") List<Integer> modifyContentIdList, @RequestParam("modifyContentList") List<String> modifyContentList,
+			@RequestParam("plusContentList") List<String> plusContentList) throws Exception {
 		
 		// 레시피 게시물 수정
 		Recipe recipe = recipeDao.findRecipeByRecipeId(Integer.parseInt(recipeId));
 		recipe.setTitle(title);
 		recipe.setContent(content);
 		recipe.setIngredient(ingredient);
+		if (picPathList.size()>1) recipe.setFilepath(picPathList.get(1));
 		recipeDao.save(recipe);
 		
-		photoHandler.saveProfile(pic, recipe.getRecipeId());
-		
-		// 레시피 과정 사진 지우기
-		List<RecipeProcess> proList = processDao.findAll();
-		for (RecipeProcess rp : proList) {
-			if (rp.getRecipeId().getRecipeId()==recipe.getRecipeId()) processDao.delete(rp);
+		// 과정 삭제
+		if (deleteIdList.size()>1) {
+			List<RecipeProcess> processList = recipeProcessDao.findAll();
+			for (RecipeProcess rp : processList) {
+				if (deleteIdList.contains(rp.getRecipeProcessId())) recipeProcessDao.delete(rp);
+			}
 		}
 		
-		// 레시피 사진 다시 저장
-		List<RecipeProcess> saveList = photoHandler.getProcessList(files, processContent, recipe.getRecipeId());
-
-		for (RecipeProcess rp : saveList) {
-			processDao.save(rp);
+		// 과정 사진 수정
+		for (int i=1;i<modifyPhotoIdList.size();i++) {
+			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyPhotoIdList.get(i));
+			process.setFilepath(modifyPathList.get(i));
+			recipeProcessDao.save(process);
 		}
 		
+		
+		// 과정 내용 수정
+		for (int i=1;i<modifyContentIdList.size();i++) {
+			RecipeProcess process = recipeProcessDao.findRecipeProcessByRecipeProcessId(modifyContentIdList.get(i));
+			process.setContent(modifyContentList.get(i));
+			recipeProcessDao.save(process);
+		}
+		
+		// 과정 사진, 내용 추가
+		for (int i = 1; i < plusPathList.size(); i++) {
+			RecipeProcess process = new RecipeProcess(0, plusContentList.get(i), plusPathList.get(i), recipe);
+			recipeProcessDao.save(process);
+		}
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
@@ -273,10 +279,13 @@ public class RecipeController {
 	
 	@GetMapping("/select_all")
 	@ApiOperation(value = "레시피 전체 조회")
-	public ResponseEntity<List<Recipe>> select_all() {
-		List<Recipe> recipeList = recipeDao.findAll();
+	public Page<Recipe> select_all(@RequestParam(required = false, defaultValue = "") String keyword, @RequestParam("cate") String cate, Pageable pageable) {
+		keyword = "%" + keyword + "%";
+		Pageable sortedByTimeDesc = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(cate).descending()); 
+		Page<Recipe> recipepage = recipeDao.findByKeyWord(keyword, sortedByTimeDesc);
+		List<Recipe> recipeList = recipepage.toList();
 		
-		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
+		return new PageImpl<Recipe>(recipeList, sortedByTimeDesc ,recipepage.getTotalElements());
 	}
 	
 	@GetMapping("/select_detail/{recipe_id}")
@@ -300,6 +309,15 @@ public class RecipeController {
 		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
 	}
 	
+	@GetMapping("/search_myrecipe/{user_id}")
+	@ApiOperation(value = "나의 레시피 검색")
+	public ResponseEntity<List<Recipe>> myrecipes(@PathVariable int user_id) {
+		User user = userDao.getUserByUserid(user_id);
+		List<Recipe> recipeList = recipeDao.findByUserid(user);
+		
+		return new ResponseEntity<List<Recipe>>(recipeList, HttpStatus.OK);
+	}
+	
 	@GetMapping("/like/{user_id}/{recipe_id}")
 	@ApiOperation(value = "좋아요 누르기 or 취소")
 	public ResponseEntity<String> like(@PathVariable int user_id, @PathVariable int recipe_id) {
@@ -310,13 +328,13 @@ public class RecipeController {
 		// like 테이블에 존재하는지 확인
 		if (like==null) { // 존재하지 않을 시
 			// 해당 recipe like_count +1
-			recipe.setLike_count(recipe.getLike_count()+1);
+			recipe.setLikecount(recipe.getLikecount()+1);
 			
 			// like 테이블에 저장
 			recipeLikeDao.save(new RecipeLike(0, user, recipe));
 		} else { // 이미 존재 시
 			// 해당 recipe like_count -1
-			recipe.setLike_count(recipe.getLike_count()-1);
+			recipe.setLikecount(recipe.getLikecount()-1);
 			
 			recipeLikeDao.delete(like);
 		}

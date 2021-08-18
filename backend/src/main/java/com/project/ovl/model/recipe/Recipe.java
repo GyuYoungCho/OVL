@@ -36,11 +36,12 @@ public class Recipe {
     private String ingredient;
 	
 	private Date time;
-	private int like_count;
-	private int comment_count;
+	@Column(name="like_count")
+	private int likecount;
+	@Column(name="comment_count")
+	private int commentcount;
 	
-	private String original_file_name;
-	private String stored_file_path;
+	private String filepath;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

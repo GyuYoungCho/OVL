@@ -55,6 +55,8 @@ public class ChallengeController {
 		// 참여 챌린지 없을 경우 등록 
 		if(user.getChallengeId().getChallengeId()==1) {
 			Challenge challenge = challengeDao.findByChallengeId(challenge_id);
+			challenge.setCount(challenge.getCount()+1); // 챌린지 참여 시 참여 인원 +1
+			challengeDao.save(challenge);
 			user.setChallengeId(challenge);
 			userDao.save(user);
 			return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
@@ -68,6 +70,11 @@ public class ChallengeController {
 	public ResponseEntity<String> delete(@PathVariable int user_id) {
 		User user = userDao.getUserByUserid(user_id);
 		
+		// 이미 참여중인 챌린지
+		Challenge attend = user.getChallengeId();
+		attend.setCount(attend.getCount()-1);
+		challengeDao.save(attend);
+		
 		Challenge challenge = challengeDao.findByChallengeId(1);
 		user.setChallengeId(challenge);
 		userDao.save(user);
@@ -79,6 +86,9 @@ public class ChallengeController {
 	public ResponseEntity<String> complete(@PathVariable int user_id,@PathVariable int div) {
 		User user = userDao.getUserByUserid(user_id);
 		Challenge endChallenge = user.getChallengeId();
+		
+		// 챌린지 완료 시 해당 챌린지 참여 인원 -1
+		endChallenge.setCount(endChallenge.getCount()-1);
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(endChallenge.getStart_date());
@@ -133,7 +143,7 @@ public class ChallengeController {
 		}
 	}
 	
-	@GetMapping("/search_history/{user_id}")
+	@GetMapping("/search_history/{challenge_id}/{user_id}")
 	@ApiOperation(value = "이전에 참여한 챌린지")
 	public ResponseEntity<List<Challenge>> search_history(@PathVariable int user_id) {
 		
@@ -148,5 +158,41 @@ public class ChallengeController {
 			return new ResponseEntity<>(null, HttpStatus.OK);
 		}
 	}
+	
+	@GetMapping("/search_mychallenge/{challenge_id}/{user_id}")
+	@ApiOperation(value = "내 모든 챌린지")
+	public ResponseEntity<List<Challenge>> search_mychallenge(@RequestParam int challenge_id, @RequestParam int user_id){
+		//나의 이전 챌린지 이력
+		Optional<List<ChallengeHistory>> historylist = challengeHistoryDao.findByUserIdUserid(user_id);
+		//나의 현재 챌린지 이력 조회 
+		Optional<List<User>> userlist = userDao.findByChallengeIdChallengeId(challenge_id);
+		Challenge challenge = challengeDao.findByChallengeId(challenge_id);
+		
+		//다담을 리스트
+		List<Challenge> totallist = new ArrayList<>();
+		
+		for(User u : userlist.get()) {
+			if(u.getUserid() == user_id) {
+				totallist.add(u.getChallengeId());
+				break;
+			}
+		}
+
+		if(historylist.isPresent()) {
+			for(ChallengeHistory ch : historylist.get()) {
+				totallist.add(ch.getChallengeId());
+			}
+		}
+		
+		//totallist.add(challenge);
+		
+		if(!totallist.isEmpty()) {
+			return new ResponseEntity<>(totallist, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(null, HttpStatus.OK);
+		}
+	}
+	
+	
 	
 }

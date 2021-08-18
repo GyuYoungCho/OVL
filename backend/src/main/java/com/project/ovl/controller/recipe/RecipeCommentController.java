@@ -67,7 +67,7 @@ public class RecipeCommentController {
 		
 		
 		recipeCommentDao.save(new RecipeComment(0, content, 0,0, new Date(),recipe, user));
-		recipe.setComment_count(recipe.getComment_count()+1);
+		recipe.setCommentcount(recipe.getCommentcount()+1);
 		recipeDao.save(recipe);
 		
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
@@ -99,7 +99,7 @@ public class RecipeCommentController {
 		RecipeComment rc = recipeCommentDao.findByRecipeCommentId(recipe_comment_id);
 		// 해당 레시피
 		Recipe recipe = recipeDao.findRecipeByRecipeId(rc.getRecipeId().getRecipeId());
-		recipe.setComment_count(recipe.getComment_count()-1); // 해당 레시피 댓글 삭제 시 레시피 comment_count -1
+		recipe.setCommentcount(recipe.getCommentcount()-1); // 해당 레시피 댓글 삭제 시 레시피 comment_count -1
 		
 		// 해당 댓글 좋아요 삭제
 		List<RecipeCommentLike> likeList = recipeCommentLikeDao.findAll();

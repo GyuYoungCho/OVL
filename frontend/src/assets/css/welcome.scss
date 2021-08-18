@@ -1,0 +1,46 @@
+.welcome-bg {
+  background: url('../../assets/image/welcomebg.jpg') center; 
+  background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+}
+
+.welcome-text {
+  position: relative;
+  top: 5vh;
+}
+
+.welcome-container {
+  position: relative;
+}
+
+.ovl-welcome {
+  width: 100%;
+  position: relative;
+  left: -8%;
+}
+
+.welcome-button-box {
+  display: flex;
+  justify-content: space-around;
+  position: absolute;
+  top: 80vh;
+  width: 92%;
+}
+
+.welcomeBtn1 {
+  background-color: $freditgreen !important;
+  border-radius: 8px !important;
+  color: white !important;
+  width: 30% !important;
+  margin-left: 2vw;
+}
+
+.welcomeBtn2 {
+  @extend .welcomeBtn1;
+  margin-left: none;
+}

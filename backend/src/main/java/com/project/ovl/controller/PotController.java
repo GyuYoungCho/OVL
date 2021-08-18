@@ -3,8 +3,6 @@ package com.project.ovl.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.ovl.dao.pot.PotDao;
@@ -24,7 +21,6 @@ import com.project.ovl.dao.pot.PotRelationDao;
 import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.model.pot.Pot;
 import com.project.ovl.model.pot.PotRelation;
-import com.project.ovl.model.pot.PotRequest;
 import com.project.ovl.model.user.User;
 
 import io.swagger.annotations.ApiOperation;
@@ -45,15 +41,16 @@ public class PotController {
 	@Autowired
     UserDao userDao;
 	
-	@PostMapping("/regist")
+	@PostMapping("/regist/{userid}")
 	@ApiOperation(value = "pot 등록")
-	public ResponseEntity<String> regist(@RequestBody Pot pot, @RequestParam int userid){
+	public ResponseEntity<String> regist(@RequestBody Pot pot, @PathVariable int userid){
 		User user = userDao.getUserByUserid(userid);
 		Pot savePot = new Pot(0, pot.getTitle(), pot.getPlace(), 
 				pot.getStep(), pot.getTime(), pot.getTotal_people(),
 				pot.getRestaurant_name(),
-				 pot.getType(),pot.getContent(),user);
+				 pot.getType(),pot.getContent(),user,0);
 		potDao.save(savePot);
+		attend(savePot.getPotid(),userid);
 		return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 	}
 	
@@ -76,7 +73,6 @@ public class PotController {
 	@ApiOperation(value = "pot 삭제")
 	public ResponseEntity<String> delete(@PathVariable int potid){
 		List<PotRelation> relations = potrelationDao.findAll();
-		List<PotRelation> reresults = new ArrayList<>();
 		
 		List<Pot> pots = potDao.findAll();
 		//먼저 pot relation 삭제 후 가능
@@ -115,17 +111,37 @@ public class PotController {
 		else {	
 			PotRelation potrelation = new PotRelation(0, pot, user);
 			potrelationDao.save(potrelation);
+			
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
 		}
 	}
 	
+	@DeleteMapping("/attend_cancel/{potid}/{userid}")
+	@ApiOperation(value = "pot 참여 취소")
+	public ResponseEntity<String> attend_cancel(@PathVariable int potid, @PathVariable int userid){
+		User user = userDao.getUserByUserid(userid);
+		Pot pot = potDao.getPotByPotid(potid);
+		
+		List<PotRelation> dpr = potrelationDao.findAll();
+		
+		for(PotRelation pr : dpr) {
+			if(pr.getPotid()==pot && pr.getUserid() == user) {
+				potrelationDao.delete(pr);
+				return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<String>(FAIL, HttpStatus.FAILED_DEPENDENCY);
+	}
 	
 	@GetMapping("/select_all")
-	@ApiOperation(value = "전체 팟 조회", response = Pot.class)
+	@ApiOperation(value = "전체 팟 조회")
 	public ResponseEntity<List<Pot>> select_all(){
-		
 		List<Pot> allPots = potDao.findAll();
 		if(!allPots.isEmpty()){
+			for(Pot ap : allPots) {
+				
+				ap.setPot_count(potrelationDao.countBypotid(ap));
+			}
 			return new ResponseEntity<List<Pot>>(allPots, HttpStatus.OK);
 		}
 		else {
@@ -144,12 +160,13 @@ public class PotController {
 		for(PotRelation pr : ingPots) {
 			if(pr.getUserid().getUserid() == userid) {
 				Pot result = potDao.getPotByPotid(pr.getPotid().getPotid());
+				int count = potrelationDao.countBypotid(result);
+				result.setPot_count(count);
 				attendlist.add(result);
-				//System.out.println(attendlist + ": potrelation 값 조회");
+				
 			}
 		}
 		if(!attendlist.isEmpty()) {
-			//System.out.println("비어있지 않음");
 			return new ResponseEntity<>(attendlist, HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);

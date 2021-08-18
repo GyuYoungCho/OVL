@@ -1,90 +1,140 @@
 <template>
-  <div>
-    <v-container>
-      <h1 class="text-center">비번을 까먹냐 ㅉㅉ</h1>
-      <v-text-field
-      v-model="email"
-        label="email"
-      ></v-text-field>
-      <v-btn
-        block
-        @click="sendNumber"
-      >
-        인증 번호 발송
-      </v-btn>
-      <v-text-field
-        label="인증번호"
-        v-model="authNumber"
-      ></v-text-field>
-      <v-btn
-        block
-        @click="authCheck"
-      >
-        인증 확인
-      </v-btn>
-      <v-form
-        v-if="authChecked"
-        v-model="valid"
-        ref="form"
-        lazy-validation
-      >
-        <v-text-field
-          label="새로운 비밀번호"
-          v-model="newPassword"
-          :rules="newPasswordRules"
-          required
-        ></v-text-field>
-        <v-btn
-          :disabled="!valid || !newPassword"
-          raised
-          block
-          @click="onPasswordBtnClick"
-          class="bg-freditgreen"
-        >
-          확인
-        </v-btn>
-
-      </v-form>
-    </v-container>
-  </div>
+  <v-container>
+    <!-- 모달 -->
+    <FlashModal :modalOpen="modalOpen" :title="modalTitle" :modalContent="modalContent" />
+    
+    <section class="findPassword">
+      <img src="@/assets/image/OVL_logo.png" alt="">
+      <!-- 이메일 -->
+      <div class="inputBtnDiv">
+        <input type="text" placeholder="이메일" v-model="email">
+        <button :class="{'bg-freditgreen': email && emailFormValid, 'disabledBtn': !email || !emailFormValid}"
+        :disabled="!email || !emailFormValid" @click="onEmailBtnClick">인증</button>
+      </div>
+      <p class="invalidTxt" v-if="!emailFormValid">
+        이메일 양식을 확인해주세요.
+      </p>
+      <!-- 인증번호 -->
+      <div class="inputBtnDiv" v-if="emailValid">
+        <input type="text" placeholder="인증번호" v-model="authNumber">
+        <button class="bg-freditgreen" @click="onEmailAuthBtnClick">확인</button>
+      </div>
+      <!-- 새 비밀번호 -->
+      <div v-if="authNumberValid">
+        <input type="password" placeholder="새로운 비밀번호 입력" v-model="newPassword">
+      </div>
+      <p class="invalidTxt" v-if="!newPasswordFormValid">
+        숫자와 특수문자를 포함하여 8자 이상으로 적어주세요.
+      </p>
+      <!-- 새 비밀번호 확인 -->
+      <div v-if="authNumberValid">
+        <input type="password" placeholder="새로운 비밀번호 확인" v-model="newPasswordCheck">
+      </div>
+      <p class="invalidTxt" v-if="!newPasswordCheckFormValid">
+        비밀번호와 일치하지 않습니다.
+      </p>
+      <!-- 비밀번호 변경 버튼 -->
+      <div v-if="authNumberValid">
+        <button class=" finalBtn" :class="{ 'bg-freditgreen': findPasswordFormValid, 'disabledBtn': !findPasswordFormValid }" 
+        :disabled="!findPasswordFormValid" @click="onPasswordBtnClick">
+          비밀번호변경
+        </button>
+      </div>
+      <div>
+        <hr>
+      </div>
+      <div class="infoBelow">
+        <p>
+          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 | </RouterLink>
+          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 | </RouterLink>
+          <RouterLink :to="{ name: 'FindEmail'}" class="grey-link">이메일찾기</RouterLink>
+        </p>
+      </div>
+    </section>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
+  components: {
+    FlashModal,
+  },
   data: () => ({
-    // valid라고 되어있는 부분은 v-form 안에 컴포넌트에 바인딩 시키면
-    // v-form 내부의 이야기에 따라 
-    valid: false,
     email: '',
+    emailValid: false,
     authNumber: '',
+    authNumberValid: false,
     newPassword: '',
-    newPasswordRules: [
-      v => !!v || '비밀번호를 꼭 기입해주세요',
-      v => (v && v.length > 7) || '8자리 이상 적어주세요',
-      v => (v && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(v)) || '문자/숫자/특수문자의 조합으로 적어주세요'
-    ],
-    authChecked: false
+    newPasswordCheck: '',
+
+    modalOpen: false,
+    modalContent: '',
+    modalTitle:'',
   }),
   methods: {
-    sendNumber () {
+    nothing () {
+      console.log('nothing')
+    },
+    onEmailBtnClick () {
+      this.modalTitle = "이메일 인증"
+      this.modalContent = '이메일을 확인하는 중입니다. 잠시만 기다려주세요'
+      this.modalOpen = true
       const URL = API.url + userAPI.email_auth('password', this.email)
       axios.get(URL)
         .then(res => {
-          console.log(res)
+          if (res.data==="success") {
+            this.modalTitle = "이메일 인증"
+            this.modalContent = "인증번호가 이메일로 발송되었습니다"
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
+            this.emailValid = true
+          } else {
+            this.modalTitle = "이메일 인증"
+            this.modalContent = "등록 정보가 없는 이메일입니다"
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
+          }
         })
-        .catch(err => console.error(err))
+        .catch(err => {
+          console.error(err)
+          this.modalTitle = "이메일 인증"
+          this.modalContent = "등록 정보가 없는 이메일입니다"
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
+        })
     },
 
-    authCheck () {
+    onEmailAuthBtnClick () {
+      this.modalTitle = "이메일 인증"
+      this.modalContent = '이메일을 확인하는 중입니다. 잠시만 기다려주세요'
+      this.modalOpen = true
       const URL = API.url + userAPI.email_auth_check(this.email, this.authNumber)
       axios.get(URL)
         .then(res => {
-          console.log(res)
-          this.authChecked = true
+          if (res.data==="success") {
+            this.modalTitle = "이메일 인증"
+            this.modalContent = "이메일 인증이 완료되었습니다"
+            setTimeout(() => {
+              this.modalOpen = false
+            }, 1000);
+            this.authNumberValid = true
+          } else {
+            this.modalTitle = "이메일 인증"
+            this.modalContent = '인증번호가 일치하지 않습니다. 다시 인증번호를 확인해주세요'
+            setTimeout(() => {
+              this.modalOpen = false
+              this.emailValid = false
+            }, 1000);
+            this.authNumber = ''
+          }
         })
         .catch(err => console.error(err))
     },
@@ -96,11 +146,33 @@ export default {
         }
       })
         .then(res => {
+          this.modalTitle = "비밀번호 변경"
+          this.modalContent = '비밀번호가 무사히 변경되었습니다'
+          this.modalOpen = true
+          setTimeout(() => {
+            this.modalOpen = false
+            this.$router.push({ name: "Login" })
+          }, 1000);
           console.log(res)
-          this.$router.push({ name : "Login" })
         })
         .catch(err => console.error(err))
     }
+  },
+  computed: {
+    emailFormValid () {
+      return !this.email || /.+@.+\..+/.test(this.email)
+    },
+    newPasswordFormValid () {
+      return !this.newPassword || ((this.newPassword.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.newPassword))
+    },
+    newPasswordCheckFormValid () {
+      return !this.newPasswordCheck || (this.newPassword===this.newPasswordCheck)
+    },
+    findPasswordFormValid () {
+    const dataValid = !!this.email && this.emailValid && !!this.authNumber && this.authNumberValid && !!this.newPassword && !!this.newPasswordCheck
+    const formValid = this.newPasswordFormValid && this.newPasswordCheckFormValid
+    return dataValid && formValid
+    },
   }
 }
 </script>

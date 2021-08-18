@@ -1,0 +1,78 @@
+h2 {
+  font-size: 1.3em;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.blackSquare {
+  background-image:url('../image/blackSquare.png');
+  background-size: 100%;
+}
+
+.carousel_content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color:white;
+  height: 100%;
+}
+
+.color-gray {
+  color: #bababa;
+}
+
+.postProfile {
+  display: flex;
+  align-items: center;
+}
+
+.comment {
+  background-color: $hy-green;
+}
+
+.smallFont {
+  font-size: small;
+}
+
+.contentAndTime {
+  display: flex;
+  justify-content: space-between;
+}
+
+.detext {
+  font-size: 13px;
+}
+
+
+.beginBtn {
+  background-color: $freditgreen;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}
+
+.alreadyBtn {
+  background-color: $hy-grey;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}
+
+.myBtn {
+  background-color: $hy-red;
+  color: white;
+  border-radius: 4px;
+  width: 30%;
+  padding:5px 0;
+}

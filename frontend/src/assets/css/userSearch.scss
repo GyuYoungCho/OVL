@@ -1,0 +1,97 @@
+.search_bar {
+   
+    input {
+      margin-top: 5px;
+      background-color: transparent;
+      border: none;
+    }
+  
+    i {
+      background-color: $freditgreen;
+      border-radius: 15px;
+    }
+  
+    .row {
+      height: 35px;
+      width: 100%;
+    }
+    .v-select {
+       font-size: 15px;
+      .dropdown-toggle {
+        border: none;
+      }
+    }
+  
+    div {
+      .v-text-field--rounded > .v-input__control > .v-input__slot {
+        padding: 0;
+        input {
+          margin-top: 10px;
+        }
+      }
+
+      .v-input__append-inner > .v-input__icon > i{
+        margin: 0;
+      }
+  
+      .v-input__slot {
+        margin-left: 0px;
+        margin-bottom: 0px;
+        padding-right: 0PX;
+        button {    
+           margin-bottom: 2px;
+        }
+      }
+
+      .v-text-field__slot > #input-45  {
+        margin-left: 0px;
+      }
+  
+      .v-input__control {
+        height: 30px;
+        input {
+          margin-left: 5px;
+        }
+      }
+
+      .v-input__control > .v-text-field__details {
+          padding-left: 5%;
+      }
+  
+      .v-select__slot {
+        margin-left: 0%;
+        margin-bottom: 11px;
+  
+        i {
+          margin-left: 0px;
+          color: white;
+        }
+  
+        .v-input__control {
+          padding: 0px;
+        }
+
+        .v-select__selections {
+            margin-left: 7%;
+        }
+  
+        .v-select__selections > .v-select__selection {
+            margin:auto;
+        }
+      }
+    }
+  }
+
+.borderRadius {
+    border-radius: 8px;
+}
+
+.noResult {
+  text-align: center;
+  margin-top: 40%;
+  font-size: large;
+  img {
+    width: 50%;
+    height: 50%;
+  }
+}

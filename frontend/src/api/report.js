@@ -2,13 +2,13 @@
 
 export default {
   // url: '/report/',
-  regist (from_id, to_id) {
-    return `/report/regist/${from_id}/${to_id}`
+  report (user_id, report_id) {
+    return `/report/regist/${user_id}/${report_id}`
   },
   select (user_id) {
     return `/report/select/${user_id}`
   },
-  unreport (from_id, to_id) {
-    return `/report/unreport/${from_id}/${to_id}`
+  unreport (user_id, report_id) {
+    return `/report/unreport/${user_id}/${report_id}`
   },
 }

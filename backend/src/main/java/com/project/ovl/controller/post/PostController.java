@@ -1,7 +1,7 @@
 package com.project.ovl.controller.post;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -10,9 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,9 +24,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.challenge.ChallengeCertificationDao;
@@ -33,19 +34,21 @@ import com.project.ovl.dao.post.PostCommentDao;
 import com.project.ovl.dao.post.PostDao;
 import com.project.ovl.dao.post.PostLIkeDao;
 import com.project.ovl.dao.post.PostPhotoDao;
+import com.project.ovl.dao.recipe.RecipeDao;
 import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.model.challenge.Challenge;
 import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.like.PostLike;
-import com.project.ovl.model.photo.PhotoHandler;
 import com.project.ovl.model.photo.PostPhoto;
 import com.project.ovl.model.post.Post;
 import com.project.ovl.model.post.PostComment;
+import com.project.ovl.model.recipe.Recipe;
 import com.project.ovl.model.user.User;
 import com.project.ovl.model.user.UserLog;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
@@ -80,18 +83,18 @@ public class PostController {
 	PostCommentController commentController;
 	
 	@Autowired
-	PhotoHandler photoHandler;
-	
-	@Autowired
 	ChallengeDao challengeDao;
 	
 	@Autowired
 	ChallengeCertificationDao challengeCertificationDao;
 	
+	@Autowired
+	RecipeDao recipeDao;
+	
 	@PostMapping("/regist")
 	@ApiOperation(value = "게시글 등록")
-	public ResponseEntity<Map<String, String>> regist(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") String categori,
-											@RequestPart("content") String content, @RequestPart("userId") String userId) throws Exception {
+	public ResponseEntity<Map<String, String>> regist(@RequestParam("pathList") List<String> pathList, @RequestParam("category") String category,
+			@RequestParam("content") String content, @RequestParam("userId") String userId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
@@ -101,27 +104,26 @@ public class PostController {
 		User user = userDao.getUserByUserid(Integer.parseInt(userId));
 		// 게시글 등록 시 유저에 경험치 5 추가
 		int value = 0;
-		if (Integer.parseInt(categori)==1) value = 5;
-		else if (Integer.parseInt(categori)==2) value = 3;
+		if (Integer.parseInt(category)==1) value = 5;
+		else if (Integer.parseInt(category)==2) value = 3;
 		else value = 2;
 		
 		user.setExperience(user.getExperience()+value);
 		userDao.save(user);
 		
 		// 게시글 등록
-		Post post = new Post(0, Integer.parseInt(categori), content, 0, 0, new Date(), user);
+		Post post = new Post(0, Integer.parseInt(category), content, 0, 0, new Date(), user);
 		postDao.save(post);
 		// 이미지 저장
-		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
-		
-		for (PostPhoto pp : photoList) {
-			postPhotoDao.save(pp);
+		for (int i=1;i<pathList.size();i++) {
+			PostPhoto photo = new PostPhoto(0, pathList.get(i), post);
+			postPhotoDao.save(photo);
 		}
 		
 		// 챌린지 중일 경우 인증
 		if(user.getChallengeId().getChallengeId()!=1
 				&& user.getChallengeId().getType()==1
-				&& user.getChallengeId().getCategori()==Integer.parseInt(categori)) {
+				&& user.getChallengeId().getCategory()==Integer.parseInt(category)) {
 			
 			Challenge ch = user.getChallengeId();
 			List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
@@ -147,23 +149,24 @@ public class PostController {
 		}
 		
 		// 로그 저장 post라 type 1
-		userLogDao.save(new UserLog(0, user, new Date(), 1 , Integer.parseInt(categori),post.getPostId(), value));
+		userLogDao.save(new UserLog(0, user, new Date(), 1 , Integer.parseInt(category),post.getPostId(), value));
 		
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 	
 	@PutMapping("/modify")
 	@ApiOperation(value = "게시글 수정")
-	public ResponseEntity<Map<String, String>> modify(@RequestPart("files") List<MultipartFile> files, @RequestPart("categori") int categori,
-			@RequestPart("content") String content, @RequestPart("postId") int postId) throws Exception {
+	public ResponseEntity<Map<String, String>> modify(@RequestParam(value="deleteIdList", required=false) Set<Integer> deleteIdList, @RequestParam("modifyIdList") List<Integer> modifyIdList,
+			@RequestParam("modifyPhotoList") List<String> modifyPhotoList, @RequestParam("plusPhotoList") List<String> plusPhotoList,
+			@RequestParam("category") String category, @RequestParam("content") String content, @RequestParam("postId") String postId) throws Exception {
 		
 		Map<String, String> map = new HashMap<>();
 		map.put("job", SUCCESS);
 		map.put("challenge", FAIL);
 		
-		Post post = postDao.findPostByPostId(postId);
+		Post post = postDao.findPostByPostId(Integer.parseInt(postId));
 		User user = post.getUserId();
-		int user_chall_cate = user.getChallengeId().getCategori();
+		int user_chall_cate = user.getChallengeId().getCategory();
 		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -180,14 +183,14 @@ public class PostController {
 		cal.set(Calendar.MILLISECOND, 999);
 		Date endDate = cal.getTime();
 		
-		int count = postDao.countByUserIdAndCategoriAndTimeBetween(
+		int count = postDao.countByUserIdAndCategoryAndTimeBetween(
 				user,user_chall_cate,startDate,endDate);
 		// 카테고리 변경에 따른 챌린지 처리
-		if(categori!=post.getCategori()) {
+		if(Integer.parseInt(category)!=post.getCategory()) {
 			
 			
 			// 챌린지로 인증됨
-			if(user_chall_cate==categori && count ==0) {
+			if(user_chall_cate==Integer.parseInt(category) && count ==0) {
 				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
 				Date now = new Date();
 				
@@ -211,7 +214,7 @@ public class PostController {
 			}
 				
 			// 챌린지 인증 취소됨
-			if(user_chall_cate==post.getCategori() && count ==1) {
+			if(user_chall_cate==post.getCategory() && count ==1) {
 				List<ChallengeCertification> cert = challengeCertificationDao.findByUserId(user);
 				Date now = new Date();
 				
@@ -234,31 +237,37 @@ public class PostController {
 				}
 			}
 			
-			UserLog log = userLogDao.findByTypeAndContentId(1, postId);
-			log.setCategori(categori);
+			UserLog log = userLogDao.findByTypeAndContentId(1, Integer.parseInt(postId));
+			log.setCategory(Integer.parseInt(category));
 			userLogDao.save(log);
 		}
 		
 		
-		post.setCategori(categori);
+		post.setCategory(Integer.parseInt(category));
 		post.setContent(content);
 		
 		postDao.save(post);
 		
-		// 원래 있던 사진 다 지우기
-		List<PostPhoto> deleteList = postPhotoDao.findAll();
-		for (PostPhoto pp : deleteList) {
-			if (pp.getPostId().getPostId()==postId) postPhotoDao.delete(pp);
+		// 사진 삭제
+		if (deleteIdList.size()>1) {
+			List<PostPhoto> deleteList = postPhotoDao.findAll();
+			for (PostPhoto pp : deleteList) {
+				if (deleteIdList.contains(pp.getPostPhotoId())) postPhotoDao.delete(pp);
+			}
 		}
 		
-		// 사진 다시 저장
-		List<PostPhoto> photoList = photoHandler.parseFileInfo(files, post.getPostId());
-
-		for (PostPhoto pp : photoList) {
-			postPhotoDao.save(pp);
+		// 사진 수정
+		for (int i=1;i<modifyIdList.size();i++) {
+			PostPhoto photo = postPhotoDao.findPostPhotoByPostPhotoId(modifyIdList.get(i));
+			photo.setFilepath(modifyPhotoList.get(i));
+			postPhotoDao.save(photo);
 		}
 		
-		
+		// 사진 추가
+		for (int i=1;i<plusPhotoList.size();i++) {
+			PostPhoto photo = new PostPhoto(0, plusPhotoList.get(i), post);
+			postPhotoDao.save(photo);
+		}
 		
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
@@ -276,8 +285,8 @@ public class PostController {
 		Post post = postDao.findPostByPostId(post_id);
 		
 		int value = 0;
-		if (post.getCategori()==1) value = 5;
-		else if (post.getCategori()==2) value = 3;
+		if (post.getCategory()==1) value = 5;
+		else if (post.getCategory()==2) value = 3;
 		else value = 2;
 		
 		User user = userDao.getUserByUserid(post.getUserId().getUserid());
@@ -309,7 +318,7 @@ public class PostController {
 		// 챌린지 중일 경우 조건에 따른 인증 취소 처리
 		if(user.getChallengeId().getChallengeId()!=1
 				&& user.getChallengeId().getType()==1
-				&& user.getChallengeId().getCategori()==post.getCategori()) {
+				&& user.getChallengeId().getCategory()==post.getCategory()) {
 			
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(new Date());
@@ -326,8 +335,8 @@ public class PostController {
 			cal.set(Calendar.MILLISECOND, 999);
 			Date endDate = cal.getTime();
 
-			int count = postDao.countByUserIdAndCategoriAndTimeBetween(
-					user,post.getCategori(),startDate , endDate);
+			int count = postDao.countByUserIdAndCategoryAndTimeBetween(
+					user,post.getCategory(),startDate , endDate);
 			
 			// 하나일 경우 취소
 			if(count==1) {
@@ -365,9 +374,28 @@ public class PostController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	} 
 	
-	@GetMapping("/select_all/{user_id}")
-	@ApiOperation(value = "게시글 조회")
-	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id) {
+	@GetMapping("/select_all")
+	@ApiOperation(value = "전체 게시글 조회")
+	public ResponseEntity<List<PostPhoto>> select_all() {
+		List<PostPhoto> postList = postPhotoDao.findAll();
+		List<PostPhoto> returnList = new ArrayList<>();
+		Set<Integer> idList = new HashSet<>();
+		
+		for (PostPhoto pp : postList) {
+			if (!idList.contains(pp.getPostId().getPostId())) {
+				idList.add(pp.getPostId().getPostId());
+				returnList.add(pp);
+			}
+		}
+		Collections.sort(returnList, (o1, o2)-> {
+			return Integer.compare(o2.getPostId().getPostId(), o1.getPostId().getPostId());
+		});
+		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("/select_my/{user_id}")
+	@ApiOperation(value = "나와 관련된 게시글 조회")
+	public ResponseEntity<List<PostPhoto>> select_all(@PathVariable int user_id, final Pageable pageable) {
 		// 내가 팔로우 한 사람 찾기
 		Optional<List<Follow>> followList = followDao.findByFromIdUserid(user_id);
 		Set<Integer> followingList = new HashSet<>();
@@ -382,8 +410,18 @@ public class PostController {
 		// 해당 게시글의 이미지 리스트를 찾기 위해 이미지 데이터 싹 가져오기
 		List<PostPhoto> photoList = postPhotoDao.findAll();
 		List<PostPhoto> returnList = new ArrayList<>();
+		
+		// 최근 게시글 위주
+		Calendar getToday = Calendar.getInstance();
+		getToday.setTime(new Date());
+		
 		for (Post p : postList) {
-			if (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id) {
+			Calendar postday = Calendar.getInstance();
+			getToday.setTime(p.getTime());
+			
+			long diff = (getToday.getTimeInMillis() - postday.getTimeInMillis()) / (1000*24*60*60);
+			
+			if (diff <=7 && (followingList.contains(p.getUserId().getUserid()) || p.getUserId().getUserid() == user_id)) {
 				List<PostPhoto> saveList = new ArrayList<>();
 				// 해당 게시물의 이미지를 리스트에 저장
 				for (PostPhoto pp : photoList) {
@@ -403,6 +441,7 @@ public class PostController {
 		});
 		return new ResponseEntity<List<PostPhoto>>(returnList, HttpStatus.OK);
 	} 
+	
 
 	@GetMapping("/select_user/{user_id}")
 	@ApiOperation(value = "자기 자신 게시글 조회")
@@ -490,5 +529,95 @@ public class PostController {
 			if (pl.getUserId().getUserid()==user_id) returnSet.add(pl.getPostId().getPostId());
 		}
 		return new ResponseEntity<Set<Integer>>(returnSet, HttpStatus.OK);
+	}
+	
+	@GetMapping("recommend_ch")
+	@ApiOperation(value = "뉴스피드 챌린지 추천")
+	public ResponseEntity<List<Challenge>> recommend_ch() {
+		List<Challenge> returnList = new ArrayList<>();
+		List<Challenge> topChList = new ArrayList<>();
+		
+		// 챌린지 가져오기
+		List<Challenge> chList = challengeDao.findAll();
+		// 참여하는 인원 순으로 정렬
+		Collections.sort(chList, (o1, o2) -> {
+			return Integer.compare(o2.getCount(), o1.getCount());
+		});
+
+		// 정렬 후 상위 5개 뽑기 (참여하는 인원이 있는 경우에만)
+		for (int i = 0; i < 5; i++) {
+			if (chList.get(i).getCount() > 0) topChList.add(chList.get(i));
+			else break;
+		}
+
+		// 랜덤으로 2개 뽑기
+		int a[] = new int[2];
+		Random rand = new Random();
+		int cnt = topChList.size()>0?topChList.size():chList.size(); // 상위 5개에 값이 있을 때 (참여 인원이 있을 때)는 topChList 만큼, 아닐 때는 chList 만큼 --> 참여 인원이 없다면 전체 챌린지에서 랜덤으로 값 뽑기
+		int size = cnt>2?2:cnt; // cnt 개수만큼 랜덤 값 뽑기
+		for (int i = 0; i < size; i++) {
+			a[i] = rand.nextInt(cnt);
+			for (int j = 0; j < i; j++) {
+				if (a[i] == a[j]) i--;
+			}
+		}
+
+		// 랜덤으로 뽑은 값 넣기
+		for (int i = 0; i < size; i++) {
+			if (topChList.size()>0) returnList.add(topChList.get(a[i]));
+			else returnList.add(chList.get(a[i]));
+		}
+		
+		return new ResponseEntity<List<Challenge>>(returnList, HttpStatus.OK);
+	}
+	
+	@GetMapping("recommend_re")
+	@ApiOperation(value = "뉴스피드 레시피 추천, 상위 5개 중 2개 랜덤으로 골라서 리턴")
+	public ResponseEntity<List<Recipe>> recommend() {
+		List<Recipe> returnList = new ArrayList<>();
+		List<Recipe> topReList = new ArrayList<>();
+		
+		// 레시피 가져오기
+		List<Recipe> reList = recipeDao.findAll();
+		
+		// 레시피가 존재한다면
+		if (reList.size()>=1) {
+			// 좋아요 순으로 정렬
+			Collections.sort(reList, (o1, o2)-> {
+				return Integer.compare(o2.getLikecount(), o1.getLikecount());
+			});
+		} else { // 레시피가 없다면 
+			returnList.add(new Recipe(0, "", "", "", new Date(), 0, 0, "", new User(0, "", "", "", "", "", 0, 0, 0, "", new Challenge(0, "", "", new Date(), 0, 0, 0, 0, 0, 0))));
+			return new ResponseEntity<List<Recipe>>(returnList, HttpStatus.OK); // 바로 리턴
+		}
+
+		
+		// 정렬 후 상위 5개 뽑기 (좋아요 있을 경우에만)
+		int size = reList.size()<5?reList.size():5;
+		for (int i=0;i<size;i++) {
+			if (reList.get(i).getLikecount()>0) topReList.add(reList.get(i));
+			else break;
+		}
+		
+		// 랜덤으로 2개 뽑기
+		int a[] = new int[2];
+		Random rand = new Random();
+		int cnt = topReList.size()>0?topReList.size():reList.size(); // 상위 5개에 값이 있을 때 (좋아요 누른 게 있을 때)는 topReList 만큼, 아닐 때는 reList 만큼 --> 좋아요 누른 게 없다면 전체 레시피에서 랜덤으로 값 뽑기
+		
+		size = cnt>2?2:cnt; // cnt 개수만큼 랜덤 값 뽑기
+		for (int i=0;i<size;i++) {
+			a[i] = rand.nextInt(cnt);
+			for (int j=0;j<i;j++) {
+				if (a[i]==a[j]) i--;
+			}
+		}
+		
+		// 랜덤으로 뽑은 값 넣기
+		for (int i=0;i<size;i++) {
+			if (topReList.size()>0) returnList.add(topReList.get(a[i]));
+			else returnList.add(reList.get(a[i]));
+		}
+		
+		return new ResponseEntity<List<Recipe>>(returnList, HttpStatus.OK);
 	}
 }

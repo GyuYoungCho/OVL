@@ -5,17 +5,17 @@ export default {
   regist () {
     return '/post/comment/regist'
   },
-  modify (post_comment_id) {
-    return `/post/comment/modify/${post_comment_id}`
+  modify () {
+    return '/post/comment/modify'
   },
   delete (post_comment_id) {
     return `/post/comment/delete/${post_comment_id}`
   },
   select_all (post_id) {
-    return `/post/comment/select_all/${post_id}`
+    return `/post/comment/search_all/${post_id}`
   },
-  like_list (user_id) {
-    return `/post/comment/like_list/${user_id}`
+  like_list (user_id, post_id) {
+    return `/post/comment/like_list/${user_id}/${post_id}`
   },
   like (user_id, post_comment_id) {
     return `/post/comment/like/${user_id}/${post_comment_id}`

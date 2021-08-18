@@ -1,4 +1,61 @@
-.bg-freditgreen {
-  background-color: $freditgreen !important;
-  color: white !important;
+.signup {
+  display: flex;
+  flex-direction: column;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    margin-top: 2vh;
+  }
+
+  img {
+    max-width: 50vw;
+    align-self: center;
+  }
+
+  input {
+    // margin-top: 20px;
+    background-color: $hy-green;
+    border-radius: 15px;
+    padding: 10px 10px;
+    min-width: 75vw;
+  }
+
+  .bg-freditgreen {
+    background-color: $freditgreen !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .disabledBtn {
+    background-color: $hy-grey !important;
+    color: white !important;
+    border-radius: 15px;
+    padding: 10px 10px;
+  }
+
+  .inputBtnDiv {
+    flex-direction: row;
+    justify-content: space-between;
+
+    input {
+      width: 70vw;
+    }
+
+    button {
+      width: 17vw;
+    }
+
+  }
+
+  .finalBtn {
+    margin-top: 2vh;
+  }
+
+  .invalidTxt {
+    color: $hy-red;
+    margin: 0;
+    font-size: small;
+  }
 }

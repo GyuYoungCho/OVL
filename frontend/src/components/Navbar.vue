@@ -1,9 +1,12 @@
 <template>
   <div>
+    <FlashModal :modalOpen="modalOpen" title="로그아웃" :modalContent="modalContent" />
     <!-- dense 하면 좀더 좁은 nav bar (48px 이 가능함) -->
-      <v-app-bar color="accent-4" dense white>
+      <v-app-bar color="white" dense class="navBar">
         <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <!-- justify content between 해주는 태그가 v-spacer -->
+        <v-spacer></v-spacer>
+        <span class="navbarTitle" @click="onClickLogo" >OVL</span>
         <v-spacer></v-spacer>
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
@@ -14,7 +17,7 @@
           <v-list>
           <v-list-item v-for="(item, index) in items" :key="index">
             <v-list-item-title>
-              <RouterLink class='text-dec' :to="{ name: item.routerName }">
+              <RouterLink class='text-dec' :to="{ name: item.routerName, params: { type: 0 } }">
                 {{ item.title }}
               </RouterLink>
             </v-list-item-title>
@@ -35,7 +38,7 @@
               </v-list-item>
             </RouterLink>
             
-            <RouterLink :to="{ name: 'Profile' }">           
+            <RouterLink :to="{ name: 'Profile', params: { userid: userinfo.userid} }">           
               <v-list-item class="mb-2 text-dec">
                 <v-icon>mdi-card-account-details-outline</v-icon>
                 <v-list-item-title class="ms-4">내 프로필</v-list-item-title>
@@ -63,16 +66,16 @@
               </v-list-item>
             </RouterLink>
 
-            <RouterLink :to="{name:'Main'}">
+            <RouterLink :to="{name:'UserSearch'}">
               <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-map-marker-radius-outline</v-icon>
-                <v-list-item-title class="ms-4">지도</v-list-item-title>
+                <v-icon>mdi-account-search-outline</v-icon>
+                <v-list-item-title class="ms-4">유저 검색</v-list-item-title>
               </v-list-item>
             </RouterLink>
 
             <v-list-item class="mb-2">
               <v-icon>mdi-home-remove-outline</v-icon>
-              <v-list-item-title class="ms-4">로그아웃</v-list-item-title>
+              <v-list-item-title class="ms-4" @click.prevent="onClickLogout()">로그아웃</v-list-item-title>
             </v-list-item>
 
             
@@ -83,7 +86,14 @@
 </template>
 
 <script>
+import {mapActions, mapGetters} from "vuex";
+import FlashModal from '@/components/signup/FlashModal.vue'
+
+
   export default {
+    components: {
+      FlashModal,
+    },
     data: () => ({
       drawer: false,
       group: null,
@@ -92,6 +102,8 @@
         { title: '레시피 생성', routerName: 'RecipeCreate' },
         { title: '채식팟 생성', routerName: 'VetPartyCreate' },
       ],
+      modalOpen: false,
+      modalContent: '',
     }),
 
     watch: {
@@ -99,13 +111,32 @@
         this.drawer = false
       },
     },
+    computed:{
+        ...mapGetters("user", ["userinfo", "isLogin"]),
+    },
+    methods: {
+      ...mapActions ("user", ["getTokenUserInfo", "logout"]),
+
+      onClickLogout(){
+        this.modalContent = "로그아웃 되었습니다"
+        this.modalOpen = true
+        setTimeout(() => {
+          this.modalOpen = false
+          this.logout()
+          this.$router.push({name: 'Main'})
+        }, 1000);
+      },
+      onClickLogo(){
+        this.$router.push({name: 'Main'})
+      }
+    },
   }
 </script>
 
 <style lang="scss" scoped>
- .text-dec {
-   text-decoration: none !important;
-   color: black !important;
- }
+.text-dec {
+  text-decoration: none !important;
+  color: black !important;
+}
 
 </style>
