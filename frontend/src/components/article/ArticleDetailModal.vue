@@ -4,7 +4,7 @@
     <v-card>
       <!-- 모달 타이틀 영역 -->
       <v-toolbar dense color="#004627">
-        <v-toolbar-title class="modalTitle"></v-toolbar-title>
+        <v-toolbar-title class="modalTitle">{{modalTitle}}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon dark @click="modalCancelBtnClick">
           <v-icon>mdi-close</v-icon>
@@ -38,6 +38,7 @@ export default {
   props: {
     modalOpen: Boolean,
     modalContent:String,
+    modalTitle:String,
     post:Object,
   },
   methods: {

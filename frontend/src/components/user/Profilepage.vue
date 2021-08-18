@@ -5,7 +5,7 @@
         <ModifyModal :modalOpen="isModifyPicModal" title="프로필 사진 수정" modalContent="사진을 수정하시겠습니까?" type=1
         @modalConfirmBtnClick="onUploadPicModalClick" @modalCancelBtnClick="isModifyPicModal = false" />
         <!-- 프로필 사진 수정 완료 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
+        <FlashModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
         <!-- Rank 선택 시 등급 안내 모달 -->
         <RankModal :modalOpen="isRankModalOpen" :user="userinfo" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />
         <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
@@ -146,10 +146,11 @@ import userAPI from '@/api/user.js'
 import ModifyModal from '@/components/profile/ModifyModal.vue'
 import RankModal from '@/components/profile/RankModal.vue'
 import FollowModal from '@/components/profile/FollowModal.vue'
+import FlashModal from '@/components/signup/FlashModal.vue'
 import filepath from '@/api/fileUpload.js';
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChallenging, ModifyModal, RankModal, FollowModal},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChallenging, ModifyModal, RankModal, FollowModal, FlashModal},
 
     data () {
         
@@ -301,7 +302,8 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
                 this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
                 this.followModalTitle = "Follower" // 팔로우 모달 타이틀
             }
-            this.isFollowModalOpen = true;
+            if (this.detailFollowUser.length!=0) this.isFollowModalOpen = true;
+            // this.isFollowModalOpen = true;
         },
         openCertDialog(val){
             console.log("챌린지 선택 !")

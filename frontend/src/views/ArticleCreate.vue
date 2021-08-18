@@ -1,12 +1,8 @@
 <template>
   <div>
     <v-container>
-      <!-- 게시글 수정 시 사진 삭제 모달 -->
-      <ArticleCreateModal :modalOpen="modalOpen" :modalContent="modalContent" 
-      :modalConfirm="modalConfirm" :deletePhotoIdx="deletePhotoIdx" 
-      @confirmBtnClicked="photoDelete(deletePhotoIdx)" @cancelBtnClicked="modalOpen=false" />
-
-
+      <!-- 게시글 등록 성공 시 -->
+      <FlashModal :modalOpen="isPostRegist" :title="modalTitle" :modalContent="modalContent" />
 
       <section class="article">
         <div v-if="type==0">
@@ -36,7 +32,7 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
@@ -47,7 +43,11 @@
         </div>
         <!-- 수정 시 캐러셀 영역 -->
         <div v-else>
-          <v-carousel class="carouselBorder" hide-delimiters height="30vh">
+          <div class='articlePic' v-if="!photoList.length">
+            <label for="newFile"><v-icon>mdi-plus</v-icon></label>
+            <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(1)" style="width:0; height:0">
+          </div>
+          <v-carousel v-else class="carouselBorder" hide-delimiters height="30vh">
             <v-carousel-item v-for="(info,idx) in photoList" :key="idx" :src="photoPath(idx)" style="text-align:right">
               <!-- 사진 수정 -->
               <span @click="photoModify(idx)">
@@ -55,8 +55,7 @@
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUpload" style="width:0; height:0">  
               </span>
               <!-- 사진 삭제 -->
-              <!-- <span @click="photoDelete(idx, 1)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>   -->
-              <span @click="phtoDeleteModalPopup(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
+              <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
               <!-- 사진 추가 -->
               <span>
                 <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
@@ -81,13 +80,13 @@
 <script>
   import axios from "axios";
   import { mapState } from "vuex";
-  import ArticleCreateModal from "@/components/article/ArticleCreateModal.vue";
+  import FlashModal from '@/components/signup/FlashModal.vue'
   import fileUpload from "@/api/fileUpload.js";
   import API from "@/api/index.js";
 
   export default {
     components: {
-      ArticleCreateModal,
+      FlashModal
     },
     data () {
       return {
@@ -113,9 +112,9 @@
         tempIdx:0, // 임시 저장
 
         // 모달 관련 변수
-        modalOpen: false,
         modalContent: '',
-        modalConfirm: false,
+        modalTitle:'',
+        isPostRegist:false,
         deletePhotoIdx: 0,
       }
     },
@@ -188,11 +187,18 @@
         params.append("content", this.content);
         params.append("userId", this.userinfo.userid);
         params.append("pathList", pathList);
-
+        
         axios.post(API.url+'/post/regist', params)
         .then((response) => {
           console.log(response.data);
-          this.$router.push({ name: 'Main' })
+
+          this.modalTitle = "게시글 등록"
+          this.modalContent = "게시글이 등록되었습니다"
+          this.isPostRegist = true
+          setTimeout(() => {
+            this.isPostRegist = false
+            this.$router.push({ name: 'Main' })  
+          }, 1000);
         })
         .catch((error) => {
           // alert("못보냈슴!");
@@ -217,7 +223,15 @@
         axios.put(API.url+'/post/modify', params)
         .then((response) => {
           console.log(response.data);
-          if (response.data.job=="success") this.$router.push({path:"/article_detail/"+this.post.postId});
+          if (response.data.job=="success") {
+            this.modalTitle = "게시글 수정"
+            this.modalContent = "게시글이 수정되었습니다"
+            this.isPostRegist = true
+            setTimeout(() => {
+              this.isPostRegist = false
+              this.$router.push({path:"/article_detail/"+this.post.postId});
+            }, 1000);            
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -253,6 +267,7 @@
         this.photoList.splice(this.photoList.length-1, 1);
       },
       newFileUpload(type) {
+        console.log(this.$refs.plusFiles)
         for (let i = 0; i < this.$refs.plusFiles[0].files.length; i++) {
           const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
           if (type==0) {
@@ -268,12 +283,6 @@
           }
         }
       },
-      phtoDeleteModalPopup(idx) {
-        this.modalConfirm = true
-        this.modalContent = "정말 삭제하시겠습니까?"
-        this.modalOpen = true
-        this.deletePhotoIdx = idx
-      },
       photoDelete(idx) { // 사진 삭제
         const type = this.type
         if (type!=0) { // 게시글 수정일 때
@@ -283,12 +292,6 @@
           this.sendList.splice(idx, 1);
           this.previewItems.splice(idx, 1); 
         }
-        this.modalConfirm = false
-        this.modalContent = "삭제 되었습니다."
-        setTimeout(() => {
-          this.modalOpen = false
-          this.modalContent = ""
-        }, 800);
       }
     },
     async created() {

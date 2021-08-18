@@ -155,7 +155,7 @@ export default {
         })
         .catch((err) => {
           // 로그인 실패 시 모달 띄우기
-          commit("SET_MODAL", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요." });
+          commit("SET_MODAL", { modalOpen: true, modalContent: "이메일과 비밀번호를 확인하세요" });
           setTimeout(() => {
             commit("SET_MODAL", { modalOpen: false, modalContent: "" });
           }, 1000);

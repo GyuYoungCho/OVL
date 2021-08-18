@@ -1,8 +1,8 @@
 <template>
 <v-container>
     <!-- 프로필 사진 수정 완료 안내 모달 -->
-    <ModifyModal :modalOpen="isModifyComplete" title="회원 정보 수정" modalContent="수정이 완료되었습니다" type=2 />
-    <ModifyModal :modalOpen="isUserDelete" title="회원 탈퇴" modalContent="탈퇴가 정상적으로 처리되었습니다" type=2 />
+    <FlashModal :modalOpen="isModifyComplete" title="회원 정보 수정" modalContent="수정이 완료되었습니다" type=2 />
+    <FlashModal :modalOpen="isUserDelete" title="회원 탈퇴" modalContent="탈퇴가 정상적으로 처리되었습니다" type=2 />
 
         <div style="text-align:center">
             <img src="@/assets/image/OVL_logo.png" alt="">
@@ -64,11 +64,11 @@ import {mapGetters, mapState} from "vuex"
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
-import ModifyModal from '@/components/profile/ModifyModal.vue'
+import FlashModal from '@/components/signup/FlashModal.vue'
 
 export default {
     components: {
-        ModifyModal
+        FlashModal
     },
     data() {
         return {

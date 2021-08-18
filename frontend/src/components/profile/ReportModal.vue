@@ -2,7 +2,7 @@
     <v-dialog v-model="modalOpen" max-width="300" @click:outside="modalOpen = false">
         <v-card>
             <!-- 모달 타이틀 영역 -->
-            <v-toolbar dense color="#CF5555">
+            <v-toolbar dense color="#49784B">
                 <v-toolbar-title class="modalTitle">{{title}}</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon dark @click="onCancelBtnClick">
@@ -14,12 +14,12 @@
                 <div class="modalContent" >
                 <div class="mb-3" >
                     <span class="modalContentMessage">
-                        <div v-if="!isReport"><textarea name="" id="" cols="30" rows="10" placeholder="신고사유." class="ingredient-text" v-model="reason"></textarea></div>
+                        <div v-if="!isReport"><textarea name="" id="" cols="30" rows="10" placeholder="신고사유를 구체적으로 적어주세요" class="ingredient-text" v-model="reason" style="height:100px"></textarea></div>
                         <div v-else style="text-align:left">신고를 취소하시겠습니까?</div>
                     </span>
                 </div>
-                <div class="modalContentButtonArea" v-if="!isReport">
-                    <button class="modalContentButton" @click="onConfirmBtnClick" style="width:80px">신고</button>
+                <div class="modalContentButtonArea" v-if="!isReport" :class="{'buttonDiv': valid, 'disabledBtnDiv': !valid}">
+                    <button class="modalContentButton" @click="onConfirmBtnClick" :disabled="!valid" style="width:80px">신고</button>
                 </div>
                 <div class="modalContentButtonArea" v-else>
                     <button class="modalContentButton" @click="onConfirmBtnClick" style="width:80px">신고 취소</button>
@@ -44,6 +44,12 @@ export default {
   data() {
       return {
           reason:"", 
+      }
+  },
+  computed: {
+      valid() {
+          if (this.reason.length==0) return false;
+          return true;
       }
   },
   methods: {

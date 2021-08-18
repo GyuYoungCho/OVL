@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <!-- 로그인 관련 모달 -->
-    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+    <FlashModal :modalOpen="modalOpen" title="로그인" :modalContent="modalContent" />
 
     <section class="login">
       <img src="@/assets/image/OVL_logo.png" alt="" @click="onClickLogo">

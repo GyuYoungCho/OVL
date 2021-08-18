@@ -15,7 +15,7 @@
       <v-card>
         <!-- 모달 타이틀 영역 -->
         <v-toolbar dense color="#004627">
-          <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
+          <v-toolbar-title class="modalTitle">챌린지 참여</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="participation = false">
             <v-icon>mdi-close</v-icon>
@@ -26,12 +26,62 @@
         <div class="modalContent">
           <div class="mb-3">
             <span class="modalContentMessage">
-              이미 참여한 챌린지가 있습니다! <br>
+              이미 참여한 챌린지가 있습니다. <br>
               참여 취소를 원하시면 내 프로필에서 취소해 주세요!
             </span>
           </div>
+        </div>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+    <!-- 커스텀 모달 : 챌린지 참여 --> 
+    <v-dialog v-model="isDetail" max-width="300">
+      <v-card>
+        <!-- 모달 타이틀 영역 -->
+        <v-toolbar dense color="#004627">
+          <v-toolbar-title class="modalTitle">{{detailCh.title}}</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon dark @click="isDetail = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <!-- 모달 컨텐츠 영역 -->
+        <v-container>
+        <div class="modalContent">
+          <div class="mb-3">
+            <div>{{detailCh.content}}</div>
+            <br>
+            <!-- 해당 챌린지의 기간 영역 -->
+            <div>
+              <v-icon dense>mdi-run</v-icon>
+              <span v-if="detailCh.cycle === 1">
+                매일
+              </span>
+              <span v-else>
+                {{detailCh.cycle}}일마다
+              </span>
+            </div>
+            <!-- 해당 챌린지의 경험치 영역 -->
+            <div>
+              <v-icon dense>mdi-diamond-stone</v-icon>
+              {{detailCh.score}}
+            </div>
+            <!-- 참여 인원을 나타내는 영역 -->
+            <div>
+              <v-icon dense>mdi-account</v-icon>
+              {{detailCh.count}}명 참여 중
+            </div>
+            <!-- 참여 기간을 나타내는 영역 -->
+            <div v-if="detailCh.start_date!=undefined">
+              <v-icon dense>mdi-calendar-blank</v-icon>
+              {{ recalibratedDate(detailCh.start_date, 0) }} ~
+                {{ recalibratedDate(detailCh.start_date, detailCh.period) }}  ({{detailCh.period/7}}주)
+            </div>
+            <br>
+          </div>
           <div class="modalContentButtonArea">
-            <button class="modalContentButton" @click="participation = false">확인</button>
+            <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(detailCh.challengeId)" class="beginBtn">참여하기</button>
           </div>
         </div>
         </v-container>
@@ -84,7 +134,7 @@
               </div>
               <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
               <div class="cardContentArea">
-                <button v-if="userinfo.challengeId.challengeId === 1" @click="participateClick(challenge.challengeId)" class="beginParticipation"><div style="margin-top:1px">참여하기</div></button>
+                <button v-if="userinfo.challengeId.challengeId === 1" @click="isChallenge(challenge)" class="beginParticipation"><div style="margin-top:1px">참여하기</div></button>
                 <button v-else-if="challenge.challengeId === userinfo.challengeId.challengeId" disabled class="myParticipation"><div style="margin-top:1px">참여 중</div></button>
                 <button v-else  @click='participation = true' class="alreadyInParticipation"><div style="margin-top:1px">참여하기</div></button>
               </div>
@@ -112,6 +162,8 @@ export default {
       nowSelectedCategory: '',
       // 커스텀 모달 온오프 위한 변수
       participation: false,
+      detailCh : {},
+      isDetail: false
     }
   },
   methods: {
@@ -156,8 +208,13 @@ export default {
           this.nowSelectedCategory = '3'
         }
       },
+    isChallenge(Challenge) {
+      this.detailCh = Challenge;
+      this.isDetail = true;
+    },
     // 참여하기 버튼을 누르는 경우
     participateClick (challenge_id) {
+      this.isDetail = false;
       if (this.userinfo.challengeId.challengeId === 1) {
         // 만약 유저가 챌린지에 참여하고 있지 않은 경우라면?
           const payload = {

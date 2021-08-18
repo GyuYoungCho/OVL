@@ -245,9 +245,9 @@ export default {
         },
         onClickReport() { 
             if (!this.isReport) { // 신고 안했음 이제 해야됨
-                this.reportModalTitle = "신고"
+                this.reportModalTitle = "회원 신고"
             } else { // 신고 했음 이제 취소 해야됨
-                this.reportModalTitle = "신고 취소"
+                this.reportModalTitle = "회원 신고 취소"
             }
             this.isReportOpen = true;
         },

@@ -4,7 +4,7 @@
       <!-- 모달 타이틀 영역 -->
       <v-toolbar dense color="#004627">
         <v-toolbar-title class="modalTitle">
-          <!-- {{ modaltitle }} -->
+          {{ modalTitle }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
         
@@ -37,6 +37,7 @@ export default {
   props: {
     modalOpen: Boolean,
     modalContent: String,
+    modalTitle:String, 
     modalConfirm: Boolean,
     deletePhotoIdx: Number,
   },

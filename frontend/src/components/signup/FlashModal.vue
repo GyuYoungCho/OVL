@@ -4,6 +4,7 @@
         <!-- 모달 타이틀 영역 -->
         <v-toolbar dense color="#004627">
           <v-toolbar-title class="modalTitle">
+            {{title}}
           </v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
@@ -26,6 +27,7 @@ export default {
   props: {
     modalOpen: Boolean,
     modalContent: String,
+    title:String,
   },
   methods: {
     nothing () {
