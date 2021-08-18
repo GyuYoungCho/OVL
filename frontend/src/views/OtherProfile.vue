@@ -211,6 +211,7 @@ export default {
             this.followingCnt = val.length
         },
         ProFileUser(val) {
+            console.log("ProfileUser 변경 : ", val);
             if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
             else this.isLocked = false;
 
@@ -239,7 +240,6 @@ export default {
             this.isFollowModalClick = false;
         },
         openCertDialog(val){
-            console.log("챌린지 선택 ! ", this.profileUser.challengeId.challengeId)
             if(this.profileUser.challengeId.challengeId!=1)
                 this.isCertOpen = val
         },
@@ -284,6 +284,7 @@ export default {
         }
     },
     created() {
+        console.log("created !! : ", this.$route.params.userid);
         const userid = this.$route.params.userid;
         // 해당 프로필 유저 아이디와 내 아이디가 같다면 나의 프로필로 이동
         if(userid == this.userinfo.userid){
@@ -304,6 +305,9 @@ export default {
         if (this.profileUser.challengeId.challengeId==1) this.isNotChallenging = true;
         else this.isNotChallenging = false;
 
+        console.log("초기 isNotChallenging : ", this.isNotChallenging)
+        console.log("초기 profileUser : ", this.profileUser)
+
         // 비건 등급
         if(this.percent < 31 ) this.step = 1;
         else if( this.percent > 30 && this.percent < 61) this.step = 2;
@@ -314,6 +318,8 @@ export default {
         if (this.profileUser.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
         // 신고 확인 -> 내가 신고한 사람 중 현재 프로필 유저의 아이디가 있다면 신고한 것
         if (this.reportList.includes(this.profileUser.userid)) this.isReport = true;
+
+        console.log("초기 isLocked : ", this.isLocked)
     }
 }
 </script>
