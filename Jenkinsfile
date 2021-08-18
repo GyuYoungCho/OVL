@@ -21,7 +21,7 @@ pipeline {
 
        	    sh 'docker container ls -a -fname=name=backend -q | xargs -r docker container rm'
 
-	    // sh 'docker rm backend'
+	    sh 'docker rm backend'
             }
         }
         stage('Docker build') {
