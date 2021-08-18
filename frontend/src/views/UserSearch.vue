@@ -13,10 +13,6 @@
           <div class="mt-3">닉네임, 게시글을 검색할 수 있습니다!</div>
       </div>
 
-      <div v-if="search.length>0 && ((ord=='게시글' && searchPost.length==0) || (ord=='닉네임' && searchUser.length==0)) " class="noResult">
-          <img src="@/assets/image/noResult.png" alt="">
-          <div class="mt-3">검색 결과가 존재하지 않습니다</div>
-      </div>
 
       <div v-if="ordCheck">
         <div v-for="(info, idx) in postAll" :key="idx" class="mt-4">
