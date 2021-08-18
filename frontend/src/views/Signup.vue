@@ -100,7 +100,7 @@ export default {
     },
     onNicknameBtnClick () {
       this.modalTitle = "닉네임 중복 확인"
-      this.modalContent = "닉네임 중복 여부 확인 중입니다"
+      this.modalContent = "닉네임 중복 여부를 확인 중입니다"
       this.modalOpen = true
       const URL = API.url + userAPI.nickname_check(this.nickname)
       axios.get(URL)
@@ -108,13 +108,13 @@ export default {
           if (res.data === "success") {
             this.nicknameValid = true
             this.modalTitle = "닉네임 중복 확인"
-            this.modalContent = '사용 가능한 닉네임입니다'
+            this.modalContent = '사용 가능한 닉네임 입니다'
             setTimeout(() => {
               this.modalOpen = false
             }, 1000)
           } else {
             this.modalTitle = "닉네임 중복 확인"
-            this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임입니다`
+            this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임 입니다`
             setTimeout(() => {
               this.modalOpen = false
             }, 1000)
