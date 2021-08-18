@@ -60,8 +60,10 @@
         </div>
       </div>
 
-
-      <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
+    
+      <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" 
+      spinner="none">
+        <div slot="spinner"></div>
         <div slot="no-more" class="mt-4">
             <!-- <div class="noResult">
                 <img src="@/assets/image/noResult.png" alt="">
@@ -75,6 +77,7 @@
             </div> -->
           </div>
         </infinite-loading>
+   
 
   </v-container>
 </template>
@@ -158,51 +161,52 @@ export default {
     },
     infiniteHandler($state) {
       
-      if(this.ord == '닉네임' && this.search!=''){
-        this.pageSize = 10
-        let params = new URLSearchParams();
-        params.append("size", this.pageSize);
-        params.append("page", this.pageNumber);
-        params.append("keyword", this.search);
-        axios.get(API.url + feedAPI.select_alluser(),{params})
-          .then(res => {
-            
-            if (res.data.content.length > 0) {
-                this.getUserList(res.data.content)
-                $state.loaded();
-                this.pageNumber++;
-            } else {
-                $state.complete();
-            }
-        })
-        .catch(err => {
-            console.log(err)
-            alert('에러');
-        })
-      }else if(this.ord=='게시글' && this.search!=''){
-        this.pageSize = 5
-        let params = new URLSearchParams();
-        params.append("size", this.pageSize);
-        params.append("page", this.pageNumber);
-        params.append("keyword", this.search);
-        axios.get(API.url + feedAPI.postsearch(),{params})
-          .then(res => {
-            
-            if (res.data.content.length > 0) {
-                this.getPostAll(res.data.content)
-                this.getPostLikeList(this.userinfo.userid)
-                $state.loaded();
-                this.pageNumber++;
-            } else {
-                $state.complete();
-            }
-        })
-        .catch(err => {
-            console.log(err)
-            alert('에러');
-        })
+        if(this.ord == '닉네임' && this.search!=''){
+          this.pageSize = 10
+          let params = new URLSearchParams();
+          params.append("size", this.pageSize);
+          params.append("page", this.pageNumber);
+          params.append("keyword", this.search);
+          axios.get(API.url + feedAPI.select_alluser(),{params})
+            .then(res => {
+              
+              if (res.data.content.length > 0) {
+                  this.getUserList(res.data.content)
+                  $state.loaded();
+                  this.pageNumber++;
+              } else {
+                  $state.complete();
+              }
+          })
+          .catch(err => {
+              console.log(err)
+              alert('에러');
+          })
+        }else if(this.ord=='게시글' && this.search!=''){
+          this.pageSize = 5
+          let params = new URLSearchParams();
+          params.append("size", this.pageSize);
+          params.append("page", this.pageNumber);
+          params.append("keyword", this.search);
+          axios.get(API.url + feedAPI.postsearch(),{params})
+            .then(res => {
+              
+              if (res.data.content.length > 0) {
+                  this.getPostAll(res.data.content)
+                  this.getPostLikeList(this.userinfo.userid)
+                  $state.loaded();
+                  this.pageNumber++;
+              } else {
+                  $state.complete();
+              }
+          })
+          .catch(err => {
+              console.log(err)
+              alert('에러');
+          })
+        }
       }
-    }
+    
  },
  computed: {
     ...mapGetters("user", (["userinfo", "userlist"])),
@@ -210,17 +214,18 @@ export default {
     
  },
  watch:{
-    search: function() {
+    search(newVal,oldVal) {
+      oldVal
       if(this.ord=="게시글") this.resetPostAll();
       else this.resetUserList();
       this.pageNumber = 0;
-      this.$refs.infiniteLoading.stateChanger.reset();
+      if(newVal!='') this.$refs.infiniteLoading.stateChanger.reset();
     },
     ord : function() {
       this.resetUserList();
       this.resetPostAll();
       this.pageNumber = 0;
-      this.$refs.infiniteLoading.stateChanger.reset();
+      // this.$refs.infiniteLoading.stateChanger.reset();
     },
   },
  created() {

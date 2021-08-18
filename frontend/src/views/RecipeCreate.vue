@@ -35,7 +35,8 @@
         </div>
         <!-- 과정 탭 -->
         <div class="process-tab" v-else>
-          <div v-for="(processImgFile, index) in processImgFiles" :key="index" >
+          <div v-for="(processImgFile, index) in processImgFiles" :key="index">
+            
             <div class="process-index">
               <span># {{ index + 1 }}</span>
               <button class="cancelBtn" @click="deleteProcessImg(processImgFile.number)">X</button>
@@ -49,13 +50,16 @@
               <textarea cols="30" rows="10" v-model="processImgFile.text"></textarea>
             </div>
           </div>
-          <div>
+          <div v-if="processImgFiles.length<15">
             <p># next</p>
             <div class="process-input">
               <label for="processImgInput"><v-icon>mdi-plus</v-icon></label>
               <input type="file" id="processImgInput" ref="files" multiple @change="onProcessInputChange">
               <textarea name="" id="" cols="30" rows="10"></textarea>
             </div>
+          </div>
+          <div v-if="processImgFiles.length==15">
+            <p>과정은 15개만 등록할 수 있습니다</p>
           </div>
         </div>
       </div>
@@ -112,7 +116,8 @@ export default {
     onProcessInputChange(event) {
       if (this.changeProcessPhotoIdx===-1) {
         const inputFiles = this.$refs.files.files
-        for(let i=0; i < inputFiles.length; i++) {
+        const limitInputFilesCount = inputFiles.length <=15 ? inputFiles.length : 15 
+        for(let i=0; i < limitInputFilesCount; i++) {
           let inputFile = inputFiles[i]
           inputFile.previewURL = URL.createObjectURL(inputFile)
           inputFile.number = this.processLastIdx
@@ -124,7 +129,7 @@ export default {
         const newFile = this.$refs.files.files[0]
         newFile.previewURL = URL.createObjectURL(newFile)
         newFile.number = this.processLastIdx
-        newFile.text = ''
+        newFile.text = this.processImgFiles[this.changeProcessPhotoIdx].text
         this.processLastIdx++
         this.processImgFiles[this.changeProcessPhotoIdx] = newFile
         // 리스트가 업데이트됐다는 이벤트가 발생하도록 임의의 값을 push하고 pop
