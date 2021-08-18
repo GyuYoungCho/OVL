@@ -1,6 +1,10 @@
 <template>
 <v-container>
     <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+
+        <div style="text-align:center">
+            <img src="@/assets/image/OVL_logo.png" alt="">
+        </div>
         
     <div class="text-right">
         <v-row justify="end">
@@ -13,12 +17,6 @@
     </div>
     
     <section class="modifyuser">
-        
-        
-        
-        <div>
-        <img src="@/assets/image/OVL_logo.png" alt="">
-        </div>
     <!-- 이름 -->
     <div class="inputOnlyRead">
         {{name}}
@@ -26,7 +24,7 @@
     <!-- 닉네임 -->
     <div class="inputBtnDiv">
         <input type="text" v-model="nickname">
-        <button class="bg-freditgreen" @click="onClickNicknameValidate()">확인</button>
+        <button class="bg-freditgreen" @click="onClickNicknameValidate()" style="width:60px">확인</button>
     </div>
     <!-- 이메일 -->
     <div class="inputOnlyRead">

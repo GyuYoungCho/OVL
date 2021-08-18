@@ -21,7 +21,10 @@ public interface UserDao extends JpaRepository<User, String> {
 	 
 	 Optional<List<User>> findByChallengeIdChallengeId(int challenge_id);
 	 
-	 @Query(value = "select * from user u where " +
-				"lower(u.nickname) like :keyword", nativeQuery = true)
+	 @Query(value = "select * from ( " +
+			 "select *, instr(nickname, :keyword ) ind FROM user " + 
+	 		") t " + 
+	 		"where ind > 0 " + 
+	 		"order by ind ", nativeQuery = true)
 	 Page<User> findByKeyWord(String keyword, Pageable pageable);
 }

@@ -1,628 +1,291 @@
 <template>
 <v-container>
     <section class="profilepage">
-            <div centered class="container d-flex justify-content-center">
-                <div class="card p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="image text-center">
-                            <img :src="otheruserinfo.filepath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
-                        <div class="mb-0 mt-0">{{this.otheruserinfo.nickname}}</div>
-                            <div v-if="time <=0" style="font-size:x-small">
-                                <span class="ingdate">&nbsp;</span>
+        <!-- Rank 선택 시 등급 안내 모달 -->
+        <RankModal :modalOpen="isRankModalOpen" :user="profileUser" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />    
+        <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
+        <FollowModal v-if="detailFollowUser.length>0" :modalOpen="isFollowOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="isFollowOpen = false" />
+        <!-- 신고 모달 -->
+        <ReportModal :modalOpen="isReportOpen" :isReport="isReport" :title="reportModalTitle" :fromId="userinfo.userid" :toId="profileUser.userid"
+        @onCancelBtnClick="isReportOpen = false" @onConfirmBtnClick="reportRegistOrCancel"/>
+        <ChallengeConfirm :user="profileUser" :isCertOpen="isCertOpen" @openCertDialog="openCertDialog"/>
+
+        <div centered class="container d-flex justify-content-center">
+            <div class="card p-3">
+                <div class="d-flex align-items-center">
+                    <!-- 프로필 사진, 닉네임, 챌린지 -->
+                    <div class="image text-center"> 
+                        <img :src="profileUser.filepath" class="profile-img" width="100" height="100" style="border-radius: 50%;">
+                        <!-- 닉네임 -->
+                        <div class="mb-0 mt-0" style="font-size:large">{{profileUser.nickname}}</div>
+                        <!-- 챌린지 -->
+                        <div v-if="time <= 0" style="font-size:x-small">
+                            <span class="ingdate">&nbsp;</span>
+                        </div> 
+                        <div v-else-if="time>0 && !isNotChallenging" style="font-size:x-small" @click="openCertDialog(true)">
+                            <span class="ingdate">{{time}} </span> 일째 챌린지 중
+                        </div>
+                    </div>
+                    
+                    <!-- 랭킹 박스 --> 
+                    <div class="rankingbox" style="font-size:xx-small; margin: 30px">
+                        <div class="d-flex justify-content-center">
+                            <div style="margin: 0px 10px 10px">
+                                <div class="d-flex flex-column" @click="openRankDialog"> 
+                                    <span class="rank" style="font-size:x-small">Rank</span>
+                                    <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"/></span>
+                                    <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"/></span>
+                                    <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"/></span>
+                                </div>
                             </div>
-                            <div v-else style="font-size:x-small"
-                            @click="openCertDialog(true)"> 
-                                <span class="ingdate">{{time}} </span> 일째 챌린지 중
+                            <v-spacer></v-spacer>
+                            <!-- 팔로잉 -->
+                            <div style="margin: 0px 10px 10px" class="justify-content-center" >
+                                <div class="d-flex flex-column"> 
+                                    <span class="following">Following</span>
+                                    <div @click="onClickFollow(0)" class="mt-1">
+                                    <span class="number2" style="font-size:medium" width="40px">{{followingCnt}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <!-- 팔로워 -->
+                            <div style="margin: 0px 10px 10px">
+                                <div class="d-flex flex-column">
+                                <span class="follower">Follower</span>
+                                    <div @click="onClickFollow(1)" class="mt-1">
+                                        <span class="number3" style="font-size:medium" width="40px" >{{followerCnt}}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="rankingbox" style="font-size:xx-small; margin: 30px">
-                            <div class="d-flex justify-content-center">
-                                <div style="margin: 10px">
-                                    <div class="d-flex flex-column"> 
-                                        <span class="rank">rank</span>
-                                        <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                        <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                        <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                    </div>
-                                </div>
-                                <v-spacer></v-spacer>
-                                <div style="margin: 10px">
-                                    <div class="d-flex flex-column"> 
-                                        <span class="following">following</span>
-                                        <div v-if="this.requestforfollow" >
-                                            <span class="number2" style="font-size:medium">{{following}}</span>
-                                        </div>
-                                        <div v-else @click="openDialog(0)">
-                                        <span class="number2" style="font-size:medium">{{following}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <v-spacer></v-spacer>
-                                <div style="margin: 10px"><div class="d-flex flex-column">
-                                    <span class="follower">follower</span>
-                                        <div v-if="this.requestforfollow" >
-                                            <span class="number2" style="font-size:medium">{{follower}}</span>
-                                        </div>
-                                    <div v-else @click="openDialog(1)">
-                                    <span class="number3" style="font-size:medium">{{follower}}</span>
-                                    </div>
-                                </div></div>
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                
-                                <div v-if="this.requestforfollow" style="backgroung-color: #9A2EFE"> 
-                                    <button class="requestFollow">비공개 계정</button> <!--@click="onClickRequestBtn()"-->
-                                </div>
-                                <div v-else>                                
-                                    <div v-if="this.isFollowing" width=""> 
-                                        <button class="unfollowBtn" @click="onClickUnFollowBtn()">unFollow</button>
-                                    </div>
-                                    <div v-else-if="!this.isFollowing"> 
-                                        <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
-                                    </div>
-                                </div>
 
-                                <div v-if="!isReported" class="ms-1">
-                                    <button class="reportBtn" @click="onClickReport()">신고</button>
+                        <!-- 팔로우 or 언팔로우 버튼, 신고 버튼 -->
+                        <div class="d-flex justify-content-center">
+                            <div v-if="profileUser.account_open==1" style="backgroung-color: #9A2EFE"> 
+                                <button class="requestFollow">비공개 계정</button> 
+                            </div>
+                            <div v-else>                                
+                                <div v-if="isFollowing" width=""> 
+                                    <button class="unfollowBtn" @click="onClickUnFollowBtn()">Unfollow</button>
                                 </div>
-                                <div v-else class="ms-1 unreport">
-                                    <button class="reportBtn" @click="onClickNotReport()" style="font-size:x-small">신고취소</button>
+                                <div v-else-if="!isFollowing"> 
+                                    <button class="followBtn" @click="onClickFollowBtn()">Follow</button>
                                 </div>
                             </div>
-                            
+
+                            <div v-if="!isReport" class="ms-1">
+                                <button class="reportBtn" @click="onClickReport">신고</button>
+                            </div>
+                            <div v-else class="ms-1 unreport">
+                                <button class="reportBtn" @click="onClickReport" style="font-size:x-small">신고취소</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- 커스텀 모달  for 팔로잉 팔로워 목록-->
-                <v-dialog v-model="dialog" max-width="300" @click:outside="dialog = false">
-                <v-card>
-                    <!-- 모달 타이틀 영역 -->
-                    <v-toolbar dense color="#49784B">
-                    <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="dialog = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    </v-toolbar>
-                    <!-- 모달 컨텐츠 영역 -->
-                    <v-container>
-                    <div class="modalContent">
-                    <div class="mb-3">
-                        <span class="modalContentMessage">
-                            <!-- 업로드 컴포넌트 -->
-                            <ProfileName
-                                v-for="(auser, index) in detailFollowUser" :key="index" cols="12" class="grid-cell" :user="auser">
-                            </ProfileName>
-                        </span>
-                    </div>
-                    <div class="modalContentButtonArea">
-                        <button class="modalContentButton" @click="dialog = false">확인</button>
-                    </div>
-                    </div>
-                    </v-container>
-                </v-card>
-                </v-dialog>
-                <!-- 커스텀 모달  for 랭크 확인-->
-                <v-dialog v-model="rankOpen" max-width="300" @click:outside="rankOpen = false">
-                <v-card>
-                    <!-- 모달 타이틀 영역 -->
-                    <v-toolbar dense color="#49784B">
-                    <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="rankOpen = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    </v-toolbar>
-                    <!-- 모달 컨텐츠 영역 -->
-                    <v-container>
-                    <div class="modalContent">
-                    <div class="mb-3">
-                        <span class="modalContentMessage">
-                            <div>
-                                <span v-if="this.step===1" class="number1" ><img src="@/assets/image/OVLKoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                <span v-else-if="this.step===2" class="number1" ><img src="@/assets/image/OVLoongya.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                <span v-else-if="this.step===3" class="number1" ><img src="@/assets/image/OVLoong.png" alt="" width="30px"  @click="onClickRank"/></span>
-                                <span v-if="this.step===3" > 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요!</span>
-                                <span v-if="this.step===2" > 머리에 새싹이 너무 귀여워요! 조금만 더 노력하면 꽃을 피울거에요!</span>
-                                <span v-if="this.step===1" > 최고의 비건 생활을 영위하고 있어요! 대박! </span>
-                            </div>
-                            <br/>
-                            <div class="text-center">
-                                <span style="color: #49784B; font-size: Large">"{{this.otheruserinfo.nickname}}" 님의 </span>
-                                <div> Rank는 <span style="font-size: large; color:  #49784B;">"{{this.Rank}}"</span> 등!! </div>
-                                <div> Vegan Score 는 <span style="font-size: large; color:  #49784B;">"{{experience}}"</span>  점 입니다!</div>
-                            </div>
-                        </span>
-                    </div>
-                    <div class="modalContentButtonArea">
-                        <button class="modalContentButton" @click="rankOpen = false">확인</button>
-                    </div>
-                    </div>
-                    </v-container>
-                </v-card>
-                </v-dialog>
-                <!-- 커스텀 모달 for 신고버튼-->
-                <v-dialog v-model="isReporting" max-width="300" @click:outside="isReporting = false">
-                <v-card>
-                    <!-- 모달 타이틀 영역 -->
-                    <v-toolbar dense color="#CF5555">
-                    <v-toolbar-title class="modalTitle">Report! </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="isReporting = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    </v-toolbar>
-                    <!-- 모달 컨텐츠 영역 -->
-                    <v-container>
-                    <div class="modalContent">
-                    <div class="mb-3">
-                        <span class="modalContentMessage">
-                            신고사유를 적어주세요.
-                            <textarea name="" id="" cols="30" rows="10" placeholder="신고사유." class="ingredient-text" v-model="reason"></textarea>
-                        </span>
-                    </div>
-                    <div class="modalContentButtonArea">
-                        <button class="modalContentButton" @click="OnclickExitReporting()" style="background-color: #FAFFFB; color: #004627; border: 1px solid gray; border-radius: 5px;">확인</button>
-                        <!--<button class="ms-1 modalContentButton" @click="isReporting = false" style="background-color: #EBF4ED; color: #004627; border: 1px solid gray; border-radius: 5px;">취소</button>-->
-                    </div>
-                    </div>
-                    </v-container>
-                </v-card>
-                </v-dialog>
-                <!-- 커스텀 모달 for 신고버튼-->
-                <v-dialog v-model="isCancelReporting" max-width="300" @click:outside="isCancelReporting = false">
-                <v-card>
-                    <!-- 모달 타이틀 영역 -->
-                    <v-toolbar dense color="#CF5555">
-                    <v-toolbar-title class="modalTitle">Reported! </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="isCancelReporting = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    </v-toolbar>
-                    <!-- 모달 컨텐츠 영역 -->
-                    <v-container>
-                    <div class="modalContent">
-                    <div class="mb-3">
-                        <span class="modalContentMessage">
-                            <span class="modalContentMessage"> 이미 신고한 계정입니다. 신고를 취소하시겠습니까? </span>
-                        </span>
-                    </div>
-                    <div class="modalContentButtonArea">
-                        <button class="modalContentButton" @click="onClickisCancelReporting()" style="background-color: #FAFFFB; color: #004627; border: 1px solid gray; border-radius: 5px;">확인</button>
-                        <!--<button class="ms-1 modalContentButton" @click="isReporting = false" style="background-color: #EBF4ED; color: #004627; border: 1px solid gray; border-radius: 5px;">취소</button>-->
-                    </div>
-                    </div>
-                    </v-container>
-                </v-card>
-                </v-dialog>
+            </div>
         </div>
-    <div class="text-center">
-        <v-tabs
-            color="green darken-4"
-            centered
-            grow
-            text-h2
-        >
-            <v-tab>게시글</v-tab>
-            <v-tab>레시피</v-tab>
-            <v-tab>챌린지</v-tab>
-            <!-- 탭 내용 -->
-            <!-- 게시글  -->
-                <v-tab-item>
-                    <LockImg v-if="this.isLocked"/>
-                    <OtherUserPosts v-else/>
-                </v-tab-item>
-            <!-- 레시피  -->
-                <v-tab-item>
-                    <LockImg v-if="this.isLocked"/>
-                    <OtherUserRecipes v-else/>
-                </v-tab-item>
-            <!-- 챌린지  -->
-                <v-tab-item>
-                    <LockImg v-if="this.isLocked"/>
-                    <NoneChallenging v-else-if="this.isNotChallenging"/>
-                    <OtherUserChallenges v-else/>
-                </v-tab-item>
-        </v-tabs>
-    </div> 
-    <ChallengeConfirm :certdialog="certdialog" @openCertDialog="openCertDialog"/>
+
+        <div class="text-center">
+            <v-tabs
+                color="green darken-4"
+                centered
+                grow
+                text-h2
+            >
+                <v-tab>게시글</v-tab>
+                <v-tab>레시피</v-tab>
+                <v-tab>챌린지</v-tab>
+                <!-- 탭 내용 -->
+                <!-- 게시글  -->
+                    <v-tab-item>
+                        <LockImg v-if="this.isLocked"/>
+                        <OtherUserPosts v-else/>
+                    </v-tab-item>
+                <!-- 레시피  -->
+                    <v-tab-item>
+                        <LockImg v-if="this.isLocked"/>
+                        <OtherUserRecipes v-else/>
+                    </v-tab-item>
+                <!-- 챌린지  -->
+                    <v-tab-item>
+                        <LockImg v-if="this.isLocked"/>
+                        <NoneChallenging v-else-if="this.isNotChallenging"/>
+                        <OtherUserChallenges v-else/>
+                    </v-tab-item>
+            </v-tabs>
+        </div> 
     </section>
-</v-container>  
+</v-container>
 </template>
 
 <script>
-import {mapGetters} from "vuex"
-import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
-import OtherUserPosts from '@/components/profile/OtheruserPost.vue'
+import {mapActions, mapGetters} from "vuex";
+import moment from 'moment'
 import LockImg from '@/components/profile/Lockuser.vue'
+import OtherUserPosts from '@/components/profile/OtheruserPost.vue'
 import OtherUserRecipes from '@/components/profile/OtheruserRecipe.vue'
 import OtherUserChallenges from '@/components/profile/OtheruserChallenge.vue'
-import ProfileName from '@/components/basic/ProfileName.vue'
 import NoneChallenging from '@/components/profile/NoneChallenging.vue'
-import moment from 'moment';
-import axios from "axios";
-import API from '@/api/index.js'
-import followAPI from '@/api/follow.js'
-import userAPI from '@/api/user.js'
-import reportAPI from '@/api/report.js'
-export default {
-components: { OtherUserPosts, OtherUserRecipes, OtherUserChallenges, ChallengeConfirm, ProfileName, LockImg, NoneChallenging},
+import RankModal from '@/components/profile/RankModal.vue'
+import FollowModal from '@/components/profile/FollowModal.vue'
+import ReportModal from '@/components/profile/ReportModal.vue'
+// import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
 
-    data () {
-        
-        return{
-            file: "",
-            lists: [],
-            path:'',
-            isModalFollower: false,
-            isModalFollowing: false,
-            start_date: 0,
-            dialog: false,
-            certdialog:false,
-            otheruserinfo: {
-                userid: "",
-                email: "",
-                password: "",
-                name: "",
-                nickname: "",
-                phone: "",
-                filepath: "",
-                account_open: '',
-                challengeId: {
-                start_date: null,
-                },
-            },
-            followingList:[],
-            followerList: [],
-            UserfollowingList: [],
-            detailFollowUser: [],
-            follower: '',
-            following: '',
-            Rank : null,
-            percent: '',
-            isLocked: false,
-            isFollowing: false,
-            rankOpen: false,
-            isReporting: false,
-            isReported: false,
-            isCancelReporting: false,
-            isNotChallenging: false,
-            reason: "",
-            requestforfollow : false, //비공개 여부 확인 true : 비공개  / false: 공개
-            experience:'',
-            step:'',
+export default {
+    components: {RankModal, LockImg, OtherUserPosts, OtherUserRecipes, OtherUserChallenges, NoneChallenging, FollowModal, ReportModal},
+    data() {
+        return {
+            // 모달 관련
+            isRankModalOpen: false, // 랭킹 모달 오픈 
+            isCertOpen: false, // 챌린지 인증 모달 오픈
+            isFollowOpen: false, // 팔로우 모달 오픈
+            isReportOpen: false, // 신고 모달 오픈
+
+            isNotChallenging: false, // 챌린지 진행 여부
+
+            step:'', // 비건 등급
+            followModalTitle:"Follow", // 팔로우 모달 타이틀
+            reportModalTitle:"신고", // 신고 모달 타이틀
+            reportType:0, // 신고 타입 0 : 신고, 1 : 신고 취소
+
+            isFollowing: false, // 팔로우 확인
+            isReport: false, // 신고 확인 
+            isLocked: false, // 계정 공개 여부 (팔로우 했으면 false, 팔로우 안되어 있으면 true)
+
+            followerCnt:0,
+            followingCnt:0,
+            
         }
     },
-    computed :{
-        ...mapGetters("user",(["userinfo","isLogin"])),
+    computed:{
+        ...mapGetters('user', ["userinfo", "profileUser", "rank", "percent"]),
+        ...mapGetters('follow', ["followerList", "followingList", "detailFollowUser"]),
+        ...mapGetters('report', ["reportList"]),
         time() {
-            const start = moment(this.start_date);
+            const start = moment(this.profileUser.challengeId.start_date);
             const now = moment(new Date());
-            // console.log(`Difference is ${now.diff(start, 'days') + 1} day(s)`);
             if((now.diff(start, 'days') + 1) <= 0){
-                return 0;
-            }else if(this.isNotChallenging){
                 return 0;
             }
             else{
                 return now.diff(start, 'days') + 1
             }
+        },  
+        report() {
+            return this.reportList;
+        },
+        follower() {
+            return this.followerList;
+        },
+        following() {
+            return this.followingList;
+        },
+        proFileUser() {
+            console.log("profileUser 변화 : ", this.proFileUser);
+            return this.proFileUser;
         }
-
-        
     },
-    // wathch(){
-    //     if(this.$route.params.userid === this.userinfo.userid){
-    //         console.log("야 너네 똑같다고")
-    //         this.$rounter.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
-    //     }
-    // },
+    watch: {
+        report(val) {
+            if (val.includes(this.profileUser.userid)) this.isReport = true;
+            else this.isReport = false;
+
+            if(this.isReportOpen) this.isReportOpen = false;
+        },
+        follower(val) {
+            if (val.includes(this.userinfo.userid)) this.isFollowing = true;
+            else this.isFollowing = false;
+            
+            this.followerCnt = val.length;
+        },
+        following(val) {
+            this.followingCnt = val.length
+        },
+        profileUser(val) {
+            if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
+            else this.isLocked = false;
+        }
+    }, 
+    methods: {
+        ...mapActions('user', ["getSelectUser", "getUserRank"]),
+        ...mapActions('follow', ["getFollowerList", "getFollowingList", "getDetailFollowUser", "follow", "unfollow"]),
+        ...mapActions('report', ["reportRegist", "selectReport", "reportCancel"]),
+        openCertDialog(val){
+            console.log("챌린지 선택 !")
+            if(this.profileUser.challengeId.challengeId!=1)
+                this.isCertOpen = val
+        },
+        openRankDialog() { // 랭킹 모달 오픈
+            this.isRankModalOpen = true
+        },
+        onClickFollow(num) { // follow Dialog 열리는 동작
+            if (this.profileUser.account_open==1) return // 비공개 계정 -> 팔로우, 팔로워 보이면 안됨
+
+            if(num == 0) this.getDetailFollowUser(this.followingList)
+            else {
+                this.getDetailFollowUser(this.followerList)
+                this.followModalTitle = "Follower"
+            }
+            this.isFollowOpen = true
+        },
+        onClickFollowBtn() { // 팔로우 등록
+            var payload = {
+                "fromId": this.userinfo.userid,
+                "toId":this.profileUser.userid
+            }
+            this.follow(payload)
+        },
+        onClickUnFollowBtn() { // 팔로우 취소
+            var payload = {
+                "fromId": this.userinfo.userid,
+                "toId": this.profileUser.userid
+            }
+            this.unfollow(payload)
+        },
+        onClickReport() { 
+            if (!this.isReport) { // 신고 안했음 이제 해야됨
+                this.reportModalTitle = "신고"
+            } else { // 신고 했음 이제 취소 해야됨
+                this.reportModalTitle = "신고 취소"
+            }
+            this.isReportOpen = true;
+        },
+        reportRegistOrCancel() {
+            // this.isReportOpen = false;
+        }
+    },
     created() {
-        // console.log("type1", typeof this.$route.params.userid)
-        // console.log("type2", typeof this.userinfo.userid)
-        //타입을 고려하여 연산
-        if(this.$route.params.userid == this.userinfo.userid){
+        const userid = this.$route.params.userid;
+        // 해당 프로필 유저 아이디와 내 아이디가 같다면 나의 프로필로 이동
+        if(userid == this.userinfo.userid){
             this.$router.push({ name : 'Profile', params: {userid: this.userinfo.userid}})
         }
-        axios({
-                method: "get",
-                url: API.url + reportAPI.select(this.userinfo.userid),
-            }).then((res)=> {
-                if(res.data.length === 0){
-                    console.log("nothing selected: ", res.data)
-                    //아직 신고 안됨
-                    this.isReported = false;
-                }else{
-                    console.log("selected: ", res.data)
-                    //이미 신고한 계정
-                    this.isReported = true;
-                }
-            }).catch((err)=> {
-                console.log(err)
-            })
-            //랭크 
-            axios({
-            method: "get",
-            url: API.url + userAPI.rank(this.$route.params.userid),
-            }).then((res) => {
-                if(res){
-                    this.Rank = res.data.rank
-                    this.percent = res.data.percent;
-                    
-                    //console.log("가져온 percent",this.percent)
-                    //쿵야 셋팅
-                    if(this.percent < 31 ){
-                        this.step = 1;
-                    }else if( this.percent > 30 && this.percent < 61){
-                        this.step = 2;
-                    }else{
-                        this.step = 3;
-                    }
-                }else{
-                    console.log("랭크 가져오기 실패")
-                }
-            }).catch((err) => {
-                console.log(err)
-            })
 
-    },
-    methods: {
-        onClickRequestBtn(){
-            //alert("팔로우 요청이 완료 되었습니다.")
-        },
-        //신고 모달창 열기
-        onClickReport(){
-            //this.isReported = true;
-            this.isReporting = true;
-        },
-        //신고취소 모달창 열기
-        onClickNotReport(){
+        // 해당 유저 정보 가져오기
+        this.getSelectUser(userid);
+        // 해당 랭킹 정보 가져오기
+        this.getUserRank(userid);
+        // 팔로잉 리스트 가져오기
+        this.getFollowingList(userid);
+        // 팔로워 리스트 가져오기
+        this.getFollowerList(userid);
+        // 신고 리스트 가져오기 (로그인 된 유저가 신고한 유저 아이디 리스트)
+        this.selectReport(this.userinfo.userid);
 
-            this.isCancelReporting = true;
-        },
-        //신고 모달창 나가기
-        OnclickExitReporting(){
-            
-            axios({
-                method: "post",
-                url: API.url + reportAPI.report(this.userinfo.userid,this.$route.params.userid),
-                params: {
-                    "user_id": this.userinfo.userid,
-                    "report_id": this.$route.params.userid,
-                    "reason": this.reason,
-                }
-            }).then((res)=>{
-                console.log("신고 성공", res.data)
-            }).catch((err)=>{
-                console.log(err)
-            })
-            this.isReported = true;
-            this.isReporting = false;
-        },
-         //랭크 클릭시 보이는 모달
-        onClickRank() {
-            
-            axios({
-                method: "get",
-                url: API.url + userAPI.select(this.$route.params.userid)
-            }).then((res)=>{
-                if(res.data !== null){
-                    console.log("유저 경험점수" , res.data)
-                    this.experience = res.data.experience;
-                }
-            }).catch((err)=>{
-                console.log(err)
-            })
+        if (this.profileUser.challengeId.challengeId==1) this.isNotChallenging = true;
+        else this.isNotChallenging = false;
 
-            this.rankOpen = true;
-        },
-        //계정 신고 취소 
-        onClickisCancelReporting(){
+        // 비건 등급
+        if(this.percent < 31 ) this.step = 1;
+        else if( this.percent > 30 && this.percent < 61) this.step = 2;
+        else this.step = 3;
 
-            axios({
-                method: "get",
-                url: API.url + reportAPI.unreport(this.userinfo.userid,this.$route.params.userid),
-            }).then((res) =>{
-                console.log("신고취소 성공", res.data)
-            }).catch((err)=>{
-                console.log(err)
-            }),
-            this.isReported = false;
-            this.isCancelReporting = false;
-        },
-        onClickUnFollowBtn(){
-            axios({
-                method: "delete",
-                url: API.url + followAPI.unfollow(this.userinfo.userid, this.$route.params.userid),
-            }).then((res)=>{
-                if(res.data == "success"){
-                    console.log("Unfollow")
-                    this.isFollowing = false;
-                    this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
-                     //언팔로우 버튼을 누르면 타계정의 팔로워 증감
-                    axios({
-                            method: "get",
-                            url: API.url + followAPI.select_follower(this.$route.params.userid),
-                        }).then((res) => {
-                            this.followerList = res.data;
-                            this.follower = this.followerList.length;
-                        }).catch((err) => {
-                            console.log("실패");
-                            console.log(err);
-                        })
-                        //언팔 후 비공개 계정일 경우 아래 잠금 화면 표시
-                        
-                }
-            }).catch((err)=>{
-                console.log(err)
-            })
-        },
-        onClickFollowBtn(){
-            axios({
-                method: "post",
-                url: API.url + followAPI.follow(this.userinfo.userid, this.$route.params.userid),
-            }).then((res)=>{
-                if(res.data == "success"){
-                    console.log("follow")
-                    this.isFollowing = true;
-                    this.$store.dispatch("user/getUpdateUserInfo", this.userinfo.userid);
-                    //팔로우 버튼을 누르면 타계정의 팔로워 증가
-                    axios({
-                            method: "get",
-                            url: API.url + followAPI.select_follower(this.$route.params.userid),
-                        }).then((res) => {
-                            this.followerList = res.data;
-                            this.follower = this.followerList.length;
-                        }).catch((err) => {
-                            console.log("실패");
-                            console.log(err);
-                        })
-                }
-            }).catch((err)=>{
-                console.log(err)
-            })
-        },
-        openDialog(num) { //Dialog 열리는 동작
-        if(num == 0){
-                axios({
-                    method: "post",
-                    url: API.url + followAPI.select_detail(),
-                    data: this.followingList,
-                }).then((res) => {
-                    //console.log("Detail: " + res.data);
-                    this.detailFollowUser = res.data;
-                }).catch((err) => {
-                    console.log("실패");
-                    console.log(err);
-                })
-        }else{
-                axios({
-                    method: "post",
-                    url: API.url + followAPI.select_detail(),
-                    data: this.followerList,
-                }).then((res) => {
-                    console.log("Detail: " + res.data);
-                    this.detailFollowUser = res.data;
-                }).catch((err) => {
-                    console.log("실패");
-                    console.log(err);
-                })
-        }
-        this.dialog = true;
-
-        },
-        closeDialog() { //Dialog 닫히는 동작
-            this.dialog = false;
-        },
-        openCertDialog(val){
-            this.certdialog = val
-        }
-    },
-    mounted(){
-            //url userid 체크
-        let userid = this.$route.params.userid;
-        //url 에 자신의 아이디를 입력했을 때 자신의 프로필로 돌아가rl
-
-
-        let isOpened = 0;
-        //다른 유저 정보 가져오기
-        axios({
-            method: "get",
-            url: API.url + userAPI.select(userid),
-        }).then((res) => {
-                //console.log(" 다른 유저 정보 : ", res.data);
-                this.otheruserinfo = res.data;
-                if(this.otheruserinfo.account_open === 1) {
-                    this.requestforfollow = true;
-                }
-                if(this.otheruserinfo.challengeId.challengeId === 1){
-                    this.isNotChallenging = true;
-                }else{
-                    this.isNotChallenging = false;
-                }
-                this.start_date = this.otheruserinfo.challengeId.start_date;
-                //쿵야 설정
-                if(res.data.percent < 31 ){
-                        this.step = 1;
-                    }else if( res.data.percent > 30 && res.data.percent < 61){
-                        this.step = 2;
-                    }else{
-                        this.step = 3;
-                    }
-
-                axios({
-                        method: "get",
-                        url: API.url + followAPI.select_following(this.userinfo.userid),
-                    }).then((res) => {
-                        //팔로잉 중 - unfollow 버튼 활성화, 무조건 띄움
-                        if(res.data != null){
-                        this.UserfollowingList = res.data;
-                        let mount = this.UserfollowingList.length;
-                            for(var i = 0; i< mount; i++){
-                                
-                                if(this.UserfollowingList[i] === this.$route.params.userid){
-                                    this.isFollowing = true;
-
-                                    //console.log("팔로잉중 볼 수 있어", this.UserfollowingList)
-                                    break;
-                                }
-                            }
-                            if(this.isFollowing === false){
-                                    if(this.requestforfollow){
-                                        this.isLocked = true;
-                                    }
-                                    else{
-                                        this.isLocked = false;
-                                    }
-                            }
-                        }
-                        else{
-                            console.log("팔로우 해야 합니다.")
-                            if(isOpened == 0){
-                                this.isLocked = false;
-                                this.requestforfollow = true;
-                            }
-                            else{
-                                this.isLocked = true;
-                                this.requestforfollow = false;
-                            }
-                        }
-                    }).catch((err) => {
-                        console.log("실패");
-                        console.log(err);
-                    })
-               // console.log("otherprofilepage : ", this.otheruserinfo)
-            })
-            .catch((err) => {
-            console.log("ohter User 정보 조회 실패"); 
-            console.log(err);
-            }),
-        
-        //팔로워
-            axios({
-                method: "get",
-                url: API.url + followAPI.select_follower(userid),
-            }).then((res) => {
-                this.followerList = res.data;
-                this.follower = this.followerList.length;
-            }).catch((err) => {
-                console.log("실패");
-                console.log(err);
-            }),
-            //팔로잉
-            axios({
-                method: "get",
-                url: API.url + followAPI.select_following(userid),
-            }).then((res) => {
-                this.followingList = res.data;
-                
-                this.following = this.followingList.length;
-            }).catch((err) => {
-                console.log("실패");
-                console.log(err);
-            })
-
+        // 팔로우 확인 -> 내가 팔로잉 하는 사람 중 현재 프로필 유저의 아이디가 있다면 팔로우 한 것
+        if (this.followerList.includes(this.userinfo.userid)) this.isFollowing = true;
+        if (this.profileUser.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
+        // 신고 확인 -> 내가 신고한 사람 중 현재 프로필 유저의 아이디가 있다면 신고한 것
+        if (this.reportList.includes(this.profileUser.userid)) this.isReport = true;
     }
 }
 </script>

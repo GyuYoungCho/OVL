@@ -25,9 +25,12 @@ export default {
 
   computed:{
     ...mapGetters('user',["userinfo"]),
-    ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
     ...mapState('user', ["isLogin"]),
 
+  },
+  methods: {
+    ...mapActions("challenge", ["fetchChallengeList", "challengeAttend"]),
+    ...mapActions("follow", ["getFollowerList", "getFollowingList"]),
   },
   components: {
     ProfilePage, Welcome,
@@ -38,7 +41,8 @@ export default {
     if(this.$route.params.userid == this.userinfo.userid){
       //로그인 user == 프로필 확인 user 같음
       this.isUser = true;
-
+      this.getFollowingList(this.userinfo.userid)
+      this.getFollowerList(this.userinfo.userid)
     }
     if(this.$route.params.userid != this.userinfo.userid){
       axios.get(API.url+userAPI.select(this.$route.params.userid))
@@ -48,7 +52,7 @@ export default {
             //console.log("다른사람이고 회원가입 안했음")
             this.isUser = false;
         }else{
-            //console.log("가입은 했네")
+            console.log("userid : ", this.$route.params.userid);
             this.$router.push({name: 'OtherProfile', params: {userid: this.$route.params.userid}})
         }
     }).catch((err)=>{

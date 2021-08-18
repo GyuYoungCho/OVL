@@ -2,10 +2,14 @@
 <v-container>
     <section  class="profilepage">
         <!-- 프로필 사진 수정 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicModal" modalContent="사진을 수정하시겠습니까?" type=1
+        <ModifyModal :modalOpen="isModifyPicModal" title="프로필 사진 수정" modalContent="사진을 수정하시겠습니까?" type=1
         @modalConfirmBtnClick="onUploadPicModalClick" @modalCancelBtnClick="isModifyPicModal = false" />
         <!-- 프로필 사진 수정 완료 안내 모달 -->
-        <ModifyModal :modalOpen="isModifyPicComplete" modalContent="수정이 완료되었습니다" type=2 />
+        <ModifyModal :modalOpen="isModifyPicComplete" title="프로필 사진 수정" modalContent="수정이 완료되었습니다" type=2 />
+        <!-- Rank 선택 시 등급 안내 모달 -->
+        <RankModal :modalOpen="isRankModalOpen" :user="userinfo" :step="step" :rank="rank" @modalCancelBtnClick="isRankModalOpen = false" />
+        <!-- 팔로우 선택 시 팔로우, 팔로워 모달 -->
+        <FollowModal :modalOpen="isFollowModalOpen" :followList="detailFollowUser" :title="followModalTitle" @modalCancelBtnClick="isFollowModalOpen = false" />
 
         <ChallengeConfirm :user="userinfo" :certdialog="certdialog" @openCertDialog="openCertDialog"/>
             <div centered class="container d-flex justify-content-center">
@@ -70,8 +74,8 @@
                                 <div style="margin: 0px 10px 10px" class="justify-content-center" >
                                     <div class="d-flex flex-column"> 
                                         <span class="following">Following</span>
-                                        <div @click="openDialog(0)" class="mt-1">
-                                        <span class="number2" style="font-size:medium" width="40px">{{following}}</span>
+                                        <div @click="onClickFollow(0)" class="mt-1">
+                                        <span class="number2" style="font-size:medium" width="40px">{{followingCnt}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -79,8 +83,8 @@
                                 <div style="margin: 0px 10px 10px">
                                     <div class="d-flex flex-column">
                                     <span class="follower">Follower</span>
-                                        <div @click="openDialog(1)" class="mt-1">
-                                            <span class="number3" style="font-size:medium" width="40px" >{{follower}}</span>
+                                        <div @click="onClickFollow(1)" class="mt-1">
+                                            <span class="number3" style="font-size:medium" width="40px" >{{followerCnt}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -96,129 +100,56 @@
                         </div>
                     </div>
                 </div>
-                <!-- 커스텀 모달 -->
-                <v-dialog v-model="rankOpen" max-width="300" @click:outside="rankOpen = false">
-                <v-card>
-                    <!-- 모달 타이틀 영역 -->
-                    <v-toolbar dense color="#49784B">
-                    <v-toolbar-title class="modalTitle">랭킹</v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-btn icon dark @click="rankOpen = false">
-                        <v-icon>mdi-close</v-icon>
-                    </v-btn>
-                    </v-toolbar>
-                    <!-- 모달 컨텐츠 영역 -->
-                    <v-container>
-                    <div class="modalContent">
-                        <div class="mb-3">
-                            <span class="modalContentMessage">
-                                <div>
-                                    <div v-if="this.step===1" class="number1" >
-                                        <img src="@/assets/image/OVLKoongya.png" alt="" @click="onClickRank"/>
-                                        <div> 쿵야가 아직 아기에요! 좀 더 많은 게시물을 올려보세요! 머리에 새싹이 자라날 거에요! </div>
-                                    </div>
-                                    <div v-else-if="this.step===2" class="number1" >
-                                        <img src="@/assets/image/OVLoongya.png" alt="" @click="onClickRank"/>
-                                        <div> 쿵야가 많이 자랐어요! 쿵야를 더 키워보세요! <br> 머리에 꽃이 자라날 거에요! </div>
-                                    </div>
-                                    <div v-else-if="this.step===3" class="number1" >
-                                        <img src="@/assets/image/OVLoong.png" alt="" @click="onClickRank"/>
-                                        <div> 쿵야가 다 자랐어요! 지금도 충분히 잘하고 있으니 더 열심히 참여해주세요! </div>
-                                    </div>
-                                    
-                                </div>
-                                <br/>
-                                <div class="text-center">
-                                    <div> &lt; <span style="color: #49784B; font-size:large">{{nickname}}</span> 님의 랭킹 &gt;</div> 
-                                    <div> Rank는 <span style="font-size: large; color:  #49784B;">{{rank}}</span> 등 !! </div>
-                                    <div> Vegan Score는 <span style="font-size: large; color:  #49784B;">{{experience}}</span>  점 입니다 ! </div>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
-                    </v-container>
-                </v-card>
-                </v-dialog>
-                                <!-- 커스텀 모달 -->
-                <v-dialog v-model="dialog" max-width="300" @click:outside="dialog = false">
-                    <v-card>
-                        <!-- 모달 타이틀 영역 -->
-                        <v-toolbar dense color="#49784B">
-                        <v-toolbar-title class="modalTitle">Challenge</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-btn icon dark @click="dialog = false">
-                            <v-icon>mdi-close</v-icon>
-                        </v-btn>
-                        </v-toolbar>
-                        <!-- 모달 컨텐츠 영역 -->
-                        <v-container>
-                        <div class="modalContent">
-                        <div class="mb-3">
-                            <span class="modalContentMessage">
-                                <!-- 업로드 컴포넌트 -->
-                                <ProfileName
-                                    v-for="(auser, index) in detailFollowUser" :key="index" :user="auser">
-                                </ProfileName>
+            </div>
+        <div class="text-center">
+            <v-tabs
+                color="green darken-4"
+                centered
+                grow
+                text-h2
+            >
+                <v-tab>게시글</v-tab>
+                <v-tab>레시피</v-tab>
+                <v-tab>챌린지</v-tab>
+                <!-- 탭 내용 -->
+                <!-- 게시글  -->
+                    <v-tab-item>
+                        <UserPosts/>
+                    </v-tab-item>
+                <!-- 레시피  -->
+                    <v-tab-item>
+                        <UserRecipes/>
+                    </v-tab-item>
+                <!-- 챌린지  -->
+                    <v-tab-item>
+                        <NoneChallenging v-if="isNotChallenging"/>
+                        <UserChallenges v-else/>
 
-                            </span>
-                        </div>
-                        <div class="modalContentButtonArea">
-                            <button class="modalContentButton" @click="dialog = false">확인</button>
-                        </div>
-                        </div>
-                        </v-container>
-                    </v-card>
-                </v-dialog>
-
-        </div>
-    <div class="text-center">
-        <v-tabs
-            color="green darken-4"
-            centered
-            grow
-            text-h2
-        >
-            <v-tab>게시글</v-tab>
-            <v-tab>레시피</v-tab>
-            <v-tab>챌린지</v-tab>
-            <!-- 탭 내용 -->
-            <!-- 게시글  -->
-                <v-tab-item>
-                    <UserPosts/>
-                </v-tab-item>
-            <!-- 레시피  -->
-                <v-tab-item>
-                    <UserRecipes/>
-                </v-tab-item>
-            <!-- 챌린지  -->
-                <v-tab-item>
-                    <NoneChallenging v-if="isNotChallenging"/>
-                    <UserChallenges v-else/>
-
-                </v-tab-item>
-        </v-tabs>
-    </div> 
+                    </v-tab-item>
+            </v-tabs>
+        </div> 
     </section>
 </v-container>  
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex"
+import {mapGetters} from "vuex"
 import UserPosts from '@/components/profile/userPost.vue'
 import UserRecipes from '@/components/profile/userRecipe.vue'
 import UserChallenges from '@/components/profile/userChallenge.vue'
 import ChallengeConfirm from '@/components/user/ChallengeConfirm.vue'
-import ProfileName from '@/components/basic/ProfileName.vue'
 import NoneChallenging from '@/components/profile/NoneChallenging.vue'
 import moment from 'moment'
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
 import ModifyModal from '@/components/profile/ModifyModal.vue'
+import RankModal from '@/components/profile/RankModal.vue'
+import FollowModal from '@/components/profile/FollowModal.vue'
 import filepath from '@/api/fileUpload.js';
 
 export default {
-components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileName, NoneChallenging, ModifyModal},
+components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChallenging, ModifyModal, RankModal, FollowModal},
 
     data () {
         
@@ -236,17 +167,22 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
             experience:'',
             step:'',
 
-            isModifyPicModal:false, // 모달창
+            isModifyPicModal:false, // 프로필 수정 확인 모달창
             isModifyPic:false, // 프로필 사진 수정
             isModifyPicComplete:false, // 프로필 사진 수정 완료
             picture: null,
             defailtImgFilePath:"https://ovl-bucket.s3.ap-northeast-2.amazonaws.com/defaultImg.jpg",
             isDefaultImg: false, // 기본 이미지 vs 새로운 이미지
+
+            isRankModalOpen: false, // 랭크 모달 클릭
+            isFollowModalOpen: false, // 팔로우 모달 클릭
+
+            followModalTitle:"Follow", // 팔로우 모달 타이틀
         }
     },
     computed:{
         ...mapGetters("user",(["userinfo","isLogin", "challenge", "rank", "percent"])),
-        ...mapState("follow", (["followerList", "followingList", "detailFollowUser"])),
+        ...mapGetters("follow", (["followerList", "followingList", "detailFollowUser"])),
         time() {
             const start = moment(this.start_date);
             const now = moment(new Date());
@@ -258,7 +194,20 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
             }
             
         },
-
+        follower() {
+            return this.followerList;
+        },
+        following() {
+            return this.followingList;
+        },
+    },
+    watch: {
+        follower(val) {
+            this.followerCnt = val.length;
+        },
+        following(val) {
+            this.followingCnt = val.length
+        },
     },
     created() {
         this.nickname = this.userinfo.nickname;
@@ -266,17 +215,14 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
         this.$store.dispatch("follow/getFollowingList", this.userinfo.userid);
         this.$store.dispatch("follow/getFollowerList", this.userinfo.userid);
 
-        console.log("challenge : ", this.userinfo.challengeId);
-
-        this.follower = this.followerList.length;
-        this.following = this.followingList.length;
+        this.followerCnt = this.followerList.length;
+        this.followingCnt = this.followingList.length;
         //00일째 챌린지 계산
         if(this.userinfo.challengeId.challengeId ===1){
             this.isNotChallenging = true;
         }else{
             this.isNotChallenging = false;
         }
-        console.log("isNotChallenging : ", this.isNotChallenging);
     
         this.start_date = this.userinfo.challengeId.start_date;
 
@@ -346,32 +292,16 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, ProfileN
         },
         //랭크 클릭시 보이는 모달
         onClickRank() {
-            
-            axios({
-                method: "get",
-                url: API.url + userAPI.select(this.userinfo.userid)
-            }).then((res)=>{
-                if(res.data !== null){
-                    //console.log("유저 경험점수" , res.data)
-                    this.experience = res.data.experience;
-                }
-            }).catch((err)=>{
-                console.log(err)
-            })
-
-            this.rankOpen = true;
+            this.isRankModalOpen = true;
         },
-        openDialog(num) { //Dialog 열리는 동작
-        if(num == 0){
-            this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
-        }else{
-            this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
-        }
-        this.dialog = true;
-
-        },
-        closeDialog() { //Dialog 닫히는 동작
-            this.dialog = false;
+        onClickFollow(num) { // Dialog 열리는 동작
+            if(num == 0){ // following
+                this.$store.dispatch("follow/getDetailFollowUser", this.followingList);
+            }else{ // follower
+                this.$store.dispatch("follow/getDetailFollowUser", this.followerList);
+                this.followModalTitle = "Follower" // 팔로우 모달 타이틀
+            }
+            this.isFollowModalOpen = true;
         },
         openCertDialog(val){
             console.log("챌린지 선택 !")
