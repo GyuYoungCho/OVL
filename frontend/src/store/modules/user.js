@@ -221,6 +221,7 @@ export default {
       store.commit("RESET_POST_USER");
     },
     getSelectUser({commit}, payload) {
+      console.log("유저 정보 가져오기!! userid : ", payload);
       const URL = API.url + userAPI.select(payload);
       axios.get(URL)
       .then((res)=>{
