@@ -33,9 +33,7 @@ pipeline {
         stage('Docker run') {
             agent any
             steps {
-//       sh 'docker images -f dangling=true && docker rmi -f $(docker images -f dangling=true -q)' 
-
-       sh 'docker images -f dangling=true && docker rmi -f backend:latest' 
+       sh 'docker images -f dangling=true && docker rmi -f $(docker images -f dangling=true -q)' 
 
        sh 'docker run -d --name backend -p 8080:8080 backend:latest'
             }
