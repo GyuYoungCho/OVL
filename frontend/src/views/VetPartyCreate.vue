@@ -62,7 +62,7 @@
           scrollable
         >
       <v-card>
-        <v-toolbar color="#004627" dark dense>
+        <v-toolbar color="#49784B" dark dense>
           <v-toolbar-title>식당 검색</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="cancelAddres">

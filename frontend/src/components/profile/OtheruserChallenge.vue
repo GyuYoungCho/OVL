@@ -51,7 +51,7 @@
                         <!-- (5) 참여 인원을 나타내는 영역 -->
                         <div class="cardContentArea">
                         <v-icon x-small>mdi-account</v-icon>
-                        {{challenge.count}}명 참여중
+                        {{challenge.count}}명 참여 중
                         </div>
                         <!-- (6) 참여 기간을 나타내는 영역 -->
                         <div class="cardContentArea">
@@ -60,7 +60,7 @@
                         </div>
                         <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                         <div class="cardContentArea">
-                            <button v-if="challenge.challengeId === otheruserinfo.challengeId.challengeId" class="cancleChallenge">참여중</button>
+                            <button v-if="challenge.challengeId === otheruserinfo.challengeId.challengeId" class="cancleChallenge">참여 중</button>
                             <button v-else class="completeChallenge">참여완료</button>
                         </div>
                         </article>
@@ -95,7 +95,7 @@
                         <!-- (5) 참여 인원을 나타내는 영역 -->
                         <div class="cardContentArea">
                         <v-icon x-small>mdi-account</v-icon>
-                        {{challenge.count}}명 참여중
+                        {{challenge.count}}명 참여 중
                         </div>
                         <!-- (6) 참여 기간을 나타내는 영역 -->
                         <div class="cardContentArea">

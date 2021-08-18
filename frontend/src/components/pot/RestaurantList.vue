@@ -1,4 +1,4 @@
-/<template>
+<template>
     <div>
         <v-data-table
         :headers="fields"

@@ -15,9 +15,11 @@
     &Content {
       display: flex;
       flex-direction: column;
+      text-align: left;
 
       &Area {
         margin-bottom: 1px;
+        margin-top: 1px;
 
         // 타이틀의 font-size를 더미데이터 제목 길이에 따라 수정 가능합니다.
         &Title {

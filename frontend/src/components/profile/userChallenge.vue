@@ -1,5 +1,7 @@
 <template>
 <v-container class="mb-4">
+  <ModifyModal :modalOpen="isChDelete" title="챌린지 참여 취소" modalContent="참여를 취소하시겠습니까?" type=1
+        @modalConfirmBtnClick="challengeEnd" @modalCancelBtnClick="isChDelete = false" />
         <div class="icon mb-4">
             <button class="icon-btn" v-if="!btnActive[0]" @click="selectTypeIcon(0)">
             <img src="@/assets/icon/recipe.png" alt="" class="icon-btn-img"></button>
@@ -22,45 +24,47 @@
             <v-row>
               <v-col v-for="(challenge, idx) in filteredUserChallengeList" :key="idx" cols="4" class="grid-cell">
                 <!-- 개별 card 영역 : 카드들이 위의 v-for 태그로 인해 그리드로 들어가게 됩니다 -->
-                <v-container v-if="challenge.challengeId === userinfo.challengeId.challengeId" class="card" @click="onClickCard(challenge.challengeId )">
+                <v-container v-if="challenge.challengeId === userinfo.challengeId.challengeId" class="card" >
                   <article class="cardContent">
                     <!-- (1) 개별 카드에서의 더미 이미지 영역 -->
-                    <div class="cardContentArea">
+                    <div class="cardContentArea" @click="onClickCard(challenge.challengeId )">
                             <img v-if="challenge.type === 2" src="@/assets/image/challenge_recipe.png" class='cardImage'>
                             <img v-else :src="require(`@/assets/image/challenge${challenge.category}.png`)" class='cardImage'>
                     </div>
                     <!-- (2) 제목 -->
-                    <div class="cardContentArea cardContentAreaTitle">
+                    <div @click="onClickCard(challenge.challengeId )"  class="cardContentArea">
+                    <div class="cardContentArea cardContentAreaTitle" >
                       {{challenge.title}}
-                    </div>
-                    <!-- (3) 해당 챌린지의 기간 영역 -->
-                    <div class="cardContentArea">
-                      <v-icon x-small>mdi-run</v-icon>
-                      <span v-if="challenge.cycle === 1">
-                        매일
-                      </span>
-                      <span v-else>
-                        {{challenge.cycle}}일마다
-                      </span>
-                    </div>
-                    <!-- (4) 해당 챌린지의 경험치 영역 -->
-                    <div class="cardContentArea">
-                      <v-icon x-small>mdi-diamond-stone</v-icon>
-                      {{challenge.score}}
-                    </div>
-                    <!-- (5) 참여 인원을 나타내는 영역 -->
-                    <div class="cardContentArea">
-                      <v-icon x-small>mdi-account</v-icon>
-                      {{challenge.count}}명 참여중
-                    </div>
-                    <!-- (6) 참여 기간을 나타내는 영역 -->
-                    <div class="cardContentArea">
-                      <v-icon x-small>mdi-calendar-blank</v-icon>
-                      ({{challenge.period/7}}주)
+                    </div >
+                      <!-- (3) 해당 챌린지의 기간 영역 -->
+                      <div>
+                        <v-icon x-small>mdi-run</v-icon>
+                        <span v-if="challenge.cycle === 1">
+                          매일
+                        </span>
+                        <span v-else>
+                          {{challenge.cycle}}일마다
+                        </span>
+                      </div>
+                      <!-- (4) 해당 챌린지의 경험치 영역 -->
+                      <div>
+                        <v-icon x-small>mdi-diamond-stone</v-icon>
+                        {{challenge.score}}
+                      </div>
+                      <!-- (5) 참여 인원을 나타내는 영역 -->
+                      <div>
+                        <v-icon x-small>mdi-account</v-icon>
+                        {{challenge.count}}명 참여 중
+                      </div>
+                      <!-- (6) 참여 기간을 나타내는 영역 -->
+                      <div>
+                        <v-icon x-small>mdi-calendar-blank</v-icon>
+                        {{challenge.period/7}}주
+                      </div>
                     </div>
                     <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd()" class="cancleChallenge">참여취소</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="isChDeleteClick" class="cancleChallenge">참여 취소</button>
                       <button v-else class="completeChallenge">참여완료</button>
                     </div>
                   </article>
@@ -95,16 +99,16 @@
                     <!-- (5) 참여 인원을 나타내는 영역 -->
                     <div class="cardContentArea">
                       <v-icon x-small>mdi-account</v-icon>
-                      {{challenge.count}}명 참여중
+                      {{challenge.count}}명 참여 중
                     </div>
                     <!-- (6) 참여 기간을 나타내는 영역 -->
                     <div class="cardContentArea">
                       <v-icon x-small>mdi-calendar-blank</v-icon>
-                      ({{challenge.period/7}}주)
+                      {{challenge.period/7}}주
                     </div>
                     <!-- (7) 참여하기 버튼 -> v-if 들로 분기해 줍니다. -->
                     <div class="cardContentArea">
-                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="challengeEnd()" class="cancleChallenge">참여취소</button>
+                      <button v-if="challenge.challengeId === userinfo.challengeId.challengeId" @click="isChDeleteClick" class="cancleChallenge">참여 취소</button>
                       <button v-else class="completeChallenge">참여완료</button>
                     </div>
                   </article>
@@ -119,7 +123,7 @@
                 <v-card>
                     <!-- 모달 타이틀 영역 -->
                     <v-toolbar dense color="#49784B">
-                    <v-toolbar-title class="modalTitle">Challenge 상세 내용</v-toolbar-title>
+                    <v-toolbar-title class="modalTitle">챌린지 상세 내용</v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-btn icon dark @click="challengedialog = false">
                         <v-icon>mdi-close</v-icon>
@@ -129,12 +133,34 @@
                     <v-container>
                     <div class="modalContent">
                     <div class="mb-3">
-                        <span class="modalContentMessage">
-                            {{detailContents}}
-                        </span>
-                    </div>
-                    <div class="modalContentButtonArea">
-                        <button class="modalContentButton" @click="challengedialog = false">확인</button>
+                        <div>{{detailCh.content}}</div>
+                        <br>
+                        <!-- 해당 챌린지의 기간 영역 -->
+                        <div>
+                          <v-icon dense>mdi-run</v-icon>
+                          <span v-if="detailCh.cycle === 1">
+                            매일
+                          </span>
+                          <span v-else>
+                            {{detailCh.cycle}}일마다
+                          </span>
+                        </div>
+                        <!-- 해당 챌린지의 경험치 영역 -->
+                        <div>
+                          <v-icon dense>mdi-diamond-stone</v-icon>
+                          {{detailCh.score}}
+                        </div>
+                        <!-- 참여 인원을 나타내는 영역 -->
+                        <div>
+                          <v-icon dense>mdi-account</v-icon>
+                          {{detailCh.count}}명 참여 중
+                        </div>
+                        <!-- 참여 기간을 나타내는 영역 -->
+                        <div v-if="detailCh.start_date!=undefined">
+                          <v-icon dense>mdi-calendar-blank</v-icon>
+                          {{ recalibratedDate(detailCh.start_date, 0) }} ~
+                            {{ recalibratedDate(detailCh.start_date, detailCh.period) }}  ({{detailCh.period/7}}주)
+                        </div>
                     </div>
                     </div>
                     </v-container>
@@ -150,28 +176,33 @@ import axios from 'axios';
 import {mapGetters, mapActions} from "vuex";
 import API from '@/api/index.js'
 import challengeAPI from '@/api/challenge.js'
+import moment from 'moment'
+import ModifyModal from '@/components/profile/ModifyModal.vue'
 
 export default {
+  components:{ModifyModal},
 data() {
     return {
       cancleChallenge:false,
       showAll: true,
       categoryNum: '',
       btnActive: {0:false,1:false,2:false},
-      detailContents: '',
+      detailCh: '',
       challengedialog: false,
+      isChDelete: false
     }
 },
 methods: {
       ...mapActions("challenge", ["fetchUserChallengeList"]),
+    recalibratedDate(start_date, period) {
+      if (period==0) return start_date.substring(0,10);
+      return moment(start_date).add(period-2, 'days').format('YYYY-MM-DD')
+    },
     selectTypeIcon(num){
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
             this.showAll = true;
             this.categoryNum = '';
-            // console.log(num)
-            // console.log("btn",this.btnActive)
-            // console.log("show",this.showAll)
         }else if(this.btnActive[num] ===false){
             this.btnActive[num] = true;
             this.showAll = false;
@@ -194,6 +225,9 @@ methods: {
               }
             }
         }
+    },
+    isChDeleteClick() {
+      this.isChDelete = true;
     },
     challengeEnd(){
       if(this.userinfo.challengeId.challengeId === 1){
@@ -221,7 +255,7 @@ methods: {
         }).then((res)=>{
           if(res.data!== null){
             console.log(res.data.content);
-            this.detailContents = res.data.content;
+            this.detailCh = res.data;
           }
         }).catch((err)=>{
           console.log(err)
@@ -237,7 +271,6 @@ computed: {
         if(this.showAll) {
           return this.userchallengeList;
         }else{
-          //console.log("카테고리 넘버:", this.categoryNum)
           return this.userchallengeList.filter((eachChallenge) => eachChallenge.category === parseInt(this.categoryNum) )
         }
       }

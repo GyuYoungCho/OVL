@@ -32,7 +32,7 @@
       <v-dialog v-model="isDetail" max-width="300">
         <v-card>
           <!-- 모달 타이틀 영역 -->
-          <v-toolbar dense color="#004627">
+          <v-toolbar dense color="#49784B">
             <v-toolbar-title class="modalTitle">{{detailCh.title}}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon dark @click="isDetail = false">
@@ -84,6 +84,10 @@
       </v-dialog>
       </div>
 
+      <div v-if="postList.length==0" class="noResult" style="margin-top:100px">
+        <img src="@/assets/image/noResult.png" alt="">
+        <div class="mt-3">게시글이 존재하지 않습니다 <br> 게시글을 등록하거나 다른 사람을 팔로우 해보세요!</div>
+      </div>
       <div v-for="(info, idx) in postList" :key="idx" class="mt-4">
         
         <div>
@@ -130,30 +134,10 @@
       <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
         <!-- 더 이상 없는 경우 -->
         <div slot="no-more" class="mt-4">
-            <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;">
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">끝</h4>
-              </div>
-            </v-sheet>
-          </div>
-          <div slot="no-results" class="mt-4">
-            <!-- <v-sheet
-              block
-              class="pa-5 mx-auto d-flex align-center justify-center"
-              rounded="xl"
-              color="rgb(224,229,231)"
-              style="max-width:680px;">
-              <div class="font-weight-medium d-flex flex-column">
-                <v-icon large class="blue-grey--text text--lighten-3">mdi-close</v-icon>
-                <h4 class="blue-grey--text text--lighten-3">불러올 글이 없어</h4>
-              </div>
-            </v-sheet> -->
+          <hr>
+          <div class="mt-2">게시글 끝</div>
+        </div>
+          <div slot="no-results" class="mt-4"> 
           </div>
         </infinite-loading>
 

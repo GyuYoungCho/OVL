@@ -81,7 +81,6 @@ export default {
     }
   },
   mounted(){
-    console.log("id : ", this.$route.params.userid);
     this.$store.dispatch('challenge/getCertList', this.$route.params.userid);
   },
   methods:{

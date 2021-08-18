@@ -14,7 +14,7 @@
     <v-dialog v-model="participation" max-width="300">
       <v-card>
         <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
+        <v-toolbar dense color="#49784B">
           <v-toolbar-title class="modalTitle">챌린지 참여</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="participation = false">
@@ -39,7 +39,7 @@
     <v-dialog v-model="isDetail" max-width="300">
       <v-card>
         <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
+        <v-toolbar dense color="#49784B">
           <v-toolbar-title class="modalTitle">{{detailCh.title}}</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="isDetail = false">

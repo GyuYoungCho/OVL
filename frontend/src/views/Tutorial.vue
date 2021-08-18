@@ -27,7 +27,7 @@
     <v-dialog v-model="willYouJoin" max-width="300">
       <v-card>
         <!-- 모달 타이틀 영역 -->
-        <v-toolbar dense color="#004627">
+        <v-toolbar dense color="#49784B">
           <v-toolbar-title class="modalTitle">회원가입</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon dark @click="willYouJoin = false">
