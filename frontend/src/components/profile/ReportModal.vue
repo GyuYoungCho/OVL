@@ -65,6 +65,7 @@ export default {
         } else {
            await this.reportCancel(payload);
         }
+        this.reason = "";
         this.$emit('onConfirmBtnClick')
     },
     onCancelBtnClick() {

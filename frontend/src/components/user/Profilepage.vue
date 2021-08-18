@@ -209,7 +209,6 @@ components: { UserPosts, UserRecipes, UserChallenges, ChallengeConfirm, NoneChal
             return this.userinfo;
         },
         userPercent() {
-            console.log("percent : ", this.percent);
             return this.percent;
         }
     },
