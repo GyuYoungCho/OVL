@@ -206,9 +206,9 @@ export default {
             else this.isFollowing = false;
 
             if (this.profileUser.account_open==1 && !val.includes(this.userinfo.userid)) this.isLocked = true;
+            else this.isLocked = false;
             
             this.followerCnt = val.length;
-            console.log("followerList isNotChallenging : ", this.isNotChallenging)
             console.log("followerList isLocked : ", this.isLocked)
         },
         following(val) {
@@ -218,13 +218,10 @@ export default {
         ProFileUser(val) {
             console.log("ProfileUser 변경 : ", val);
             console.log("profileUser followerList : ", this.followerList)
-            if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
-            else this.isLocked = false;
 
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
             else this.isNotChallenging = false;
             console.log("profileUser isNotChallenging : ", this.isNotChallenging)
-            console.log("profileUser isLocked : ", this.isLocked)
         },
         detailFollow(val) {
             console.log("변경 detailFollow : ", this.detailFollowUser)
