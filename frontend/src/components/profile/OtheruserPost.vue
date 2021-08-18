@@ -100,9 +100,6 @@ export default {
         if(this.btnActive[num] === true){
             this.btnActive[num] = false;
             this.showAll = true;
-            // console.log(num)
-            // console.log("btn",this.btnActive)
-            // console.log("show",this.showAll)
         }else if(this.btnActive[num] ===false){
             this.btnActive[num] = true;
             this.showAll = false;
@@ -111,9 +108,6 @@ export default {
                 this.btnActive[i] = false;
               }
             }
-            // console.log(num)
-            // console.log("btn",this.btnActive)
-            // console.log("show",this.showAll)
         }
     },
   },
@@ -124,10 +118,11 @@ export default {
   created() {
       axios({
         method: "get",
-        url: API.url + postAPI.select_my(this.$route.params.userid),
+        url: API.url + postAPI.select_user(this.$route.params.userid),
       }).then((res)=>{
         if(res.data){
           this.otherpostList = res.data
+          console.log("otherpostList : ", this.otherpostList);
           this.otherfoodPostList = res.data.filter((eachList)=> eachList.postId.category===1)
           this.otherclothPostList = res.data.filter((eachList)=> eachList.postId.category===2)
           this.othercosmeticPostList = res.data.filter((eachList)=> eachList.postId.category===3)
