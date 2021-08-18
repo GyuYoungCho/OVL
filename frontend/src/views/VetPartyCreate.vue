@@ -215,7 +215,11 @@ export default {
   methods: {
     
     ...mapActions("pot", ["setPotItems","setUsersPots"]),
-    
+    // 이동 함수    
+    goList(){
+      this.$router.push({ name: "VetPartyList" })
+    },
+
     // 주소 넣는 팝업창 생성
     onAddressBtnClick () {
       if(this.isAddress){

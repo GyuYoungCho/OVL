@@ -8,7 +8,7 @@
           scrollable
           max-height="500px"
           max-width="1000px">
-        <v-card tile flat>
+        <v-card tile flat v-if="certList.length!=0">
           <v-toolbar color="#49784B" dark>
           <v-toolbar-title >{{this.certList[0].challengeId.title}}</v-toolbar-title>
             <v-spacer></v-spacer>
@@ -56,14 +56,9 @@
 <script>
 import moment from "moment"
 import { mapGetters} from 'vuex';
-// import ProfileName from '@/components/basic/ProfileName.vue';
 
 export default {
-  data(){
-    return{
-      modals : true,
-    }
-  },
+  
   props:{
     certdialog : Boolean,
   },

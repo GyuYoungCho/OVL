@@ -162,7 +162,7 @@ export default {
       // feedDatas: [],
       detailCh:{},
       pageNumber: 0,
-      pageSize: 3,
+      pageSize: 5,
       mode : 0,
     }
   },
@@ -236,7 +236,6 @@ export default {
       params.append("userId", this.userinfo.userid);
       axios.get( API.url + feedAPI.feedmain(), {params})
         .then(res => {
-          console.log(res.data)
           if (res.data.content.length > 0) {
               this.getPostList(res.data.content);
               this.getPostLikeList(this.userinfo.userid)
