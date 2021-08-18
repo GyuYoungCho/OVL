@@ -183,7 +183,7 @@ export default {
             return this.followingList;
         },
         ProFileUser() {
-            return this.proFileUser;
+            return this.profileUser;
         },
         detailFollow() {
             return this.detailFollowUser;
