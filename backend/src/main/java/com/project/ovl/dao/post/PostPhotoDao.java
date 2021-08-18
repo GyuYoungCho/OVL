@@ -17,8 +17,9 @@ public interface PostPhotoDao extends JpaRepository<PostPhoto, Integer>{
 	@Query(value="select * " +
 			"from post_photo ph join post p on p.post_id = ph.post_id " + 
 			"where p.post_id in " +
-			"(select post_id from post where user_id in " + 
-			"(select to_id from follow where from_id = :user_id )" + 
+			"(select post_id from post where ( user_id in " + 
+			"(select to_id from follow where from_id = :user_id ) " +
+			"or user_id = :user_id ) " +
 			"and TIMESTAMPDIFF(Day, time, now()) < 14) " +
 			"group by p.post_id " + 
 			"order by time desc"
