@@ -145,7 +145,7 @@ export default {
 
             isNotChallenging: false, // 챌린지 진행 여부
 
-            step:'', // 비건 등급
+            step:0, // 비건 등급
             followModalTitle:"Follow", // 팔로우 모달 타이틀
             reportModalTitle:"신고", // 신고 모달 타이틀
             reportType:0, // 신고 타입 0 : 신고, 1 : 신고 취소
@@ -212,11 +212,14 @@ export default {
         },
         ProFileUser(val) {
             console.log("ProfileUser 변경 : ", val);
+            console.log("변경 followerList : ", this.followerList)
             if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
             else this.isLocked = false;
 
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
             else this.isNotChallenging = false;
+            console.log("변경 isNotChallenging : ", this.isNotChallenging)
+            console.log("변경 isLocked : ", this.isLocked)
         },
         detailFollow(val) {
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
@@ -321,6 +324,7 @@ export default {
         if (this.reportList.includes(this.profileUser.userid)) this.isReport = true;
 
         console.log("초기 isLocked : ", this.isLocked)
+        console.log("초기 followerList : ", this.followerList)
     }
 }
 </script>
