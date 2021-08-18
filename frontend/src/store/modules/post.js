@@ -109,7 +109,7 @@ export default {
       store.commit("GET_POST_ALL", payload);
     },
     getUserPostList(store, payload) {
-      console.log("개인 게시글 가져오기!!");
+      console.log("개인 게시글 가져오기!! userid : ", payload);
       axios({
         method: "get",
         url: API.url + postAPI.select_user(payload),
