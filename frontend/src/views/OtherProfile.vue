@@ -145,7 +145,7 @@ export default {
 
             isNotChallenging: false, // 챌린지 진행 여부
 
-            step:'', // 비건 등급
+            step:0, // 비건 등급
             followModalTitle:"Follow", // 팔로우 모달 타이틀
             reportModalTitle:"신고", // 신고 모달 타이틀
             reportType:0, // 신고 타입 0 : 신고, 1 : 신고 취소
@@ -183,7 +183,7 @@ export default {
             return this.followingList;
         },
         ProFileUser() {
-            return this.proFileUser;
+            return this.profileUser;
         },
         detailFollow() {
             return this.detailFollowUser;
@@ -194,34 +194,41 @@ export default {
     },
     watch: {
         report(val) {
+            console.log("변경 reportList : ", this.reportList)
             if (val.includes(this.profileUser.userid)) this.isReport = true;
             else this.isReport = false;
 
             if(this.isReportOpen) this.isReportOpen = false;
         },
         follower(val) {
+            console.log("변경 followerList : ", this.followerList)
             if (val.includes(this.userinfo.userid)) this.isFollowing = true;
             else this.isFollowing = false;
 
             if (this.profileUser.account_open==1 && !val.includes(this.userinfo.userid)) this.isLocked = true;
+            else this.isLocked = false;
             
             this.followerCnt = val.length;
+            console.log("followerList isLocked : ", this.isLocked)
         },
         following(val) {
+            console.log("변경 followingList : ", this.followingList)
             this.followingCnt = val.length
         },
         ProFileUser(val) {
             console.log("ProfileUser 변경 : ", val);
-            if (val.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
-            else this.isLocked = false;
+            console.log("profileUser followerList : ", this.followerList)
 
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
             else this.isNotChallenging = false;
+            console.log("profileUser isNotChallenging : ", this.isNotChallenging)
         },
         detailFollow(val) {
+            console.log("변경 detailFollow : ", this.detailFollowUser)
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
         },
         userPercent(val) {
+            console.log("변경 percent : ", this.percent)
             if(val < 31 ){
                 this.step = 1;
             }else if( val > 30 && val < 61){
@@ -293,20 +300,17 @@ export default {
 
         // 해당 유저 정보 가져오기
         await this.getSelectUser(userid);
-        console.log("초기 profileUser : ", this.profileUser)
         // 해당 랭킹 정보 가져오기
-        this.getUserRank(userid);
+        await this.getUserRank(userid);
         // 팔로잉 리스트 가져오기
-        this.getFollowingList(userid);
+        await this.getFollowingList(userid);
         // 팔로워 리스트 가져오기
-        this.getFollowerList(userid);
+        await this.getFollowerList(userid);
         // 신고 리스트 가져오기 (로그인 된 유저가 신고한 유저 아이디 리스트)
-        this.selectReport(this.userinfo.userid);
+        await this.selectReport(this.userinfo.userid);
 
         if (this.profileUser.challengeId.challengeId==1) this.isNotChallenging = true;
         else this.isNotChallenging = false;
-
-        console.log("초기 isNotChallenging : ", this.isNotChallenging)
         
 
         // 비건 등급
@@ -320,7 +324,13 @@ export default {
         // 신고 확인 -> 내가 신고한 사람 중 현재 프로필 유저의 아이디가 있다면 신고한 것
         if (this.reportList.includes(this.profileUser.userid)) this.isReport = true;
 
+        console.log("초기 profileUser : ", this.profileUser)
+        console.log("초기 rank : ", this.rank)
+        console.log("초기 followingList : ", this.followingList)
+        console.log("초기 followerList : ", this.followerList)
+        console.log("초기 reportList : ", this.reportList)
         console.log("초기 isLocked : ", this.isLocked)
+        console.log("초기 isNotChallenging : ", this.isNotChallenging)
     }
 }
 </script>
