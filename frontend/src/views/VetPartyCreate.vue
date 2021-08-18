@@ -99,8 +99,8 @@
     <!-- 인원수 -->
     <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
       
-      <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>생성하기</button>
-      <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정하기</button>
+      <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>채식팟 등록</button>
+      <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정</button>
       <v-overlay :value="overlay"></v-overlay>
     </section>
     
