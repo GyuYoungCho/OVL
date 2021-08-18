@@ -1,6 +1,8 @@
 <template>
 <v-container>
-    <FlashModal :modalOpen="modalOpen" :modalContent="modalContent" />
+    <!-- 프로필 사진 수정 완료 안내 모달 -->
+    <ModifyModal :modalOpen="isModifyComplete" title="회원 정보 수정" modalContent="수정이 완료되었습니다" type=2 />
+    <ModifyModal :modalOpen="isUserDelete" title="회원 탈퇴" modalContent="탈퇴가 정상적으로 처리되었습니다" type=2 />
 
         <div style="text-align:center">
             <img src="@/assets/image/OVL_logo.png" alt="">
@@ -62,11 +64,11 @@ import {mapGetters, mapState} from "vuex"
 import axios from 'axios'
 import API from '@/api/index.js'
 import userAPI from '@/api/user.js'
-import FlashModal from '@/components/signup/FlashModal.vue'
+import ModifyModal from '@/components/profile/ModifyModal.vue'
 
 export default {
     components: {
-        FlashModal,
+        ModifyModal
     },
     data() {
         return {
@@ -78,12 +80,12 @@ export default {
             password: '',
             passwordCheck: '',
             account_open: '',
-            modalOpen: false,
+            isUserDelete: false,
             modalContent: '',
+            isModifyComplete: false
         }
     },
     created() {
-        console.log("회원정보 수정한다!! : ",this.userinfo.nickname);
         this.userid = this.userinfo.userid;
         this.name = this.userinfo.name;
         this.nickname = this.userinfo.nickname;
@@ -124,13 +126,7 @@ export default {
         onModifyUserBtnClick () {
             console.log("회원정보수정 버튼 클릭!");
             const URL = API.url + userAPI.modify_user()
-            // const formData = new FormData()
 
-            // formData.append('phone', this.phone)
-            // formData.append('nickname', this.nickname)
-            // formData.append('password', this.password)
-            // formData.append const { email, name, nickname, password, phone } = this
-            //console.log("챌린지 정보:" , this.userinfo.challengeId)
             let send_account = 0;
             //비공개 한다.
             if(this.account_open){
@@ -157,47 +153,36 @@ export default {
                 "account_open" : send_account,
             }
 
+            this.isModifyComplete = true;
+                console.log("isModifyComplete : ", this.isModifyComplete)
+                setTimeout(() => {
+                    this.isModifyComplete = false
+                }, 1000)
+
             axios.put(URL, payload).then(res => {
                 console.log("회원정보 수정 결과 : ",res.data);
 
                 this.$store.dispatch('user/getUpdateUserInfo', this.userinfo.userid);
-                this.$router.push({ name: 'Profile', params: {userid: this.userinfo.userid} })
+
+
+                setTimeout(() => {
+                    this.$router.push({ name: 'Profile', params: {userid: this.userinfo.userid} })
+                }, 1000)
+                
                 })
                 .catch(err => 
                 console.error(err))
         },
         onClickDeleteUser(){
             this.$store.dispatch('user/deleteUser', this.userinfo.userid);
-
-            this.modalContent = "탈퇴가 정상적으로 처리 되었습니다."
-            this.modalOpen = true
-            setTimeout(() => {
-            this.modalOpen = false
-            //this.logout()
-            }, 1000);
-            this.$router.push({name: 'Main'})
-        },
-        // onModifyAccountOpenToggle(open) {
-        //     // axios.put(API.url + userAPI.lock(this.userinfo.userid,val))
-        //     // .then(res => {
-        //     //     console.log(res.data)
-        //     //     })
-        //     // .catch(err => 
-        //     //     console.error(err)
-        //     // )
-        //     console.log("계정 여부", open)
             
-        // }
+            this.isUserDelete = true
+            setTimeout(() => {
+                this.isUserDelete = false
+                this.$router.push({name: 'Main'})
+            }, 1000);
+        },
     },
-    // watch:{
-    //     account_open(val){
-    //        // let open = val? 0 : 1
-    //         //this.onModifyAccountOpenToggle(open)
-
-    //         console.log("계정 여부",val)
-    //         console.log("account-open", this.account_open)
-    //     }
-    // }
 }
 </script>
 
