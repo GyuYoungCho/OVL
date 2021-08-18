@@ -108,7 +108,9 @@ export default {
     
   },
   created() {
-    this.$store.dispatch("post/getUserPostList", this.userinfo.userid);
+    var temp = this.userinfo.userid+"";
+    console.log("temp type : ", typeof(temp))
+    this.$store.dispatch("post/getUserPostList", temp);
     console.log("postMyList : ", this.postMyList);
   },
 }

@@ -110,6 +110,7 @@ export default {
     },
     getUserPostList(store, payload) {
       console.log("개인 게시글 가져오기!! userid : ", payload);
+      console.log("post.js type : ", typeof(payload))
       axios({
         method: "get",
         url: API.url + postAPI.select_user(payload),

@@ -116,6 +116,7 @@ export default {
   },
   //가져온 게시글을 필터링
   created() {
+    console.log("otherUserPost type : ", typeof(this.$route.params.userid))
       axios({
         method: "get",
         url: API.url + postAPI.select_user(this.$route.params.userid),
