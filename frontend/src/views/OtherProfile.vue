@@ -283,7 +283,7 @@ export default {
             // this.isReportOpen = false;
         }
     },
-    created() {
+    async created() {
         console.log("created !! : ", this.$route.params.userid);
         const userid = this.$route.params.userid;
         // 해당 프로필 유저 아이디와 내 아이디가 같다면 나의 프로필로 이동
@@ -292,7 +292,8 @@ export default {
         }
 
         // 해당 유저 정보 가져오기
-        this.getSelectUser(userid);
+        await this.getSelectUser(userid);
+        console.log("초기 profileUser : ", this.profileUser)
         // 해당 랭킹 정보 가져오기
         this.getUserRank(userid);
         // 팔로잉 리스트 가져오기
@@ -306,7 +307,7 @@ export default {
         else this.isNotChallenging = false;
 
         console.log("초기 isNotChallenging : ", this.isNotChallenging)
-        console.log("초기 profileUser : ", this.profileUser)
+        
 
         // 비건 등급
         if(this.percent < 31 ) this.step = 1;
