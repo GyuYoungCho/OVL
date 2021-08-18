@@ -12,6 +12,10 @@
           <img src="@/assets/image/search.png" alt="">
           <div class="mt-3">닉네임, 게시글을 검색할 수 있습니다!</div>
       </div>
+      <div v-else-if="(ord=='닉네임' &&  userlist.length==0) || (ord=='게시글' && postAll.length==0)" class="noResult">
+          <img src="@/assets/image/noResult.png" alt="">
+          <div class="mt-3">검색 결과가 존재하지 않습니다</div>
+      </div>
 
 
       <div v-if="ordCheck">
@@ -59,16 +63,16 @@
 
       <infinite-loading @infinite="infiniteHandler" ref="infiniteLoading" spinner="circles">
         <div slot="no-more" class="mt-4">
-            <div class="noResult">
+            <!-- <div class="noResult">
                 <img src="@/assets/image/noResult.png" alt="">
                 <div class="mt-3">불러올 목록이 없어요</div>
-            </div>
+            </div> -->
           </div>
           <div slot="no-results" class="mt-4">
-            <div v-if="postAll.length==0 && search.length>0" class="noResult">
+            <!-- <div v-if="postAll.length==0 && search.length>0" class="noResult">
                 <img src="@/assets/image/noResult.png" alt="">
                 <div class="mt-3">검색 결과가 존재하지 않습니다</div>
-            </div>
+            </div> -->
           </div>
         </infinite-loading>
 
