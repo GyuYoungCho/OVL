@@ -532,7 +532,6 @@ public class UserController {
 				recipeCommentDao.delete(rc);
 			}
 			
-			
 			// pot follow history 등
 			
 			List<PotRelation> prlt = potRelationDao.findByUserid(user);
@@ -542,6 +541,10 @@ public class UserController {
 			
 			List<Pot> pt = potDao.findByUserid(user);
 			for(Pot p : pt) {
+				List<PotRelation> ppp = potRelationDao.findByPotid(p);
+				for(PotRelation pr : ppp) {
+					potRelationDao.delete(pr);
+				}
 				potDao.delete(p);
 			}
 			
@@ -555,6 +558,7 @@ public class UserController {
 			Optional<List<Follow>> frflist = followDao.findByFromIdUserid(user.getUserid());
 			if(frflist.isPresent()) {
 				for(Follow f : frflist.get()) {
+					
 					followDao.delete(f);
 				}
 			}
@@ -576,7 +580,7 @@ public class UserController {
 				}
 			}
 			
-			List<UserLog> logList = userLogDao.findTop300ByUserIdOrderByLogDateDesc(user);
+			List<UserLog> logList = userLogDao.findByUserId(user);
 			for (UserLog ul : logList) {
 				userLogDao.delete(ul);
 			}
@@ -587,7 +591,6 @@ public class UserController {
 					challengeCertificationDao.delete(c);
 				}
 			}
-			
 			
 			userDao.delete(user);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
