@@ -20,15 +20,22 @@
           <img :src="recipe.filepath" alt="" @click="onImgClick(recipe)" class="recipePic">
           <div class="oneRecipeContent">
             <span>{{ recipe.title }}</span>
-            <span class="oneRecipeTime">{{ calTime(recipe) }}</span>
           </div>
           <div>
-            <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe,idx)">mdi-heart</v-icon>
-            <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe,idx)">mdi-heart-outline</v-icon>
-            {{ recipe.likecount}}
+            <v-row>
+              <v-col cols="6" md="1">
+                <v-icon class="likedHeart" v-if="recipeLikeList.includes(recipe.recipeId)" @click="onHeartIconClick(recipe,idx)">mdi-heart</v-icon>
+                <v-icon class="unlikedHeart" v-else @click="onHeartIconClick(recipe,idx)">mdi-heart-outline</v-icon>
+                {{ recipe.likecount}}
+                
+                <v-icon class="chatIcon">mdi-chat-outline</v-icon>
+                {{ recipe.commentcount }}
+              </v-col>
+              <v-col cols="6" md="1" style="text-align:right">
+                <div>{{ calTime(recipe.time) }}</div>
+              </v-col>
+            </v-row>
             
-            <v-icon class="chatIcon">mdi-chat-outline</v-icon>
-            {{ recipe.commentcount }}
           </div>
         </div>
       </div>

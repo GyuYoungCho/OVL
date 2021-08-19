@@ -106,25 +106,30 @@
             <img :src="info.filepath" width=100%  style="border-radius: 7px;" class="my-1">
             <div class="contentAndTime">
               <div v-html="contentReplace(info.postId.content)"></div>
-              <span>{{ calTime(info.postId.time) }}</span>
+              
             </div>
               
           </div>
 
-          <!-- 좋아요, 댓글 -->
-          <!-- 좋아요 눌렀으면 꽉 찬 하트 -->
-          <div v-if="isLike(idx)" class="inline mt-1" @click="like(idx)">  
-            <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
-          </div>
-          <!-- 좋아요 안눌렀으면 빈 하트 -->
-          <div v-else class="inline mt-1" @click="like(idx)">
-            <v-icon style="color:#BABABA">mdi-heart-outline</v-icon> &nbsp;
-          </div>
-          <span class="color-gray inline">
-            {{info.postId.like_count}}  &nbsp;
-            <v-icon style="color:#BABABA" @click="moveDetail(idx)">mdi-chat-outline</v-icon>
-            {{info.postId.comment_count}}
-          </span>
+          <v-row>
+            <v-col cols="6" md="1">
+              <div v-if="isLike(idx)" class="inline mt-1" @click="like(idx)">  
+                <v-icon style="color:#20683D">mdi-heart</v-icon> &nbsp;
+              </div>
+              <!-- 좋아요 안눌렀으면 빈 하트 -->
+              <div v-else class="inline mt-1" @click="like(idx)">
+                <v-icon style="color:#BABABA">mdi-heart-outline</v-icon> &nbsp;
+              </div>
+              <span class="color-gray inline">
+                {{info.postId.like_count}}  &nbsp;
+                <v-icon style="color:#BABABA" @click="moveDetail(idx)">mdi-chat-outline</v-icon>
+                {{info.postId.comment_count}}
+              </span>
+            </v-col>
+            <v-col cols="6" md="1" style="text-align:right" class="mt-1">
+              <div>{{ calTime(info.postId.time) }}</div>
+            </v-col>
+          </v-row>
         </div>
         
       </div>
@@ -257,7 +262,6 @@ export default {
   created() {
     this.getRecommend() 
     this.resetPostList()
-    // this.getPostLikeList(this.userinfo.userid)
 
     // 추천 목록 만들기
     for (var i=0;i<this.recommendCh.length;i++) {

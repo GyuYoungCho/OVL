@@ -587,7 +587,6 @@ public class PostController {
 				return Integer.compare(o2.getLikecount(), o1.getLikecount());
 			});
 		} else { // 레시피가 없다면 
-			returnList.add(new Recipe(0, "", "", "", new Date(), 0, 0, "", new User(0, "", "", "", "", "", 0, 0, 0, "", new Challenge(0, "", "", new Date(), 0, 0, 0, 0, 0, 0))));
 			return new ResponseEntity<List<Recipe>>(returnList, HttpStatus.OK); // 바로 리턴
 		}
 
