@@ -48,7 +48,7 @@
       </div>
 
 
-      <input type="text" v-model="pot.title" placeholder="제목">
+      <input style="border-radius:8px;" class="vetpartyInput" type="text" v-model="pot.title" placeholder="제목">
     
       <textarea v-model="pot.content" placeholder="내용"></textarea>
         
@@ -84,21 +84,25 @@
     </v-dialog>
     <!-- 주소 넣기 관련 부분 -->
     <div style="display:flex">
-       <input type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%;">
+       <input class="vetpartyInput" type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%; border-radius:8px;">
        <v-spacer></v-spacer>
        <button class=BtnComp @click="onAddressBtnClick" style="width:20%;">검색</button>
     </div>
-    <input type="text" v-model="detailAddress" placeholder="상세주소">
+    <input class="vetpartyInput" style="border-radius:8px;" type="text" v-model="detailAddress" placeholder="상세주소">
     <div style="display:flex">
-      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;">
+      <input class="vetpartyInput" type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;"
+                min="today_date">
       <v-spacer></v-spacer>
-      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
+      <input class="vetpartyInput" type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
+      
     </div>
    
 
     <!-- 인원수 -->
-    <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
-      
+    <input class="vetpartyInput" type="number" placeholder="인원(5명까지 가능)" v-model="total_people">
+     <p class="invalidTxt" v-if="notDownAttend()">
+        {{this.min_pot}}명 미만은 안돼요.
+      </p>
       <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>채식팟 등록</button>
       <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정</button>
       <v-overlay :value="overlay"></v-overlay>
@@ -119,6 +123,7 @@ import RestaurantList from '@/components/pot/RestaurantList.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import { mapGetters, mapActions } from 'vuex';
 import ContentConfirm from '@/components/basic/ContentConfirm.vue';
+import moment from 'moment';
 
 export default {
   components : {
@@ -142,6 +147,8 @@ export default {
         rest_list_modal : false,
 
         search: '',
+        total_people : 1,
+        min_pot : 1,
 
         allSteps: [
           "과일채소", "계란","유제품","생선","고기"
@@ -149,7 +156,7 @@ export default {
         
         btnActive: {0:false,1:false,2:false,3:false,4:true},
 
-        message : "",
+        message : "...",
         snack : false,
         overlay : false,
 
@@ -157,7 +164,9 @@ export default {
 
         confirms : false,
         modalOpen:false,
-        modalContent:'저장되지 않은 작업이 있습니다! 정말 나갈까요?'
+        modalContent:'저장되지 않은 작업이 있습니다! 정말 나갈까요?' ,
+
+        today_date : moment(new Date()).format("yyyy-MM-DD"),
       }
   },
   computed: {
@@ -165,31 +174,36 @@ export default {
     ...mapGetters("user", ['userinfo']),
     
     isValid () {
-      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.pot.total_people && 
-      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step
+      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.total_people && 
+      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step && !!this.notTime() && !!!this.notDownAttend()
     },
   },
   created(){
-
+    
     this.updateStore()
 
     this.search = ''
     this.snack = false
     this.overlay = false
     this.rest_list_modal = false
-
     if (this.$route.params.type !=0) {
       this.type = 1
       this.roadAddress = this.selectpot.place
       this.detailAddress = this.selectpot.restaurant_name
       this.pot.title = this.selectpot.title
       this.pot.content = this.selectpot.content
-      this.pot.total_people = this.selectpot.total_people
+      this.total_people = this.selectpot.total_people
       this.pot.potid = this.selectpot.potid
       this.pot.type = this.selectpot.type
       this.pot.time = this.selectpot.time
-      this.date = new Date(this.selectpot.time).toISOString().substr(0, 10)
-      this.times = new Date(this.selectpot.time).toISOString().slice(11, 16)
+
+      let nowdate = new Date(this.selectpot.time)
+      nowdate = new Date(nowdate.getTime()-(nowdate.getTimezoneOffset()*60000))
+      this.date = nowdate.toISOString().substr(0, 10)
+      this.times = nowdate.toISOString().slice(11, 16)
+      this.min_pot = this.selectpot.pot_count
+      
+      
       if(this.pot.type="식당"){
         this.isRestaurant = true
         this.isAddress = false
@@ -197,14 +211,12 @@ export default {
         this.isRestaurant = false
         this.isAddress = true
       }
-
       for(let i=0;i<5;i++){
         if(this.allSteps[i]==this.pot.type){
           selectTypeIcon(i)
           break
         }
       }
-
       this.message = "내 팟이 수정되었어요!"
     }else{
       this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"
@@ -214,10 +226,22 @@ export default {
   },
   methods: {
     
-    ...mapActions("pot", ["setPotItems","setUsersPots"]),
+    ...mapActions("pot", ["setPotItems","setUsersPots", "setPotItems"]),
     // 이동 함수    
     goList(){
       this.$router.push({ name: "VetPartyList" })
+    },
+
+    notTime(){
+      let date = new Date(this.date + ' 00:00')
+      date.setHours(this.times.split(":")[0])
+      date.setMinutes(this.times.split(":")[1])
+      return date < new Date() ? false : true
+    },
+
+    notDownAttend(){
+      if(this.type ==1 && this.total_people < this.min_pot ) return true
+      else false
     },
 
     // 주소 넣는 팝업창 생성
@@ -263,11 +287,13 @@ export default {
       date.setMinutes(this.times.split(":")[1])
       
       this.pot.time = date
+      this.pot.total_people = this.total_people
 
       if(this.type ==0){
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
           .then((res) => {
             this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+            this.setPotItems()
             res
             this.snack = true
             this.overlay = true
@@ -280,6 +306,7 @@ export default {
         axios.put(API.url + potAPI.modify(),this.pot)
           .then((res) => {
             this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+            this.setPotItems()
             if (res.data === "success") {
                this.snack = true
                 this.overlay = true
@@ -360,6 +387,12 @@ export default {
           
           oldVal
       },
+      total_people(val){
+          if(val>=1 && val <=5) val
+          else if(val!='' && val<1) this.total_people = 1
+          else if(val!=''&& val>5) this.total_people = 5
+          else if(val!='') this.total_people = ''
+      }
   },
   mounted(){
     if(this.userpots.length >=3 && this.$route.params.type ==0){
@@ -385,5 +418,9 @@ export default {
 </script>
 
 <style>
-
+.invalidTxt {
+  color: #cf5555;
+  margin: 0 ;
+  font-size : small;
+}
 </style>

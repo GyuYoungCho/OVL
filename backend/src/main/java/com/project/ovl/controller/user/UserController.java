@@ -40,6 +40,7 @@ import com.project.ovl.controller.post.PostCommentController;
 import com.project.ovl.controller.post.PostReplyController;
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.ReportDao;
+import com.project.ovl.dao.challenge.ChallengeCertificationDao;
 import com.project.ovl.dao.challenge.ChallengeDao;
 import com.project.ovl.dao.challenge.ChallengeHistoryDao;
 import com.project.ovl.dao.post.PostCommentDao;
@@ -62,6 +63,7 @@ import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.dto.UserDto;
 import com.project.ovl.model.challenge.Challenge;
+import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.challenge.ChallengeHistory;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.jwt.JwtService;
@@ -164,6 +166,9 @@ public class UserController {
 	
 	@Autowired
 	ChallengeHistoryDao challengeHistoryDao;
+	
+	@Autowired
+	ChallengeCertificationDao challengeCertificationDao;
 	
 	@Autowired
 	UserLogDao userLogDao;
@@ -330,7 +335,9 @@ public class UserController {
 	@GetMapping("/search_id/{name}/{phone}")
 	public ResponseEntity<String> search_id(@PathVariable("name") String name,
 											@PathVariable("phone") String phone) {
+		System.out.println("name : "+name+", phone : "+phone);
 		Optional<User> userOpt = userDao.findUserByNameAndPhone(name, phone);
+		System.out.println("userOpt : "+userOpt);
 		if (userOpt.isPresent()) {
             return new ResponseEntity<>(userOpt.get().getEmail(), HttpStatus.OK);
         } else {
@@ -525,7 +532,6 @@ public class UserController {
 				recipeCommentDao.delete(rc);
 			}
 			
-			
 			// pot follow history 등
 			
 			List<PotRelation> prlt = potRelationDao.findByUserid(user);
@@ -535,6 +541,10 @@ public class UserController {
 			
 			List<Pot> pt = potDao.findByUserid(user);
 			for(Pot p : pt) {
+				List<PotRelation> ppp = potRelationDao.findByPotid(p);
+				for(PotRelation pr : ppp) {
+					potRelationDao.delete(pr);
+				}
 				potDao.delete(p);
 			}
 			
@@ -548,6 +558,7 @@ public class UserController {
 			Optional<List<Follow>> frflist = followDao.findByFromIdUserid(user.getUserid());
 			if(frflist.isPresent()) {
 				for(Follow f : frflist.get()) {
+					
 					followDao.delete(f);
 				}
 			}
@@ -569,9 +580,16 @@ public class UserController {
 				}
 			}
 			
-			List<UserLog> logList = userLogDao.findTop300ByUserIdOrderByLogDateDesc(user);
+			List<UserLog> logList = userLogDao.findByUserId(user);
 			for (UserLog ul : logList) {
 				userLogDao.delete(ul);
+			}
+			
+			List<ChallengeCertification> ccf = challengeCertificationDao.findByUserId(user);
+			if(ccf!=null) {
+				for(ChallengeCertification c : ccf) {
+					challengeCertificationDao.delete(c);
+				}
 			}
 			
 			userDao.delete(user);

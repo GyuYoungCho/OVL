@@ -3,12 +3,18 @@
     <section class="findEmail">
       <img src="@/assets/image/OVL_logo.png" alt="">
       <div>
-        <input type="text" placeholder="이름" @change="nameInputChanged">
+        <input type="text" placeholder="이름" @change="nameInputChanged" maxlength="10" v-model="userName">
       </div>
+      <p class="invalidTxt" v-if="!nameFormValid">
+        이름은 한글만 입력 가능합니다
+      </p>
       <div>
         <input type="tel" placeholder="전화번호" v-model="phone" maxlength="11">
         <p class="invalidTxt" v-if="!phoneFormValid">
           "-" 없이 숫자로만 적어주세요. 예) 01012345678
+        </p>
+        <p class="invalidTxt" v-if="!phoneLenFormValid">
+          전화번호는 11자리 입니다.
         </p>
       </div>
       <div>
@@ -26,8 +32,8 @@
       </div>
       <div class="infoBelow">
         <p>
-          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 | </RouterLink>
-          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 | </RouterLink>
+          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 &nbsp;|&nbsp; </RouterLink>
+          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 &nbsp;|&nbsp; </RouterLink>
           <RouterLink :to="{ name: 'FindPassword'}" class="grey-link">비밀번호찾기</RouterLink>
         </p>
       </div>
@@ -46,6 +52,7 @@ export default {
     phone: "",
     email: "",
     requestSent: false,
+    userName: "",
   }),
   methods: {
     onFindEmailBtnClick () {
@@ -67,11 +74,18 @@ export default {
     }
   },
   computed: {
+    nameFormValid() {
+      return !this.userName || (this.userName.length>0 && /^[가-힣]+$/.test(this.userName))
+    },
     phoneFormValid () {
-      return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
+      return !this.phone || ((/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone)))
+    },
+    phoneLenFormValid() {
+      if (!this.phoneFormValid) return true
+      return !this.phone || this.phone.length==11
     },
     allExist () {
-      return !!this.name && (this.phone.length > 9)
+      return !!this.name && this.phoneFormValid && this.phoneLenFormValid && this.nameFormValid
     }
   }
 }

@@ -13,5 +13,6 @@ public interface PotRelationDao extends JpaRepository<PotRelation, String>{
 	PotRelation getPotRelationByuserid(int userid);
 	PotRelation getPotRelationBypotid(int potid);
 	List<PotRelation> findByUserid(User user);
+	List<PotRelation> findByPotid(Pot pot);
 	int countBypotid(Pot potid);
 }

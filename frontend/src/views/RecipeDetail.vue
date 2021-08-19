@@ -121,7 +121,7 @@
           </div>
           <div class="infoBelowOneComment">
             <div class="infoFirstLine">
-              <span class="oneInfo">좋아요{{ recipeComment.like_count }}개</span>
+              <span class="oneInfo">좋아요 {{ recipeComment.like_count }}개</span>
               <span class="oneInfo" @click="onReplyClick(recipeComment)">{{ replyCommentId!==recipeComment.recipeCommentId ? '답글달기' : '답글취소' }}</span>
               <div class="oneInfo">
                 <!-- 댓글 수정 -->
@@ -155,7 +155,7 @@
                 <v-icon class="unlikedHeart" @click="onReplyLikeClick(reply)" v-else>mdi-heart-outline</v-icon>
               </div>
               <div class="infoBelowOneReply">
-                <span class="oneInfo">좋아요{{ reply.like_count }}개</span>
+                <span class="oneInfo">좋아요 {{ reply.like_count }}개</span>
                 <div class="oneInfo">
                   <div v-if="reply.userId.userid===userinfo.userid">
                     <!-- 답글 수정 -->
