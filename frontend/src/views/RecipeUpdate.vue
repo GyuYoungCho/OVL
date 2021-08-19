@@ -33,7 +33,7 @@
         </div>
         <!-- 과정 탭 -->
         <div class="process-tab" v-else>
-          <div v-for="(processFile, index) in processFiles" :key="index" >
+          <div v-for="(processFile, index) in processFiles" :key="index">
             <div class="process-index">
               <span># {{ index + 1 }}</span>
               <button class="cancelBtn" @click="deleteProcessImg(index)">X</button>
@@ -47,7 +47,7 @@
               <textarea cols="30" rows="10" v-model="processFile.content" @input="onProcessFileContentChange(processFile)"></textarea>
             </div>
           </div>
-          <div v-if="processFiles.length<15">
+          <div v-if="processFiles.length+plusPhotoCnt<15">
             <p># next</p>
             <div class="process-input">
               <label for="processImgInput"><v-icon>mdi-plus</v-icon></label>
@@ -55,7 +55,7 @@
               <textarea name="" id="" cols="30" rows="10"></textarea>
             </div>
           </div>
-          <div v-if="processImgFiles.length==15">
+          <div v-if="processFiles.length+plusPhotoCnt>15">
             <p>과정은 15개만 등록할 수 있습니다</p>
           </div>
         </div>
@@ -89,6 +89,7 @@ export default {
       processFiles: [],
       changeProcessPhotoIdx: -1,
       processLastIdx: 0,
+      plusPhotoCnt:0,
 
       // 백으로 넘겨줘야 하는 리스트들
       contentList: [],
@@ -132,9 +133,9 @@ export default {
 
     onProcessInputChange(event) {
       if (this.changeProcessPhotoIdx===-1) {
+        this.plusPhotoCnt = this.$refs.files.files.length
         const inputFiles = this.$refs.files.files
-        const limitInputFilesCount = inputFiles.length <=15 ? inputFiles.length : 15 
-
+        const limitInputFilesCount = 15-this.processFiles>inputFiles.length?inputFiles.length:15-this.processFiles.length
         for(let i=0; i < limitInputFilesCount; i++) {
           let inputFile = inputFiles[i]
           inputFile.previewURL = URL.createObjectURL(inputFile)
@@ -258,6 +259,7 @@ export default {
       for (let i=0; i < this.recipeDetail.length; i++) {
         this.processFiles.push(this.recipeDetail[i])
       }
+      console.log("len : ", this.processFiles.length)
     }
   }
   
