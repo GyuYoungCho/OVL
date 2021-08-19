@@ -58,7 +58,7 @@
               <textarea name="" id="" cols="30" rows="10"></textarea>
             </div>
           </div>
-          <div v-if="processImgFiles.length==15">
+          <div v-if="processImgFiles.length==15" class="mb-2">
             <p>과정은 15개만 등록할 수 있습니다</p>
           </div>
         </div>

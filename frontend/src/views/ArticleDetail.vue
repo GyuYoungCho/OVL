@@ -261,7 +261,7 @@ export default {
       this.isPostDelete = true;
       setTimeout(() => {
         this.isPostDelete = false
-        if (move) this.$router.push({path:"/"});
+        if (move) this.$router.go(-1);
       }, 1000);
 
       
