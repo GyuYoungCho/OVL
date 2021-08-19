@@ -94,12 +94,15 @@
                 min="today_date">
       <v-spacer></v-spacer>
       <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
+      
     </div>
    
 
     <!-- 인원수 -->
     <input type="number" placeholder="인원(5명까지 가능)" v-model="total_people">
-      
+     <p class="invalidTxt" v-if="notDownAttend()">
+        {{this.min_pot}}명 미만은 안돼요.
+      </p>
       <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>채식팟 등록</button>
       <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정</button>
       <v-overlay :value="overlay"></v-overlay>
@@ -145,6 +148,7 @@ export default {
 
         search: '',
         total_people : 1,
+        min_pot : 1,
 
         allSteps: [
           "과일채소", "계란","유제품","생선","고기"
@@ -152,7 +156,7 @@ export default {
         
         btnActive: {0:false,1:false,2:false,3:false,4:true},
 
-        message : "",
+        message : "...",
         snack : false,
         overlay : false,
 
@@ -171,7 +175,7 @@ export default {
     
     isValid () {
       return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.total_people && 
-      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step && !!this.notTime()
+      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step && !!this.notTime() && !!!this.notDownAttend()
     },
   },
   created(){
@@ -192,8 +196,14 @@ export default {
       this.pot.potid = this.selectpot.potid
       this.pot.type = this.selectpot.type
       this.pot.time = this.selectpot.time
-      this.date = new Date(this.selectpot.time).toISOString().substr(0, 10)
-      this.times = new Date(this.selectpot.time).toISOString().slice(11, 16)
+
+      let nowdate = new Date(this.selectpot.time)
+      nowdate = new Date(nowdate.getTime()-(nowdate.getTimezoneOffset()*60000))
+      this.date = nowdate.toISOString().substr(0, 10)
+      this.times = nowdate.toISOString().slice(11, 16)
+      this.min_pot = this.selectpot.pot_count
+      
+      
       if(this.pot.type="식당"){
         this.isRestaurant = true
         this.isAddress = false
@@ -201,14 +211,12 @@ export default {
         this.isRestaurant = false
         this.isAddress = true
       }
-
       for(let i=0;i<5;i++){
         if(this.allSteps[i]==this.pot.type){
           selectTypeIcon(i)
           break
         }
       }
-
       this.message = "내 팟이 수정되었어요!"
     }else{
       this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"
@@ -229,6 +237,11 @@ export default {
       date.setHours(this.times.split(":")[0])
       date.setMinutes(this.times.split(":")[1])
       return date < new Date() ? false : true
+    },
+
+    notDownAttend(){
+      if(this.type ==1 && this.total_people < this.min_pot ) return true
+      else false
     },
 
     // 주소 넣는 팝업창 생성
@@ -274,7 +287,7 @@ export default {
       date.setMinutes(this.times.split(":")[1])
       
       this.pot.time = date
-      this.pot.total_people = total_people
+      this.pot.total_people = this.total_people
 
       if(this.type ==0){
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
@@ -403,5 +416,9 @@ export default {
 </script>
 
 <style>
-
+.invalidTxt {
+  color: #cf5555;
+  margin: 0 ;
+  font-size : small;
+}
 </style>
