@@ -17,7 +17,7 @@
       <!-- 인증번호 -->
       <div class="inputBtnDiv" v-if="emailValid">
         <input type="text" placeholder="인증번호" v-model="authNumber">
-        <button class="bg-freditgreen" @click="onEmailAuthBtnClick">확인</button>
+        <button class="bg-freditgreen" @change="onEmailAuthBtnClick">확인</button>
       </div>
       <!-- 새 비밀번호 -->
       <div v-if="authNumberValid">
