@@ -116,14 +116,12 @@ export default {
   },
   //가져온 게시글을 필터링
   created() {
-    console.log("otherUserPost type : ", typeof(this.$route.params.userid))
       axios({
         method: "get",
         url: API.url + postAPI.select_user(this.$route.params.userid),
       }).then((res)=>{
         if(res.data){
           this.otherpostList = res.data
-          console.log("otherpostList : ", this.otherpostList);
           this.otherfoodPostList = res.data.filter((eachList)=> eachList.postId.category===1)
           this.otherclothPostList = res.data.filter((eachList)=> eachList.postId.category===2)
           this.othercosmeticPostList = res.data.filter((eachList)=> eachList.postId.category===3)
