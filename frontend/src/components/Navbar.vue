@@ -26,50 +26,55 @@
         </v-menu>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" absolute temporary>
+      <v-navigation-drawer v-model="drawer" absolute temporary class="pa-4">
         <v-list nav dense>
-          <!-- <v-list-item-group v-model="group" active-class="deep-purple--text text--accent-4"> -->
           <v-list-item-group v-model="group" active-class="green">
-
+            <div style="color:#004627; font-size:large" class="mb-1" >OVL</div>
+            <div style="color:#004627"><v-divider></v-divider></div>
+            
             <RouterLink :to="{ name: 'Main' }">
              <v-list-item class="mb-2 text-dec">
-               <v-icon>mdi-home-export-outline</v-icon>
-              <v-list-item-title class="ms-4">홈</v-list-item-title>
-              </v-list-item>
-            </RouterLink>
-            
-            <RouterLink :to="{ name: 'Profile', params: { userid: userinfo.userid} }">           
-              <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-card-account-details-outline</v-icon>
-                <v-list-item-title class="ms-4">내 프로필</v-list-item-title>
-              </v-list-item>
-            </RouterLink>
-
-            <RouterLink :to="{name:'VetPartyList'}">
-              <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-sprout-outline</v-icon>
-                <v-list-item-title class="ms-4">채식팟</v-list-item-title>
+               <v-icon>mdi-image-frame</v-icon>
+              <v-list-item-title class="ms-4">뉴스피드</v-list-item-title>
               </v-list-item>
             </RouterLink>
 
             <RouterLink :to="{name:'RecipeSearch'}">
               <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-file-outline</v-icon>
+                <v-icon>mdi-chef-hat</v-icon>
                 <v-list-item-title class="ms-4">레시피</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <RouterLink :to="{name:'VetPartyList'}">
+              <v-list-item class="mb-2 text-dec">
+                <!-- <v-icon>mdi-sprout-outline</v-icon> -->
+                <v-icon>mdi-map-marker-outline</v-icon>
+                <v-list-item-title class="ms-4">채식팟</v-list-item-title>
               </v-list-item>
             </RouterLink>
 
             <RouterLink :to="{name:'ChallengeList'}">
               <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-controller-classic-outline</v-icon>
+                <v-icon>mdi-gamepad-variant-outline</v-icon>
                 <v-list-item-title class="ms-4">챌린지</v-list-item-title>
               </v-list-item>
             </RouterLink>
 
             <RouterLink :to="{name:'UserSearch'}">
               <v-list-item class="mb-2 text-dec">
-                <v-icon>mdi-account-search-outline</v-icon>
-                <v-list-item-title class="ms-4">유저 검색</v-list-item-title>
+                <v-icon>mdi-magnify</v-icon>
+                <v-list-item-title class="ms-4">검색</v-list-item-title>
+              </v-list-item>
+            </RouterLink>
+
+            <div class="mt-5 mb-1" style="color:#004627; font-size:large">회원</div>
+            <div style="color:#004627"><v-divider></v-divider></div>
+
+            <RouterLink :to="{ name: 'Profile', params: { userid: userinfo.userid} }">           
+              <v-list-item class="mb-2 text-dec">
+                <v-icon>mdi-card-account-details-outline</v-icon>
+                <v-list-item-title class="ms-4">내 프로필</v-list-item-title>
               </v-list-item>
             </RouterLink>
 
