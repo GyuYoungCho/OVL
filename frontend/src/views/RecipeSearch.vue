@@ -32,7 +32,7 @@
                 {{ recipe.commentcount }}
               </v-col>
               <v-col cols="6" md="1" style="text-align:right">
-                <div>{{ calTime(recipe.time) }}</div>
+                <div>{{ calTime(recipe) }}</div>
               </v-col>
             </v-row>
             
