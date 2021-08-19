@@ -200,6 +200,8 @@ export default {
       this.date = nowdate.toISOString().substr(0, 10)
       this.times = nowdate.toISOString().slice(11, 16)
       this.min_pot = this.selectpot.pot_count
+      
+      
       if(this.pot.type="식당"){
         this.isRestaurant = true
         this.isAddress = false
