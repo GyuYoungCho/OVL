@@ -26,7 +26,11 @@ export default {
             if(this.user.userid==this.userinfo.userid){
                 this.$router.push('/profile/'+this.user.userid)
             }else{
-                this.$router.push('/other_profile/'+this.user.userid)
+                if (this.$router.currentRoute.name=="OtherProfile") {
+                    this.$router.go(this.$router.currentRoute+"/"+this.user.userid)
+                } else {
+                    this.$router.push('/other_profile/'+this.user.userid)    
+                }
             }
         }
     }
