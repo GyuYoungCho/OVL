@@ -68,11 +68,11 @@
         <!-- 게시글 컨텐츠 입력 영역 -->
         <textarea v-model="content" placeholder="게시글 입력..."></textarea>
         
-        <div v-if="type==0" :class="{'buttonDiv': articleCreateFormValid, 'disabledBtnDiv': !articleCreateFormValid}">
-          <button @click="send" :disabled="!articleCreateFormValid">등록</button>
+        <div v-if="type==0" @click="send" :class="{'buttonDiv': articleCreateFormValid, 'disabledBtnDiv': !articleCreateFormValid}">
+          <button :disabled="!articleCreateFormValid">등록</button>
         </div>
-        <div v-else :class="{'buttonDiv': articleModifyFormValid, 'disabledBtnDiv': !articleModifyFormValid}">
-          <button @click="modify" :disabled="!articleModifyFormValid">수정</button>
+        <div v-else @click="modify" :class="{'buttonDiv': articleModifyFormValid, 'disabledBtnDiv': !articleModifyFormValid}">
+          <button :disabled="!articleModifyFormValid">수정</button>
         </div>
       </section>
     </v-container>
