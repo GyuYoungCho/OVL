@@ -90,14 +90,15 @@
     </div>
     <input type="text" v-model="detailAddress" placeholder="상세주소">
     <div style="display:flex">
-      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;">
+      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;"
+                min="today_date">
       <v-spacer></v-spacer>
       <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
     </div>
    
 
     <!-- 인원수 -->
-    <input type="number" placeholder="인원" v-model="pot.total_people"  min="1" max="10">
+    <input type="number" placeholder="인원(5명까지 가능)" v-model="total_people">
       
       <button v-if="type==0" :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>채식팟 등록</button>
       <button v-else :disabled="!isValid" @click="onCreateBtnClick" class=BtnComp>수정</button>
@@ -119,6 +120,7 @@ import RestaurantList from '@/components/pot/RestaurantList.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import { mapGetters, mapActions } from 'vuex';
 import ContentConfirm from '@/components/basic/ContentConfirm.vue';
+import moment from 'moment';
 
 export default {
   components : {
@@ -142,6 +144,7 @@ export default {
         rest_list_modal : false,
 
         search: '',
+        total_people : 1,
 
         allSteps: [
           "과일채소", "계란","유제품","생선","고기"
@@ -157,7 +160,9 @@ export default {
 
         confirms : false,
         modalOpen:false,
-        modalContent:'저장되지 않은 작업이 있습니다! 정말 나갈까요?'
+        modalContent:'저장되지 않은 작업이 있습니다! 정말 나갈까요?' ,
+
+        today_date : moment(new Date()).format("yyyy-MM-DD"),
       }
   },
   computed: {
@@ -165,26 +170,25 @@ export default {
     ...mapGetters("user", ['userinfo']),
     
     isValid () {
-      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.pot.total_people && 
-      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step
+      return !!this.pot.title && !!this.pot.content && !!this.roadAddress && !!this.detailAddress && !!this.total_people && 
+      !!this.date && !!this.times && !!this.pot.type && !!this.pot.step && !!this.notTime()
     },
   },
   created(){
-
+    
     this.updateStore()
 
     this.search = ''
     this.snack = false
     this.overlay = false
     this.rest_list_modal = false
-
     if (this.$route.params.type !=0) {
       this.type = 1
       this.roadAddress = this.selectpot.place
       this.detailAddress = this.selectpot.restaurant_name
       this.pot.title = this.selectpot.title
       this.pot.content = this.selectpot.content
-      this.pot.total_people = this.selectpot.total_people
+      this.total_people = this.selectpot.total_people
       this.pot.potid = this.selectpot.potid
       this.pot.type = this.selectpot.type
       this.pot.time = this.selectpot.time
@@ -218,6 +222,13 @@ export default {
     // 이동 함수    
     goList(){
       this.$router.push({ name: "VetPartyList" })
+    },
+
+    notTime(){
+      let date = new Date(this.date + ' 00:00')
+      date.setHours(this.times.split(":")[0])
+      date.setMinutes(this.times.split(":")[1])
+      return date < new Date() ? false : true
     },
 
     // 주소 넣는 팝업창 생성
@@ -263,6 +274,7 @@ export default {
       date.setMinutes(this.times.split(":")[1])
       
       this.pot.time = date
+      this.pot.total_people = total_people
 
       if(this.type ==0){
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
@@ -360,6 +372,12 @@ export default {
           
           oldVal
       },
+      total_people(val){
+          if(val>=1 && val <=5) val
+          else if(val!='' && val<1) this.total_people = 1
+          else if(val!=''&& val>5) this.total_people = 5
+          else if(val!='') this.total_people = ''
+      }
   },
   mounted(){
     if(this.userpots.length >=3 && this.$route.params.type ==0){
