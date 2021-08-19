@@ -13,6 +13,9 @@
         <p class="invalidTxt" v-if="!phoneFormValid">
           "-" 없이 숫자로만 적어주세요. 예) 01012345678
         </p>
+        <p class="invalidTxt" v-if="!phoneLenFormValid">
+          전화번호는 11자리 입니다.
+        </p>
       </div>
       <div>
         <button class=" finalBtn" :class="{ 'bg-freditgreen': allExist, 'disabledBtn': !allExist }" @click="onFindEmailBtnClick"
@@ -75,10 +78,14 @@ export default {
       return !this.userName || (this.userName.length>0 && /^[가-힣]+$/.test(this.userName))
     },
     phoneFormValid () {
-      return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
+      return !this.phone || ((/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone)))
+    },
+    phoneLenFormValid() {
+      if (!this.phoneFormValid) return true
+      return !this.phone || this.phone.length==11
     },
     allExist () {
-      return !!this.name && (this.phone.length > 9) && this.nameFormValid
+      return !!this.name && this.phoneFormValid && this.phoneLenFormValid && this.nameFormValid
     }
   }
 }
