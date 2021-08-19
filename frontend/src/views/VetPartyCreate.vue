@@ -48,7 +48,7 @@
       </div>
 
 
-      <input class="vetpartyInput" type="text" v-model="pot.title" placeholder="제목">
+      <input style="border-radius:8px;" class="vetpartyInput" type="text" v-model="pot.title" placeholder="제목">
     
       <textarea v-model="pot.content" placeholder="내용"></textarea>
         
@@ -84,11 +84,11 @@
     </v-dialog>
     <!-- 주소 넣기 관련 부분 -->
     <div style="display:flex">
-       <input class="vetpartyInput" type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%;">
+       <input class="vetpartyInput" type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%; border-radius:8px;">
        <v-spacer></v-spacer>
        <button class=BtnComp @click="onAddressBtnClick" style="width:20%;">검색</button>
     </div>
-    <input class="vetpartyInput" type="text" v-model="detailAddress" placeholder="상세주소">
+    <input class="vetpartyInput" style="border-radius:8px;" type="text" v-model="detailAddress" placeholder="상세주소">
     <div style="display:flex">
       <input class="vetpartyInput" type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;"
                 min="today_date">
