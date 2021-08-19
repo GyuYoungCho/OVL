@@ -267,6 +267,7 @@ export default {
       if(this.type ==0){
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
           .then((res) => {
+            this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
             res
             this.snack = true
             this.overlay = true
@@ -278,6 +279,7 @@ export default {
         
         axios.put(API.url + potAPI.modify(),this.pot)
           .then((res) => {
+            this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
             if (res.data === "success") {
                this.snack = true
                 this.overlay = true
@@ -342,7 +344,6 @@ export default {
     },
 
     async updateStore(){
-          
         await this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
         await this.$store.dispatch("pot/setPotItems")
         await this.$store.dispatch("pot/selectPot",[])
