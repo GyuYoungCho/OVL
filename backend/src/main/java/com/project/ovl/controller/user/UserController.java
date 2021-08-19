@@ -40,6 +40,7 @@ import com.project.ovl.controller.post.PostCommentController;
 import com.project.ovl.controller.post.PostReplyController;
 import com.project.ovl.dao.FollowDao;
 import com.project.ovl.dao.ReportDao;
+import com.project.ovl.dao.challenge.ChallengeCertificationDao;
 import com.project.ovl.dao.challenge.ChallengeDao;
 import com.project.ovl.dao.challenge.ChallengeHistoryDao;
 import com.project.ovl.dao.post.PostCommentDao;
@@ -62,6 +63,7 @@ import com.project.ovl.dao.user.UserDao;
 import com.project.ovl.dao.user.UserLogDao;
 import com.project.ovl.dto.UserDto;
 import com.project.ovl.model.challenge.Challenge;
+import com.project.ovl.model.challenge.ChallengeCertification;
 import com.project.ovl.model.challenge.ChallengeHistory;
 import com.project.ovl.model.follow.Follow;
 import com.project.ovl.model.jwt.JwtService;
@@ -164,6 +166,9 @@ public class UserController {
 	
 	@Autowired
 	ChallengeHistoryDao challengeHistoryDao;
+	
+	@Autowired
+	ChallengeCertificationDao challengeCertificationDao;
 	
 	@Autowired
 	UserLogDao userLogDao;
@@ -575,6 +580,14 @@ public class UserController {
 			for (UserLog ul : logList) {
 				userLogDao.delete(ul);
 			}
+			
+			List<ChallengeCertification> ccf = challengeCertificationDao.findByUserId(user);
+			if(ccf!=null) {
+				for(ChallengeCertification c : ccf) {
+					challengeCertificationDao.delete(c);
+				}
+			}
+			
 			
 			userDao.delete(user);
 			return new ResponseEntity<String>(SUCCESS, HttpStatus.OK);
