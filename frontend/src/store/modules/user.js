@@ -16,6 +16,7 @@ export default {
       phone: "",
       account_open: "",
       filepath: "",
+      warning:"",
       challengeId: {
         start_date: null,
       },
