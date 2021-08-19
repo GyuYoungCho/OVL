@@ -108,10 +108,7 @@ export default {
     
   },
   created() {
-    var temp = this.userinfo.userid+"";
-    console.log("temp type : ", typeof(temp))
-    this.$store.dispatch("post/getUserPostList", temp);
-    console.log("postMyList : ", this.postMyList);
+    this.$store.dispatch("post/getUserPostList", this.userinfo.userid);
   },
 }
 </script>

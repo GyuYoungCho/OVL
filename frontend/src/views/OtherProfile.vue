@@ -194,14 +194,12 @@ export default {
     },
     watch: {
         report(val) {
-            console.log("변경 reportList : ", this.reportList)
             if (val.includes(this.profileUser.userid)) this.isReport = true;
             else this.isReport = false;
 
             if(this.isReportOpen) this.isReportOpen = false;
         },
         follower(val) {
-            console.log("변경 followerList : ", this.followerList)
             if (val.includes(this.userinfo.userid)) this.isFollowing = true;
             else this.isFollowing = false;
 
@@ -209,26 +207,18 @@ export default {
             else this.isLocked = false;
             
             this.followerCnt = val.length;
-            console.log("followerList isLocked : ", this.isLocked)
         },
         following(val) {
-            console.log("변경 followingList : ", this.followingList)
             this.followingCnt = val.length
         },
         ProFileUser(val) {
-            console.log("ProfileUser 변경 : ", val);
-            console.log("profileUser followerList : ", this.followerList)
-
             if (val.challengeId.challengeId==1) this.isNotChallenging = true;
             else this.isNotChallenging = false;
-            console.log("profileUser isNotChallenging : ", this.isNotChallenging)
         },
         detailFollow(val) {
-            console.log("변경 detailFollow : ", this.detailFollowUser)
             if (this.isFollowModalClick && val.length>0 && !this.isLocked) this.isFollowOpen = true;
         },
         userPercent(val) {
-            console.log("변경 percent : ", this.percent)
             if(val < 31 ){
                 this.step = 1;
             }else if( val > 30 && val < 61){
@@ -291,7 +281,6 @@ export default {
         }
     },
     async created() {
-        console.log("created !! : ", this.$route.params.userid);
         const userid = this.$route.params.userid;
         // 해당 프로필 유저 아이디와 내 아이디가 같다면 나의 프로필로 이동
         if(userid == this.userinfo.userid){
@@ -323,14 +312,6 @@ export default {
         if (this.profileUser.account_open==1 && !this.followerList.includes(this.userinfo.userid)) this.isLocked = true;
         // 신고 확인 -> 내가 신고한 사람 중 현재 프로필 유저의 아이디가 있다면 신고한 것
         if (this.reportList.includes(this.profileUser.userid)) this.isReport = true;
-
-        console.log("초기 profileUser : ", this.profileUser)
-        console.log("초기 rank : ", this.rank)
-        console.log("초기 followingList : ", this.followingList)
-        console.log("초기 followerList : ", this.followerList)
-        console.log("초기 reportList : ", this.reportList)
-        console.log("초기 isLocked : ", this.isLocked)
-        console.log("초기 isNotChallenging : ", this.isNotChallenging)
     }
 }
 </script>
