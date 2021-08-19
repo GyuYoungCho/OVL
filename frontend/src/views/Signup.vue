@@ -78,6 +78,7 @@ export default {
     FlashModal,
   },
   data: () => ({
+    namevalid : false,
     nicknameValid: false,
     emailValid: false,
     emailAuthNumberSent: false,
@@ -225,7 +226,7 @@ export default {
       const allValid = this.nameFormValid && this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormVali
       return allExist && allValid
     },
-  }
+  },
 }
 </script>
 
