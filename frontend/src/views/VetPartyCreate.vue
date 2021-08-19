@@ -211,14 +211,12 @@ export default {
         this.isRestaurant = false
         this.isAddress = true
       }
-
       for(let i=0;i<5;i++){
         if(this.allSteps[i]==this.pot.type){
           selectTypeIcon(i)
           break
         }
       }
-
       this.message = "내 팟이 수정되었어요!"
     }else{
       this.message = "팟을 만드셨네요! 다른 팟도 찾아볼까요?"
