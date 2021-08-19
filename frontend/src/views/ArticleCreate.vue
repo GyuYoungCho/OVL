@@ -18,6 +18,7 @@
           <button @click="cosmeticClick" :class="{'articleBtnNotSelected':!cosmeticSelected, 'articleBtnSelected':cosmeticSelected}">화장품</button>
         </div>
         <!-- 파일 업로드 영역  -->
+        <span style="text-align:right;">사진 {{imgCnt}} / 10</span>
         <div v-if="type==0">
           <div class='articlePic' v-if="!sendList.length">
             <label for="file"><v-icon>mdi-plus</v-icon></label>
@@ -27,20 +28,22 @@
           <!-- 캐러셀 영역 -->
           <v-carousel class="carouselBorder" hide-delimiters v-else height="30vh">
             <v-carousel-item v-for="(previewItem,idx) in previewItems" :key="idx" :src="previewItem.src" style="text-align:right">
+              <!-- 사진 추가 -->
+              <span>
+                <div v-if="imgCnt<10" class="inline">
+                  <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
+                  <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(0)" style="width:0; height:0"
+                  accept="image/jpeg, image/png">
+                </div>
+              </span>
               <!-- 사진 수정 -->
               <span @click="photoModify(idx)">
                 <label for="modifyFile"><v-icon class="photoClick">mdi-check-circle-outline</v-icon></label>
                 <input id="modifyFile" type="file" ref="modifyFiles" @input="modifyFileUploadRegist" style="width:0; height:0"
-               accept="image/jpeg, image/png">  
+                accept="image/jpeg, image/png">  
               </span>
               <!-- 사진 삭제 -->
               <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
-              <!-- 사진 추가 -->
-              <span>
-                <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
-                <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(0)" style="width:0; height:0"
-                accept="image/jpeg, image/png">
-              </span>
             </v-carousel-item>
           </v-carousel>
         </div>
@@ -53,6 +56,14 @@
           </div>
           <v-carousel v-else class="carouselBorder" hide-delimiters height="30vh">
             <v-carousel-item v-for="(info,idx) in photoList" :key="idx" :src="photoPath(idx)" style="text-align:right">
+              <!-- 사진 추가 -->
+              <span>
+                <div v-if="imgCnt<10" class="inline">
+                  <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
+                  <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(1)" 
+                  accept="image/jpeg, image/png" style="width:0; height:0">
+                </div>
+              </span>
               <!-- 사진 수정 -->
               <span @click="photoModify(idx)">
                 <label for="modifyFile"><v-icon class="photoClick">mdi-check-circle-outline</v-icon></label>
@@ -61,12 +72,6 @@
               </span>
               <!-- 사진 삭제 -->
               <span @click="photoDelete(idx)"><v-icon class="photoClick">mdi-close-circle-outline</v-icon></span>  
-              <!-- 사진 추가 -->
-              <span>
-                <label for="newFile"><v-icon class="photoClick">mdi-plus-circle-outline</v-icon></label>
-                <input id="newFile" type="file" ref="plusFiles" multiple @input="newFileUpload(1)" 
-                accept="image/jpeg, image/png" style="width:0; height:0">
-              </span>
             </v-carousel-item>
             
           </v-carousel>
@@ -132,6 +137,8 @@
         modalTitle:'',
         isPostRegist:false,
         deletePhotoIdx: 0,
+
+        imgCnt:0,
       }
     },
     computed: {
@@ -162,43 +169,40 @@
         this.foodSelected = true
         this.clothSelected = false
         this.cosmeticSelected = false
-        // 백 데이터 설정용
         this.category = '1'
-        // 로그를 찍어보면 this.category 가 변함을 알 수 있어요.
-        // console.log(this.category) 
       },
       clothClick () {
         this.foodSelected = false
         this.clothSelected = true
         this.cosmeticSelected = false
         this.category = '2'
-        // console.log(this.category)
       },
       cosmeticClick () {
         this.foodSelected = false
         this.clothSelected = false
         this.cosmeticSelected = true
         this.category = '3'
-        // console.log(this.category)
       },
       fileUpload (type) {
-        let cnt=0
-        for (let i = 0; i < this.$refs.files.files.length; i++)  {
+        let limitCnt = 0
+        if (type==0) limitCnt = this.$refs.files.files.length+this.sendList < 10? this.$refs.files.files.length : 10-this.sendList
+        else limitCnt = this.$refs.files.files.length+this.imgCnt < 10? this.$refs.files.files.length : 10- this.imgCnt
+        for (let i = 0; i < limitCnt; i++)  {
           if(this.$refs.files.files[i].type =='image/jpeg'||this.$refs.files.files[i].type == 'image/png'){
-            if(cnt==10) break
             const previewUrl = URL.createObjectURL(this.$refs.files.files[i])
             if (type==0) {
               this.sendList.push(this.$refs.files.files[i])
               this.previewItems.push({src:previewUrl})
+              this.imgCnt++
             } else {
               this.plusPhotoList.push(this.$refs.files.files[i])
               this.photoList.push({
                 "filesize":0,
                 "url":previewUrl
               })
+              this.imgCnt++
             }
           }
-          cnt= cnt+1
         }
       },
       photoPath(idx) {
@@ -299,17 +303,22 @@
           }
       },
       newFileUpload(type) {
-        // let cnt 
-        for (let i = 0; i < this.$refs.plusFiles[0].files.length; i++) {
+        let limitCnt = 0;
+        if (type==0) limitCnt = this.$refs.plusFiles[0].files.length+this.sendList.length < 10? this.$refs.plusFiles[0].files.length : 10-this.sendList.length
+        else limitCnt = this.$refs.plusFiles[0].files.length+this.plusPhotoList.length+this.photoList.length <10 ? this.$refs.plusFiles[0].files.length : 10-this.photoList.length-this.plusPhotoList.length
+        console.log("limitCnt : ", limitCnt)
+        for (let i = 0; i < limitCnt; i++) {
           if(this.$refs.plusFiles[0].files[i].type =='image/jpeg'||this.$refs.plusFiles[0].files[i].type == 'image/png'){
 
             const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
             if (type==0) {
               this.sendList.push(this.$refs.plusFiles[0].files[i])
               this.previewItems.push({src:previewUrl})
+              this.imgCnt++
             } else {
               this.plusPhotoList.push(this.$refs.plusFiles[0].files[i])
               const previewUrl = URL.createObjectURL(this.$refs.plusFiles[0].files[i])
+              this.imgCnt++
               this.photoList.push({
                 "filesize":0,
                 "url":previewUrl
@@ -317,15 +326,18 @@
             }
           }
         }
+        console.log("sendList.len : ", this.sendList.length)
       },
       photoDelete(idx) { // 사진 삭제
         const type = this.type
         if (type!=0) { // 게시글 수정일 때
           this.deleteIdList.push(this.photoList[idx].postPhotoId);
           this.photoList.splice(idx, 1);
+          this.imgCnt--
         } else { // 게시글 등록일 때
           this.sendList.splice(idx, 1);
-          this.previewItems.splice(idx, 1); 
+          this.previewItems.splice(idx, 1);
+          this.imgCnt--
         }
       }
     },
@@ -350,6 +362,7 @@
 
         // 내용 보여주기
         this.content = this.post.content;
+        this.imgCnt = this.photoList.length
       }
     }
   }

@@ -116,7 +116,7 @@ export default {
     onProcessInputChange(event) {
       if (this.changeProcessPhotoIdx===-1) {
         const inputFiles = this.$refs.files.files
-        const limitInputFilesCount = inputFiles.length <=15 ? inputFiles.length : 15 
+        const limitInputFilesCount = this.processImgFiles.length+inputFiles.length <=15 ? inputFiles.length : 15-this.processImgFiles.length
         for(let i=0; i < limitInputFilesCount; i++) {
           let inputFile = inputFiles[i]
           inputFile.previewURL = URL.createObjectURL(inputFile)
