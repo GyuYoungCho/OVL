@@ -17,7 +17,8 @@
       <!-- 인증번호 -->
       <div class="inputBtnDiv" v-if="emailValid">
         <input type="text" placeholder="인증번호" v-model="authNumber">
-        <button class="bg-freditgreen" @click="onEmailAuthBtnClick">확인</button>
+        <button :class="{'bg-freditgreen': authNumber.length > 0, 'disabledBtn': authNumber.length < 1}" @click="onEmailAuthBtnClick" 
+        :disabled="authNumber.length < 1">확인</button>
       </div>
       <!-- 새 비밀번호 -->
       <div v-if="authNumberValid">
@@ -116,6 +117,10 @@ export default {
       this.modalTitle = "이메일 인증"
       this.modalContent = '이메일을 확인하는 중입니다. 잠시만 기다려주세요'
       this.modalOpen = true
+      if(this.authNumber === ''){
+
+        return
+      }
       const URL = API.url + userAPI.email_auth_check(this.email, this.authNumber)
       axios.get(URL)
         .then(res => {
@@ -135,7 +140,7 @@ export default {
             this.authNumber = ''
           }
         })
-        .catch(err => console.error(err))
+        .catch((err) => console.error(err))
     },
     onPasswordBtnClick () {
       const URL = API.url + userAPI.modify_pw(this.email, this.newPassword)
