@@ -21,14 +21,14 @@
       </div>
       <!-- 새 비밀번호 -->
       <div v-if="authNumberValid">
-        <input type="password" placeholder="새로운 비밀번호 입력" v-model="newPassword">
+        <input type="password" placeholder="새로운 비밀번호 입력" v-model="newPassword" maxlength="20">
       </div>
       <p class="invalidTxt" v-if="!newPasswordFormValid">
         숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
       </p>
       <!-- 새 비밀번호 확인 -->
       <div v-if="authNumberValid">
-        <input type="password" placeholder="새로운 비밀번호 확인" v-model="newPasswordCheck">
+        <input type="password" placeholder="새로운 비밀번호 확인" v-model="newPasswordCheck" maxlength="20">
       </div>
       <p class="invalidTxt" v-if="!newPasswordCheckFormValid">
         비밀번호와 일치하지 않습니다.

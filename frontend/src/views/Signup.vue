@@ -14,7 +14,7 @@
       </p>
       <!-- 닉네임 -->
       <div class="inputBtnDiv">
-        <input type="text" placeholder="닉네임" v-model="nickname">
+        <input type="text" placeholder="닉네임" v-model="nickname" maxlength="10">
         <button :class="{'bg-freditgreen': nicknameFormValid && !!this.nickname, 'disabledBtn': !nicknameFormValid || !this.nickname }" 
         @click="onNicknameBtnClick" :disabled="!nicknameFormValid || !this.nickname">확인</button>
       </div>
@@ -43,16 +43,19 @@
       <p class="invalidTxt" v-if="!phoneFormValid">
         "-" 없이 숫자로만 적어주세요. 예) 01012345678
       </p>
+      <p class="invalidTxt" v-if="!phoneLenFormValid">
+        전화번호는 11자리 입니다.
+      </p>
       <!-- 비밀번호 -->
       <div>
-        <input type="password" placeholder="비밀번호" v-model="password">
+        <input type="password" placeholder="비밀번호" v-model="password" maxlength="20">
       </div>
       <p class="invalidTxt" v-if="!passwordFormValid">
         숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
       </p>
       <!-- 비밀번호 확인 -->
       <div>
-        <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck">
+        <input type="password" placeholder="비밀번호 확인" v-model="passwordCheck" maxlength="20">
       </div>
       <p class="invalidTxt" v-if="!passwordCheckFormValid">
         비밀번호와 일치하지 않습니다.
@@ -119,6 +122,7 @@ export default {
           } else {
             this.modalTitle = "닉네임 중복 확인"
             this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임 입니다`
+            this.nicknameValid = false
             setTimeout(() => {
               this.modalOpen = false
             }, 1000)
@@ -215,6 +219,10 @@ export default {
     phoneFormValid () {
       return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
     },
+    phoneLenFormValid() {
+      if (!this.phoneFormValid) return true
+      return !this.phone || this.phone.length==11
+    },
     passwordFormValid () {
       return !this.password || ((this.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.password))
     },
@@ -223,7 +231,7 @@ export default {
     },
     signupFormValid () {
       const allExist = !!this.name && !!this.nickname && !!this.email && !!this.phone && !!this.password && !!this.passwordCheck
-      const allValid = this.nameFormValid && this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormVali
+      const allValid = this.nameFormValid && this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormValid && this.phoneLenFormValid
       return allExist && allValid
     },
   },

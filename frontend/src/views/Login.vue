@@ -14,7 +14,7 @@
       </p>
       <!-- 비밀번호 -->
       <div>
-        <input type="password" placeholder="비밀번호" v-model="userinfo.password" @keyup.enter="login(userinfo)">
+        <input type="password" placeholder="비밀번호" v-model="userinfo.password" @keyup.enter="login(userinfo)" maxlength="20">
       </div>
       <p class="invalidTxt" v-if="!passwordFormValid">
         숫자와 특수문자를 포함하여 8자 이상 20자 이하입니다.

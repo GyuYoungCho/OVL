@@ -28,7 +28,7 @@
     </div>
     <!-- 닉네임 -->
     <div class="inputBtnDiv">
-        <input type="text" v-model="nickname">
+        <input type="text" v-model="nickname" maxlength="10">
         <button :class="{'bg-freditgreen': nicknameFormValid && !!this.nickname, 'disabledBtn': !nicknameFormValid || !this.nickname }" 
         @click="onClickNicknameValidate" :disabled="!nicknameFormValid || !this.nickname" style="width:60px">확인</button>
     </div>
@@ -48,14 +48,14 @@
     </p>
     <!-- 비밀번호 -->
     <div>
-        <input type="password" v-model="password" style="font-size:small" placeholder="비밀번호 변경 시 입력, 아닐 경우 빈칸으로 두셔도 됩니다.">
+        <input type="password" v-model="password" style="font-size:small" placeholder="비밀번호 변경 시 입력, 아닐 경우 빈칸으로 두셔도 됩니다." maxlength="20">
     </div>
     <p class="invalidTxt" v-if="!passwordFormValid">
         숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
     </p>
     <!-- 비밀번호 확인 -->
     <div>
-        <input type="password" v-model="passwordCheck" style="font-size:small" placeholder="비밀번호 확인">
+        <input type="password" v-model="passwordCheck" style="font-size:small" placeholder="비밀번호 확인" maxlength="20">
     </div>
     <p class="invalidTxt" v-if="!passwordCheckFormValid">
         비밀번호와 일치하지 않습니다.
@@ -110,7 +110,7 @@ export default {
         ...mapState("user", ["isLogin"]),
 
         nicknameFormValid () {
-            return !this.nickname || (this.nickname.length < 10 && /^[a-zA-Z0-9]*$/.test(this.nickname))
+            return !this.nickname || (/^[a-zA-Z0-9]*$/.test(this.nickname) && !/^[가-힣]+$/.test(this.nickname))
         }, 
         passwordFormValid () {
             return !this.password || ((this.password.length > 7) && /^(?=.*[a-zA-Z])(?=.*\d)(?=.*\W).{6,20}$/.test(this.password))
@@ -130,6 +130,10 @@ export default {
         phoneFormValid() {
             return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
         },
+        phoneLenFormValid() {
+            if (!this.phoneFormValid) return true
+            return !this.phone || this.phone.length==11
+            },
         accountopen(){
             return this.userinfo.account_open == 1
         }
@@ -149,6 +153,7 @@ export default {
                     }, 1000)
                 } else {
                     this.modalContent = `${this.nickname}은(는) 이미 사용중인 닉네임 입니다`
+                    this.nicknameValid = false
                     setTimeout(() => {
                         this.isNickNameCheck = false
                     }, 1000)
