@@ -156,7 +156,7 @@ export default {
         
         btnActive: {0:false,1:false,2:false,3:false,4:true},
 
-        message : "",
+        message : "...",
         snack : false,
         overlay : false,
 
@@ -196,7 +196,9 @@ export default {
       this.pot.potid = this.selectpot.potid
       this.pot.type = this.selectpot.type
       this.pot.time = this.selectpot.time
-    
+
+      let nowdate = new Date(this.selectpot.time)
+      nowdate = new Date(nowdate.getTime()-(nowdate.getTimezoneOffset()*60000))
       this.date = nowdate.toISOString().substr(0, 10)
       this.times = nowdate.toISOString().slice(11, 16)
       this.min_pot = this.selectpot.pot_count
