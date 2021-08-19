@@ -7,10 +7,10 @@
       <img src="@/assets/image/OVL_logo.png" alt="" @click="onClickLogo">
       <!-- 이름 -->
       <div>
-        <input type="text" placeholder="이름" v-model="name" maxlength="5">
+        <input type="text" placeholder="이름" v-model="name" maxlength="10">
       </div>
-      <p class="invalidTxt" v-if="nameFormValid">
-        한글만 입력 가능합니다.
+      <p class="invalidTxt" v-if="!nameFormValid">
+        이름은 한글만 입력 가능합니다
       </p>
       <!-- 닉네임 -->
       <div class="inputBtnDiv">
@@ -48,7 +48,7 @@
         <input type="password" placeholder="비밀번호" v-model="password">
       </div>
       <p class="invalidTxt" v-if="!passwordFormValid">
-        숫자와 특수문자를 포함하여 8자 이상으로 적어주세요.
+        숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
       </p>
       <!-- 비밀번호 확인 -->
       <div>
@@ -203,8 +203,8 @@ export default {
 
   },
   computed: {
-    nameFormValid(){
-      return this.namevalid;
+    nameFormValid() {
+      return !this.name || (this.name.length>0 && /^[가-힣]+$/.test(this.name))
     },
     nicknameFormValid () {
       return !this.nickname || (this.nickname.length < 10 && /^[a-zA-Z0-9]*$/.test(this.nickname))
@@ -223,21 +223,10 @@ export default {
     },
     signupFormValid () {
       const allExist = !!this.name && !!this.nickname && !!this.email && !!this.phone && !!this.password && !!this.passwordCheck
-      const allValid = this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormValid
+      const allValid = this.nameFormValid && this.nicknameValid && this.emailValid  && this.emailFormValid && this.phoneFormValid && this.passwordFormValid && this.passwordCheckFormVali
       return allExist && allValid
     },
   },
-  watch:{
-    name(val){
-        const reg = /[^ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g;
-        if(reg.exec(val)!==null){
-            this.namevalid = true;
-            return this.name = this.name.replace(reg,'');
-        }else if(reg.exec(val)===null && val!=''){
-            this.namevalid = false;
-        }
-    }
-  }
 }
 </script>
 

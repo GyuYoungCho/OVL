@@ -51,7 +51,7 @@
         <input type="password" v-model="password" style="font-size:small" placeholder="비밀번호 변경 시 입력, 아닐 경우 빈칸으로 두셔도 됩니다.">
     </div>
     <p class="invalidTxt" v-if="!passwordFormValid">
-        숫자와 특수문자를 포함하여 8자 이상으로 적어주세요.
+        숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
     </p>
     <!-- 비밀번호 확인 -->
     <div>

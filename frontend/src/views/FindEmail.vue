@@ -3,8 +3,11 @@
     <section class="findEmail">
       <img src="@/assets/image/OVL_logo.png" alt="">
       <div>
-        <input type="text" placeholder="이름" @change="nameInputChanged">
+        <input type="text" placeholder="이름" @change="nameInputChanged" maxlength="10" v-model="userName">
       </div>
+      <p class="invalidTxt" v-if="!nameFormValid">
+        이름은 한글만 입력 가능합니다
+      </p>
       <div>
         <input type="tel" placeholder="전화번호" v-model="phone" maxlength="11">
         <p class="invalidTxt" v-if="!phoneFormValid">
@@ -26,8 +29,8 @@
       </div>
       <div class="infoBelow">
         <p>
-          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 | </RouterLink>
-          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 | </RouterLink>
+          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 &nbsp;|&nbsp; </RouterLink>
+          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 &nbsp;|&nbsp; </RouterLink>
           <RouterLink :to="{ name: 'FindPassword'}" class="grey-link">비밀번호찾기</RouterLink>
         </p>
       </div>
@@ -46,6 +49,7 @@ export default {
     phone: "",
     email: "",
     requestSent: false,
+    userName: "",
   }),
   methods: {
     onFindEmailBtnClick () {
@@ -67,11 +71,14 @@ export default {
     }
   },
   computed: {
+    nameFormValid() {
+      return !this.userName || (this.userName.length>0 && /^[가-힣]+$/.test(this.userName))
+    },
     phoneFormValid () {
       return !this.phone || (/^[\d]+$/.test(this.phone) && !/[-+]+$/.test(this.phone))
     },
     allExist () {
-      return !!this.name && (this.phone.length > 9)
+      return !!this.name && (this.phone.length > 9) && this.nameFormValid
     }
   }
 }
