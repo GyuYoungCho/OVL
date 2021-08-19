@@ -226,7 +226,7 @@ export default {
   },
   methods: {
     
-    ...mapActions("pot", ["setPotItems","setUsersPots"]),
+    ...mapActions("pot", ["setPotItems","setUsersPots", "setPotItems"]),
     // 이동 함수    
     goList(){
       this.$router.push({ name: "VetPartyList" })
@@ -293,6 +293,7 @@ export default {
         axios.post(API.url + potAPI.regist(this.userinfo.userid), this.pot)
           .then((res) => {
             this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+            this.setPotItems()
             res
             this.snack = true
             this.overlay = true
@@ -305,6 +306,7 @@ export default {
         axios.put(API.url + potAPI.modify(),this.pot)
           .then((res) => {
             this.$store.dispatch("pot/setUsersPots", this.userinfo.userid)
+            this.setPotItems()
             if (res.data === "success") {
                this.snack = true
                 this.overlay = true

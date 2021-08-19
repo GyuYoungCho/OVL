@@ -12,10 +12,10 @@
           </v-card-title>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="cancelAttendModal()">
+            <v-btn color="darken-1" text @click="cancelAttendModal()" style="color:#004627">
               아니오
             </v-btn>
-            <v-btn color="green darken-1" text @click="potprocess(sign)">
+            <v-btn color="darken-1" text @click="potprocess(sign)" style="color:#004627">
               예
             </v-btn>
           </v-card-actions>
