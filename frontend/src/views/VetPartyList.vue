@@ -33,6 +33,8 @@
         <!-- axios 들어있는데 지워야할 모달 -->
         <message-modal :modalMessage="modalMessage" :sign="sign"
                 @openMessageModal="openMessageModal" @openSnackBar="openSnackBar"></message-modal>
+        <!-- 안내용 심플 팟모달 -->
+        <PotSimpleModal :potwarning="potwarning" @warning-cancel="warningCancel"/>
       </section>
       <!-- 뒤에 눌리는거 방지 -->
       <v-overlay :value="overlay" ></v-overlay>
@@ -49,6 +51,7 @@ import PotSearch from '@/components/basic/PotSearch.vue';
 import ConfirmSnack from '@/components/basic/ConfirmSnack.vue';
 import MessageModal from '@/components/pot/MessageModal.vue'
 import VetPartyDetail from '@/components/pot/VetPartyDetail.vue';
+import PotSimpleModal from '@/components/pot/PotSimpleModal.vue';
 
 export default {
   components: { 
@@ -59,6 +62,7 @@ export default {
     ConfirmSnack,
     VetPartyDetail,
     MessageModal,
+    PotSimpleModal
   },
   data(){
  
@@ -80,6 +84,7 @@ export default {
       snackbar : false,
       message : "안녕 난 디폴트야" ,
       sign : '',
+      potwarning: false,
     }
   },
   computed:{
@@ -129,6 +134,10 @@ export default {
     },
   },
   created() {
+      // 신고 3번 먹은 유저라면 채식팟 탭 못들어 가야함
+      if (this.userinfo.warning >= 3) {
+        this.potwarning = true
+      }
       
       this.modalDetail = false
       this.modalMessage = false
@@ -139,6 +148,10 @@ export default {
   },
   methods:{
     ...mapActions("pot", ['setPotItems',"setUsersPots"]),
+
+    warningCancel() {
+      this.potwarning = false
+    },
     
     searchKeyword(val){
       this.search = val

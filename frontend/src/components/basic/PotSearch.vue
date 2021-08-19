@@ -3,7 +3,7 @@
     <v-card class="search_bar">
       <v-row class="ma-0">
         <v-col class="pa-0 ma-0" cols="3">
-          <v-select class="pa-0 ma-0 ml-2" v-model="ord"
+          <v-select class="pa-0 ma-0 ml-1" v-model="ord"
             flat solo rounded justify="start" :items="order"
             background-color="rgba(255,255,255,0)" item-color="#004627"
             color="white" append-icon="mdi-menu-down-outline"></v-select>
