@@ -48,7 +48,7 @@
       </div>
 
 
-      <input type="text" v-model="pot.title" placeholder="제목">
+      <input class="vetpartyInput" type="text" v-model="pot.title" placeholder="제목">
     
       <textarea v-model="pot.content" placeholder="내용"></textarea>
         
@@ -84,22 +84,22 @@
     </v-dialog>
     <!-- 주소 넣기 관련 부분 -->
     <div style="display:flex">
-       <input type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%;">
+       <input class="vetpartyInput" type="text" v-model="roadAddress" readonly placeholder="주소" style="width:76%;">
        <v-spacer></v-spacer>
        <button class=BtnComp @click="onAddressBtnClick" style="width:20%;">검색</button>
     </div>
-    <input type="text" v-model="detailAddress" placeholder="상세주소">
+    <input class="vetpartyInput" type="text" v-model="detailAddress" placeholder="상세주소">
     <div style="display:flex">
-      <input type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;"
+      <input class="vetpartyInput" type="date" id="detailAddress" placeholder="날짜" v-model="date" style="width:48%;"
                 min="today_date">
       <v-spacer></v-spacer>
-      <input type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
+      <input class="vetpartyInput" type="time" id="detailAddress" placeholder="시간" v-model="times" style="width:48%;">
       
     </div>
    
 
     <!-- 인원수 -->
-    <input type="number" placeholder="인원(5명까지 가능)" v-model="total_people">
+    <input class="vetpartyInput" type="number" placeholder="인원(5명까지 가능)" v-model="total_people">
      <p class="invalidTxt" v-if="notDownAttend()">
         {{this.min_pot}}명 미만은 안돼요.
       </p>
