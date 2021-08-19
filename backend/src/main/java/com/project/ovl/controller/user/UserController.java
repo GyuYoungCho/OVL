@@ -330,7 +330,9 @@ public class UserController {
 	@GetMapping("/search_id/{name}/{phone}")
 	public ResponseEntity<String> search_id(@PathVariable("name") String name,
 											@PathVariable("phone") String phone) {
+		System.out.println("name : "+name+", phone : "+phone);
 		Optional<User> userOpt = userDao.findUserByNameAndPhone(name, phone);
+		System.out.println("userOpt : "+userOpt);
 		if (userOpt.isPresent()) {
             return new ResponseEntity<>(userOpt.get().getEmail(), HttpStatus.OK);
         } else {

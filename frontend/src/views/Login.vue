@@ -17,7 +17,7 @@
         <input type="password" placeholder="비밀번호" v-model="userinfo.password" @keyup.enter="login(userinfo)">
       </div>
       <p class="invalidTxt" v-if="!passwordFormValid">
-        숫자와 특수문자를 포함하여 8자 이상입니다.
+        숫자와 특수문자를 포함하여 8자 이상 20자 이하입니다.
       </p>
       <!-- 로그인 버튼 -->
       <div>
@@ -30,8 +30,8 @@
       </div>
       <div class="infoBelow">
         <p>
-          <RouterLink :to="{ name: 'Signup' }" class="grey-link">회원가입 | </RouterLink>  
-          <RouterLink :to="{ name: 'FindEmail' }" class="grey-link">아이디 찾기 | </RouterLink>  
+          <RouterLink :to="{ name: 'Signup' }" class="grey-link">회원가입 &nbsp;|&nbsp; </RouterLink>  
+          <RouterLink :to="{ name: 'FindEmail' }" class="grey-link">이메일 찾기 &nbsp;|&nbsp; </RouterLink>  
           <RouterLink :to="{ name: 'FindPassword' }" class="grey-link">비밀번호 찾기</RouterLink>
         </p>
       </div>

@@ -24,7 +24,7 @@
         <input type="password" placeholder="새로운 비밀번호 입력" v-model="newPassword">
       </div>
       <p class="invalidTxt" v-if="!newPasswordFormValid">
-        숫자와 특수문자를 포함하여 8자 이상으로 적어주세요.
+        숫자와 특수문자를 포함하여 8자 이상 20자 이하로 적어주세요.
       </p>
       <!-- 새 비밀번호 확인 -->
       <div v-if="authNumberValid">
@@ -37,7 +37,7 @@
       <div v-if="authNumberValid">
         <button class=" finalBtn" :class="{ 'bg-freditgreen': findPasswordFormValid, 'disabledBtn': !findPasswordFormValid }" 
         :disabled="!findPasswordFormValid" @click="onPasswordBtnClick">
-          비밀번호변경
+          비밀번호 변경
         </button>
       </div>
       <div>
@@ -45,9 +45,9 @@
       </div>
       <div class="infoBelow">
         <p>
-          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 | </RouterLink>
-          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 | </RouterLink>
-          <RouterLink :to="{ name: 'FindEmail'}" class="grey-link">이메일찾기</RouterLink>
+          <RouterLink :to="{ name: 'Login'}" class="grey-link">로그인 &nbsp;|&nbsp; </RouterLink>
+          <RouterLink :to="{ name: 'Signup'}" class="grey-link">회원가입 &nbsp;|&nbsp; </RouterLink>
+          <RouterLink :to="{ name: 'FindEmail'}" class="grey-link">이메일 찾기</RouterLink>
         </p>
       </div>
     </section>
@@ -131,7 +131,6 @@ export default {
             this.modalContent = '인증번호가 일치하지 않습니다. 다시 인증번호를 확인해주세요'
             setTimeout(() => {
               this.modalOpen = false
-              this.emailValid = false
             }, 1000);
             this.authNumber = ''
           }
