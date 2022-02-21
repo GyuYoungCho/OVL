@@ -111,8 +111,8 @@
 
 - Java : openjdk version "1.8.0_262"
 - Spring
-    - Spring Boot : 2.5.5
-    - gradle : 6.8.3
+    - Spring Boot : 2.5.2
+    - gradle : 6.8
 - npm : 6.14.13
 - Docker : 20.10.8
 
