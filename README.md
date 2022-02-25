@@ -44,8 +44,13 @@
 <br>
 <div markdown="1">
   <blockquote> 
- &nbsp; 채식팟 기능을 통해서 혼자가 아닌, 자신과 비슷한 취향인 비건 친구들과 식사를 하며 비건 생활을 공유할 수 있다. 또한 챌린지 기능을 통해 성취감 있는 비건 생활을 만들어 비건 실천을 장려
-    </blockquote> 
+ &nbsp;주요 기능인 채식팟 기능을 통해서 혼자가 아닌, 자신과 비슷한 취향인 비건 친구들과 식사를 하며 비건 생활을 공유할 수 있다. 또한 챌린지 기능을 통해 성취감 있는 비건 생활을 만들어 비건 실천을 장려한다.
+   </blockquote> 
+</div>
+<div markdown="2">
+  <blockquote> 
+  &nbsp;종합적으로 레시피 공유나 채식팟 기능으로 비건 식당 및 제품을 체험함으로써 비건 식품의 여러 방면을 체험할 수 있는 기회가 되고, 식단 뿐만 아니라 옷, 화장품, 가방 등 다양한 제품군을 많은 사람들과 공유할 수 있고 새로운 제품의 정보를 알 수 있는 커뮤니티를 형성한다.
+   </blockquote>
 </div>
 </details>
 
@@ -54,7 +59,7 @@
 <br>
 <div markdown="1">
   <blockquote> 
- &nbsp;OVL 회원 유입으로 OVL이 활성화된다면 메인 페이지의 Carousel 부분을 활용해 좋은 비건 제품을 추천해 줄 수 있다.
+ &nbsp; 많은 서비스에서 인테리어, 운동 등 특정 분야에 대한 SNS 활성화로 인한 성공 사례가 많다. OVL은 비건 분야에 집중된 커뮤니티로 비건을 많이 접하지 않은 사람들에게 접근성을 높여주고 최근 건강, 식단, 친환경이 점점 주요 키워드가 되는 만큼 점점 활성화될 것으로 기대한다. OVL 회원 유입으로 OVL이 활성화된다면 메인 페이지의 Carousel 부분을 활용해 좋은 비건 제품을 추천해 줄 수 있다. 
     </blockquote> 
 </div>
 </details>
@@ -67,19 +72,23 @@
 <img src="https://user-images.githubusercontent.com/49333349/154980717-8a1afec0-6b37-476c-848e-faad420a319b.png" width="80%" height="80%">
 </div>
 </details>
-<!-- 
+
 <details>
 <summary>Figma </summary>
 <div markdown="1">
-<img src="https://user-images.githubusercontent.com/49333349/153613791-8c57650f-3760-425a-9384-685c36ea2134.png" width="80%" height="80%">
+<img src="https://user-images.githubusercontent.com/49333349/155652427-ce9940f8-064b-46d0-8edb-7866d819cda9.png" width="80%" height="80%">
 </div>
-</details> -->
+</details> 
 <br>
 
 ## 🧮 기능
-
-<!-- [시연 시나리오](https://github.com/GyuYoungCho/MetaOne/blob/dev/exec/%EC%8B%9C%EC%97%B0%20%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4.pdf)
- -->
+<details>
+<summary>주요기능</summary>
+<div markdown="1">
+<img src="https://user-images.githubusercontent.com/49333349/155653944-bb38fca0-c4f4-49ba-a981-6add82b116d1.png" width="80%" height="80%">
+</div>
+</details> 
+<br>
 
 ## ⌛ Stack
 
